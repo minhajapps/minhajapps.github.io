@@ -13,23 +13,23 @@
 <meta name="author" content="MD Mahin Afrad">
 <meta name="theme-color" content="#111111">
 
-<link rel="canonical" href="https://minhajafrad.github.io/minhajapps/">
-<link rel="icon" type="image/png" sizes="512x512" href="/minhajapps/favicon.png">
-<link rel="shortcut icon" href="/minhajapps/favicon.png">
-<link rel="apple-touch-icon" sizes="512x512" href="/minhajapps/favicon.png">
+<link rel="canonical" href="https://minhajapps.github.io/">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
+<link rel="shortcut icon" href="/favicon.png">
+<link rel="apple-touch-icon" sizes="512x512" href="/favicon.png">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MINHAJ APPS">
 <meta property="og:title" content="Minhaj Apps - Minhaj Afrad Website Owner | Tools - Android Apps, Games &amp; AI Prompts">
 <meta property="og:description" content="Minhaj Apps create by Minhaj Afrad — Android apps, games, AI prompts, useful tools and downloadable resources">
-<meta property="og:url" content="https://minhajafrad.github.io/minhajapps/">
+<meta property="og:url" content="https://minhajapps.github.io/">
 <meta property="og:locale" content="bn_BD">
-<meta property="og:image" content="https://minhajafrad.github.io/minhajapps/og-image.png">
+<meta property="og:image" content="https://minhajapps.github.io/og-image.png">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Minhaj Apps - Minhaj Afrad Website Owner | Tools - Android Apps, Games &amp; AI Prompts">
 <meta name="twitter:description" content="Minhaj Apps create by Minhaj Afrad — Android apps, games, AI prompts, useful tools and downloadable resources">
-<meta name="twitter:image" content="https://minhajafrad.github.io/minhajapps/og-image.png">
+<meta name="twitter:image" content="https://minhajapps.github.io/og-image.png">
 
 <script type="application/ld+json">
 {
@@ -37,7 +37,7 @@
   "@type": "WebSite",
   "name": "MINHAJ APPS",
   "alternateName": ["Minhaj Apps", "MD Mahin Afrad"],
-  "url": "https://minhajafrad.github.io/minhajapps/",
+  "url": "https://minhajapps.github.io/",
   "description": "Minhaj Apps create by Minhaj Afrad — Android apps, games, AI prompts, useful tools and downloadable resources",
   "inLanguage": "bn"
 }
@@ -47,8 +47,8 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "MINHAJ APPS",
-  "url": "https://minhajafrad.github.io/minhajapps/",
-  "logo": "https://minhajafrad.github.io/minhajapps/favicon.png",
+  "url": "https://minhajapps.github.io/",
+  "logo": "https://minhajapps.github.io/favicon.png",
   "founder": {"@type": "Person", "name": "MD Mahin Afrad"}
 }
 </script>
@@ -3127,7 +3127,7 @@ img{content-visibility:auto;}
 <button aria-label="Close" class="install-tutorial-close" id="installTutorialClose" type="button">×</button>
 <h3 class="install-tutorial-title" id="installTutorialTitle">Install Problem Fix Tutorial</h3>
 <video class="install-tutorial-video" controls="" controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture="" id="installTutorialVideo" oncontextmenu="return false;" playsinline="" poster="" preload="metadata">
-<source id="installTutorialSource" src="/minhajapps/Fix_Tutorial.mp4" type="video/mp4"/>
+<source id="installTutorialSource" src="/Fix_Tutorial.mp4" type="video/mp4"/>
       আপনার ব্রাউজার ভিডিওটি চালাতে পারছে না। ভিডিও ফাইলটি একই folder-এ রাখুন: <strong>Fix_Tutorial.mp4</strong>
     </video>
 </div>
@@ -3507,7 +3507,7 @@ const appModalClose=document.getElementById("appModalClose");
    - একই ভিডিও সব App/Game popup-এ দেখাতে নিচের URL বদলান।
    - চাইলে কোনো app/game object-এ tutorialVideo:"YOUR_URL" যোগ করে আলাদা ভিডিও দিন।
    ========================================================= */
-const INSTALL_TUTORIAL_VIDEO_URL = "/minhajapps/Fix_Tutorial.mp4";
+const INSTALL_TUTORIAL_VIDEO_URL = "/Fix_Tutorial.mp4";
 
 const installTutorialBtn = document.getElementById("installTutorialBtn");
 const installTutorialModal = document.getElementById("installTutorialModal");
@@ -3728,10 +3728,10 @@ function openGame(game,skipHistory=false){
     try{
       var gameParent = (history.state && history.state.minhajSection) || getRouteSection() || "#home";
       var gameParentUrl = location.pathname + location.search;
-      if (/^\/minhajapps\/game\/[^/]+\/?$/.test(location.pathname)) gameParentUrl = "/minhajapps/game/";
+      if (/^\/game\/[^/]+\/?$/.test(location.pathname)) gameParentUrl = "/game/";
       var gameSlug = appRouteSlug(game.name);
       window.__minhajDetailParentUrl = gameParentUrl;
-      history.pushState({minhajModal:"game",minhajGameSlug:gameSlug,minhajParentSection:gameParent,minhajParentUrl:gameParentUrl},"","/minhajapps/game/"+gameSlug+"/");
+      history.pushState({minhajModal:"game",minhajGameSlug:gameSlug,minhajParentSection:gameParent,minhajParentUrl:gameParentUrl},"","/game/"+gameSlug+"/");
     }catch(e){}
   }
   appModalLogo.src=game.image || "";
@@ -3761,8 +3761,8 @@ function appRouteSlug(name){
   return String(name || "").normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 }
 function sectionPath(section){
-  var routes={"#home":"/minhajapps/","#apps":"/minhajapps/apps/","#presets":"/minhajapps/game/","#game":"/minhajapps/game/","#prompts":"/minhajapps/ai-prompt/"};
-  return routes[section] || "/minhajapps/";
+  var routes={"#home":"/","#apps":"/apps/","#presets":"/game/","#game":"/game/","#prompts":"/ai-prompt/"};
+  return routes[section] || "/";
 }
 function openApp(app,skipHistory=false){
   currentTutorialItem = app;
@@ -3770,10 +3770,10 @@ function openApp(app,skipHistory=false){
     try{
       var appParent = (history.state && history.state.minhajSection) || getRouteSection() || "#home";
       var parentUrl = location.pathname + location.search;
-      if (/^\/minhajapps\/app\/[^/]+\/?$/.test(location.pathname)) parentUrl = "/minhajapps/";
+      if (/^\/app\/[^/]+\/?$/.test(location.pathname)) parentUrl = "/";
       var slug = appRouteSlug(app.name);
       window.__minhajDetailParentUrl = parentUrl;
-      history.pushState({minhajModal:"app", minhajAppSlug:slug, minhajParentSection:appParent, minhajParentUrl:parentUrl},"","/minhajapps/app/"+slug+"/");
+      history.pushState({minhajModal:"app", minhajAppSlug:slug, minhajParentSection:appParent, minhajParentUrl:parentUrl},"","/app/"+slug+"/");
     }catch(e){}
   }
   appModalLogo.src=app.image || ""; appModalLogo.onerror=()=>{appModalLogo.style.visibility="hidden";}; appModalLogo.onload=()=>{appModalLogo.style.visibility="visible";}; appModalLogo.style.visibility=app.image ? "visible" : "hidden";
@@ -3818,7 +3818,7 @@ function closeApp(fromPopState=false){
         history.back();
         /* Fallback for browsers where another modal handler has consumed the Back event. */
         setTimeout(function(){
-          if(/^\/minhajapps\/(app|game)\/[^/]+\/?$/.test(location.pathname)){
+          if(/^\/(app|game)\/[^/]+\/?$/.test(location.pathname)){
             history.replaceState({minhajSection:parentSection},"",parentUrl);
             setActiveNav(parentSection);
             if(typeof goToSection==="function") goToSection(parentSection,true);
@@ -4327,7 +4327,7 @@ function openDrawerQr(skipHistory=false){
   if(!drawerQrModal)return;
   if(!drawerQrModal.classList.contains("show") && !skipHistory){
     try{
-      history.pushState({minhajModal:"drawerQr",minhajParentUrl:location.pathname+location.search},"","/minhajapps/drawer-qr/");
+      history.pushState({minhajModal:"drawerQr",minhajParentUrl:location.pathname+location.search},"","/drawer-qr/");
     }catch(e){}
   }
   drawerQrModal.classList.add("show");
@@ -4340,7 +4340,7 @@ function closeDrawerQr(fromPopState){
   if(!fromPopState && history.state && history.state.minhajModal==="drawerQr"){
     /* A direct visit has no in-site QR history entry to go back to. */
     if(history.state.minhajDirectRoute){
-      try{history.replaceState({minhajSection:"#home"},"","/minhajapps/");}catch(e){}
+      try{history.replaceState({minhajSection:"#home"},"","/");}catch(e){}
     }else{
       /* Manual QR close must consume its own popstate so the Menu underneath
          remains open. */
@@ -4374,11 +4374,11 @@ const infoData={
 };
 const infoModal=document.getElementById("infoModal"),infoTitle=document.getElementById("infoTitle"),infoContent=document.getElementById("infoContent"),infoClose=document.getElementById("infoClose");
 const infoRoutePaths={
-  about:"/minhajapps/about/",
-  privacy:"/minhajapps/privacy/",
-  contact:"/minhajapps/contact/",
-  disclaimer:"/minhajapps/disclaimer/",
-  developer:"/minhajapps/developer/"
+  about:"/about/",
+  privacy:"/privacy/",
+  contact:"/contact/",
+  disclaimer:"/disclaimer/",
+  developer:"/developer/"
 };
 function closeInfo(fromPopState=false){
   infoModal.classList.remove("show");
@@ -4389,7 +4389,7 @@ function openInfo(key,skipHistory=false){
   const d=infoData[key];
   if(!d)return;
   if(!infoModal.classList.contains("show") && !skipHistory){
-    history.pushState({minhajModal:"info",info:key},"",infoRoutePaths[key] || "/minhajapps/");
+    history.pushState({minhajModal:"info",info:key},"",infoRoutePaths[key] || "/");
   }
   infoTitle.textContent=d.title;
   infoContent.innerHTML=d.html;
@@ -4466,7 +4466,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInfo();});
         var routeMap={'#home':'',' #home':'','#apps':'apps/','#presets':'game/','#game':'game/','#prompts':'ai-prompt/'};
         var route=routeMap[hash];
         if(route===undefined) route=routeMap[internalHash] || '';
-        var basePath='/minhajapps/';
+        var basePath='/';
         var targetPath=basePath+route;
         if(location.pathname!==targetPath || location.hash){
           history.pushState({minhajSection:publicHash},'',targetPath);
@@ -4514,9 +4514,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInfo();});
     if(queryRoute==='game') return '#game';
     if(queryRoute==='ai-prompt') return '#prompts';
     var path=location.pathname.replace(/\/+$/,'');
-    if(path==='/minhajapps/apps') return '#apps';
-    if(path==='/minhajapps/game') return '#game';
-    if(path==='/minhajapps/ai-prompt') return '#prompts';
+    if(path==='/apps') return '#apps';
+    if(path==='/game') return '#game';
+    if(path==='/ai-prompt') return '#prompts';
     if(location.hash==='#apps') return '#apps';
     if(location.hash==='#game' || location.hash==='#presets') return '#game';
     if(location.hash==='#prompts') return '#prompts';
@@ -4527,14 +4527,14 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInfo();});
     try{queryRoute=new URLSearchParams(location.search).get('route')||'';}catch(e){}
     var infoKeys=['about','privacy','contact','disclaimer','developer'];
     var path=location.pathname.replace(/\/+$/,'');
-    var pathKey=path.indexOf('/minhajapps/')===0 ? path.slice('/minhajapps/'.length) : '';
+    var pathKey=path.indexOf('/')===0 ? path.slice('/'.length) : '';
     var gameRouteSlugFromQuery=queryRoute.indexOf('game:')===0 ? queryRoute.slice(5) : '';
     var gameRouteSlugFromPath=pathKey.indexOf('game/')===0 ? pathKey.slice(5).replace(/\/+$/,'') : '';
     var requestedGameSlug=gameRouteSlugFromQuery || gameRouteSlugFromPath;
     if(requestedGameSlug && typeof games!=='undefined' && Array.isArray(games)){
       var routedGame=games.find(function(game){return typeof appRouteSlug==='function' && appRouteSlug(game.name)===requestedGameSlug;});
       if(routedGame){
-        try{history.replaceState({minhajModal:'game',minhajGameSlug:requestedGameSlug,minhajDirectRoute:true,minhajParentSection:'#game',minhajParentUrl:'/minhajapps/game/'},'', '/minhajapps/game/'+requestedGameSlug+'/');}catch(e){}
+        try{history.replaceState({minhajModal:'game',minhajGameSlug:requestedGameSlug,minhajDirectRoute:true,minhajParentSection:'#game',minhajParentUrl:'/game/'},'', '/game/'+requestedGameSlug+'/');}catch(e){}
         applySection('#game',true);
         openGame(routedGame,true);
         return;
@@ -4546,14 +4546,14 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInfo();});
     if(requestedAppSlug && typeof apps!=='undefined' && Array.isArray(apps)){
       var routedApp=apps.find(function(app){return typeof appRouteSlug==='function' && appRouteSlug(app.name)===requestedAppSlug;});
       if(routedApp){
-        try{history.replaceState({minhajModal:'app',minhajAppSlug:requestedAppSlug,minhajDirectRoute:true,minhajParentSection:'#home'},'', '/minhajapps/app/'+requestedAppSlug+'/');}catch(e){}
+        try{history.replaceState({minhajModal:'app',minhajAppSlug:requestedAppSlug,minhajDirectRoute:true,minhajParentSection:'#home'},'', '/app/'+requestedAppSlug+'/');}catch(e){}
         applySection('#home',true);
         openApp(routedApp,true);
         return;
       }
     }
     if(queryRoute==='drawer-qr' || pathKey==='drawer-qr'){
-      try{history.replaceState({minhajModal:'drawerQr',minhajDirectRoute:true},'', '/minhajapps/drawer-qr/');}catch(e){}
+      try{history.replaceState({minhajModal:'drawerQr',minhajDirectRoute:true},'', '/drawer-qr/');}catch(e){}
       applySection('#home',true);
       openDrawerQr(true);
       return;
@@ -4567,7 +4567,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInfo();});
     }
     var publicHash=getRouteSection();
     var routeMap={'#home':'','#apps':'apps/','#game':'game/','#prompts':'ai-prompt/'};
-    var target='/minhajapps/'+routeMap[publicHash];
+    var target='/'+routeMap[publicHash];
     try{history.replaceState({minhajSection:publicHash},'',target);}catch(e){}
     applySection(publicHash,true);
   }
@@ -4842,7 +4842,7 @@ function openKeyLogin(){
   privateKeyInput.value="";
   try{
     if(!history.state || history.state.minhajModal!=="privateLogin")
-      history.pushState({minhajModal:"privateLogin",minhajParentSection:location.hash||"#home",minhajParentUrl:location.pathname+location.search},"","/minhajapps/private-login/");
+      history.pushState({minhajModal:"privateLogin",minhajParentSection:location.hash||"#home",minhajParentUrl:location.pathname+location.search},"","/private-login/");
   }catch(e){}
 }
 function closeKeyLogin(fromPopState=false){
@@ -5146,15 +5146,15 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeKeyLogin();clo
 (function(){
   function cleanClosedDetailUrl(){
     var modal=document.getElementById('appModal');
-    if(modal && !modal.classList.contains('show') && /^\/minhajapps\/(app|game)\/[^/]+\/?$/.test(location.pathname)){
+    if(modal && !modal.classList.contains('show') && /^\/(app|game)\/[^/]+\/?$/.test(location.pathname)){
       var st=history.state||{};
-      var parent=st.minhajParentUrl || (st.minhajModal==='game' ? '/minhajapps/game/' : '/minhajapps/');
-      if(/^\/minhajapps\/(app|game)\/[^/]+\/?$/.test(parent)) parent='/minhajapps/';
+      var parent=st.minhajParentUrl || (st.minhajModal==='game' ? '/game/' : '/');
+      if(/^\/(app|game)\/[^/]+\/?$/.test(parent)) parent='/';
       try{history.replaceState({minhajSection:st.minhajParentSection||'#home'},'',parent);}catch(e){}
     }
-    if(!document.getElementById('privateLoginOverlay')?.classList.contains('show') && location.pathname==='/minhajapps/private-login/'){
-      var st2=history.state||{}; var back=st2.minhajParentUrl||'/minhajapps/';
-      if(back==='/minhajapps/private-login/') back='/minhajapps/';
+    if(!document.getElementById('privateLoginOverlay')?.classList.contains('show') && location.pathname==='/private-login/'){
+      var st2=history.state||{}; var back=st2.minhajParentUrl||'/';
+      if(back==='/private-login/') back='/';
       try{history.replaceState({minhajSection:st2.minhajParentSection||'#home'},'',back);}catch(e){}
     }
   }
