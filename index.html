@@ -4063,22 +4063,30 @@ function runSearch(){
   }
 }
 
-/* Search history guard: typing a query creates one in-site history layer.
-   Android Back first clears Search instead of leaving the website. */
+/* Search route: while a query is active, show /search/ instead of #search.
+   Clearing the query with the input's X returns to the original clean section URL. */
 window.__minhajSearchHistoryActive=false;
-window.__minhajSearchParentSection=location.hash||'#home';
+window.__minhajSearchParentSection=(history.state && history.state.minhajSection) || (typeof getRouteSection==='function' ? getRouteSection() : '#home');
+window.__minhajSearchParentUrl=location.pathname+location.search;
 function minhajBeginSearchHistory(input){
   var value=((input && input.value)||'').trim();
   if(!value){
     if(window.__minhajSearchHistoryActive){
-      try{history.replaceState({minhajSection:window.__minhajSearchParentSection},'',location.href.split('#')[0]+window.__minhajSearchParentSection);}catch(e){}
+      var parent=window.__minhajSearchParentSection || '#home';
+      var parentUrl=window.__minhajSearchParentUrl || ((typeof sectionPath==='function') ? sectionPath(parent) : '/');
+      if(/^\/search\/?$/.test(parentUrl)) parentUrl='/';
+      try{history.replaceState({minhajSection:parent},'',parentUrl);}catch(e){}
       window.__minhajSearchHistoryActive=false;
     }
     return;
   }
   if(!window.__minhajSearchHistoryActive){
-    window.__minhajSearchParentSection=location.hash||'#home';
-    try{history.pushState({minhajModal:'search',minhajParentSection:window.__minhajSearchParentSection},'',location.href.split('#')[0]+'#search');}catch(e){}
+    window.__minhajSearchParentSection=(history.state && history.state.minhajSection) || (typeof getRouteSection==='function' ? getRouteSection() : '#home') || '#home';
+    window.__minhajSearchParentUrl=location.pathname+location.search;
+    if(/^\/search\/?$/.test(window.__minhajSearchParentUrl)){
+      window.__minhajSearchParentUrl=sectionPath(window.__minhajSearchParentSection);
+    }
+    try{history.pushState({minhajModal:'search',minhajParentSection:window.__minhajSearchParentSection,minhajParentUrl:window.__minhajSearchParentUrl},'', '/search/');}catch(e){}
     window.__minhajSearchHistoryActive=true;
   }
 }
@@ -4590,14 +4598,16 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInfo();});
     try{
       if(window.__minhajSearchHistoryActive || (state && state.minhajModal==='search')){
         window.__minhajSearchHistoryActive=false;
-        var searchParent=(state && state.minhajSection) || (state && state.minhajParentSection) || window.__minhajSearchParentSection || '#home';
+        var searchParent=(state && state.minhajSection) || (state && state.minhajParentSection) || window.__minhajSearchParentSection || (typeof getRouteSection==='function' ? getRouteSection() : '#home') || '#home';
         if(typeof search!=='undefined' && search) search.value='';
         document.querySelectorAll('.section-search').forEach(function(input){input.value='';});
         if(typeof runSearch==='function') runSearch();
         try{
           if(typeof setActiveNav==='function') setActiveNav(searchParent);
           if(typeof goToSection==='function') goToSection(searchParent,true);
-          history.replaceState({minhajSection:searchParent},'',location.href.split('#')[0]+(searchParent==='#home'?'':searchParent));
+          var cleanPath=(state && state.minhajParentUrl) || window.__minhajSearchParentUrl || ((typeof sectionPath==='function') ? sectionPath(searchParent) : '/');
+          if(/^\/search\/?$/.test(cleanPath)) cleanPath=(typeof sectionPath==='function') ? sectionPath(searchParent) : '/';
+          history.replaceState({minhajSection:searchParent},'',cleanPath);
         }catch(_){}
         return;
       }
