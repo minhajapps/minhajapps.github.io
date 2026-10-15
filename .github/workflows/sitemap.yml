@@ -1,0 +1,39 @@
+name: Generate Sitemap
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.html'
+      - 'app/**'
+      - 'apps/**'
+      - 'games/**'
+      - 'sitemap.xml'
+      - '.github/workflows/sitemap.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sitemap:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate sitemap
+        uses: cicirello/generate-sitemap@v1
+        with:
+          base-url-path: https://minhajapps.github.io/
+          drop-html-extension: true
+
+      - name: Commit sitemap
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sitemap.xml
+          git diff --cached --quiet || git commit -m "Update sitemap"
+          git push
