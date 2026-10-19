@@ -3074,6 +3074,108 @@ img{content-visibility:auto;}
 
 
 
+<style id="minhaj-ai-prompt-title-center-fix">
+/* Center AI prompt titles without changing the prompt cards or their actions. */
+.prompt-row .prompt-card > b {
+  width: 100% !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+</style>
+
+<style id="minhaj-center-copy-prompt-button">
+/* Center the Copy Prompt button inside every AI prompt card */
+.prompt-card button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:max-content!important;
+  max-width:100%!important;
+  margin:6px auto 0!important;
+  text-align:center!important;
+}
+</style>
+
+<style id="minhaj-remove-app-photo-black-shadow">
+/* Remove dark shadow beneath app/game photos while preserving card styling */
+.app-card .logo,
+.app-card .logo img,
+.game-card .game-icon,
+.game-card .game-icon img,
+.trend-card .logo,
+.trend-card .logo img,
+#trending .app-card img,
+#apps .app-card img,
+#games .game-card img {
+  box-shadow: none !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+</style>
+
+<style id="minhaj-qr-modal-above-drawer-fix">
+/* QR Scanner must appear above the menu in both Day and Night modes. */
+html body #drawerQrModal.drawer-qr-modal{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483000!important;
+  isolation:isolate!important;
+}
+html body #drawerQrModal.drawer-qr-modal.show{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+html body #drawerQrModal .drawer-qr-backdrop{
+  position:absolute!important;
+  inset:0!important;
+  z-index:0!important;
+}
+html body #drawerQrModal .drawer-qr-card{
+  position:relative!important;
+  z-index:1!important;
+  margin:auto!important;
+  max-width:min(92vw,430px)!important;
+  max-height:88vh!important;
+}
+html body #drawerQrModal .drawer-qr-card img{
+  display:block!important;
+  max-width:100%!important;
+  max-height:84vh!important;
+  object-fit:contain!important;
+}
+</style>
+
+
+<style id="minhaj-bottom-nav-visible-over-app-popup-final">
+/* Keep the mobile bottom navigation visible and usable while an app/game popup is open. */
+@media (max-width: 800px) {
+  html body .bottom-nav,
+  html body .mobile-bottom-nav {
+    position: fixed !important;
+    left: 3.5% !important;
+    right: 3.5% !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    top: auto !important;
+    width: auto !important;
+    z-index: 900 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+  /* Leave breathing room at the bottom of the popup so it does not cover the nav. */
+  #appModal .minhaj-detail,
+  #appModal .detail-modal,
+  #promptModal .prompt-modal,
+  #infoModal .info-modal {
+    max-height: calc(100dvh - 112px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    margin-bottom: 72px !important;
+  }
+}
+</style>
 </head>
 <body>
 <div aria-hidden="true" class="prompt-modal-backdrop" id="promptModal">
@@ -3440,6 +3542,7 @@ function updateSectionCounts(){
 }
 
 const prompts = [
+  {name:"Car Prompt 🛒",icon:"👤",image:"https://i.postimg.cc/PxZDfQ1w/Picsart-26-10-17-09-51-15-540.jpg",prompt:"Cinematic moody portrait of a young man standing in an underground parking garage, captured in a 3:4 vertical frame from a slightly low eye-level angle. The man has curly black hair, a well-groomed short beard and mustache, and is wearing black sunglasses. He is dressed in a relaxed-fit white button-down shirt with the sleeves slightly rolled up, paired with light blue relaxed-fit jeans and clean white sneakers.He is standing beside a white SUV with the driver-side door open, casually holding the edge of the open door with one hand while looking to his right with a calm, confident expression. His posture is relaxed and natural.The environment is dark and cinematic, featuring an underground parking garage with concrete walls, subtle oil marks, dim warm overhead lighting, deep shadows, and a slightly hazy atmosphere. Another white SUV is partially visible in the foreground, adding depth to the composition.Ultra-realistic photography, cinematic color grading, moody atmosphere, realistic skin texture, natural proportions, shallow depth of field, soft highlights, dramatic shadows, detailed clothing texture, premium editorial fashion photography, high-end cinematic look, photorealistic, 8K quality."},
   {name:"৮০ দর্শকের Prompt 🛒",icon:"👤",image:"https://i.postimg.cc/fycH8HgJ/Picsart-26-09-14-18-29-26-598.jpg",prompt:"Create Your 80s Look:Transform the person in the uploaded photo into an authentic 1980s look. Keep their face natural and recognizable. Add era-appropriate hairstyle, outfit, vintage setting, warm cinematic lighting, faded colors and realistic film grain. Photorealistic, 9:16."},
   {name:"গালফ্রেন্ড Prompt 🛒",icon:"🎬",image:"https://i.postimg.cc/Y0KnfcRY/Picsart-26-09-14-18-28-54-509.jpg",prompt:"Create a cinematic, soft monochrome portrait based on the reference image.Keep the main male subject in the foreground, positioned very close to the camera on the left side of the frame, with only part of his face visible.He is wearing a loose white shirt with the collar slightly open.Behind his shoulder, place a young woman partially hidden, gently peeking from behind him, with only her face and eyes clearly visible.Use a soft natural window light coming from the right side, creating a bright, dreamy and slightly faded atmosphere.Keep the background minimal with a softly blurred curtain / window.Use a subtle black - and - white / desaturated teal monochrome color grade, soft film texture, realistic skin texture, shallow depth of field, gentle highlights and cinematic contrast.IMPORTANT: Preserve the male subject 's original face, facial features, hairstyle, expression, skin texture, and identity exactly as provided in the input photo. Do not change his face or body shape. Match the reference composition and camera angle as closely as possible. Photorealistic, cinematic photography, natural lighting, high detail, vertical portrait, 4:5 aspect ratio."},
   {name:"Wether Prompt 🛒",icon:"🌌",image:"https://i.postimg.cc/qMbkwjfq/Picsart-26-09-14-18-52-21-801.jpg",prompt:"Same face outfit Same ultrawide Upper-angle low-angle shot of a young man Seat this bov in a stvlish pose on the topmost stone visible in the background; the pose needs to look realistic.And add some more clouds according to the color of the sky! Increases quality.Instagrammable 4:5 ratio."},
@@ -3469,11 +3572,9 @@ function renderApps(list){
         ${logoHTML(a)}
         <div class="meta">
           <b>${a.name}</b>
-          <div class="muted">v${a.version}</div>
-          <div class="rating minhaj-rating">${minhajStarLogo()}<span>${a.rating}</span><span>·</span><span>${a.downloads}</span></div>
         </div>
       </div>
-      <button type="button" class="download" data-app-name="${a.name}" onclick="openAppByName(this.dataset.appName)">Download</button>
+      <div class="card-meta-row"><span class="version-chip">v${a.version}</span><span class="rating-stars" aria-label="Five star rating">${Array.from({length:5},()=>minhajStarLogo()).join("")}</span></div>
     </article>`).join("");
   empty.hidden=list.length!==0;
 }
@@ -3487,8 +3588,7 @@ function renderTrending(){
   trendGrid.innerHTML=trendingList.map(a=>`
     <article class="trend-card" data-app-name="${a.name}">
       ${logoHTML(a)}
-      <div class="trend-info"><b>${a.name}</b><div class="muted minhaj-rating">${minhajStarLogo()}<span>${a.rating}</span><span>·</span><span>${a.downloads}</span></div></div>
-      <button type="button" class="trend-download" data-app-name="${a.name}" onclick="openAppByName(this.dataset.appName)">Download</button>
+      <div class="trend-info"><b>${a.name}</b><div class="muted">Version ${a.version}</div><div class="rating-stars trend-stars" aria-label="Five star rating">${Array.from({length:5},()=>minhajStarLogo()).join("")}</div></div>
     </article>`).join("");
 }
 
@@ -3685,11 +3785,9 @@ function renderGames(list=games){
         <div class="game-icon logo">${g.image ? `<img src="${g.image}" alt="${g.name}" loading="lazy" decoding="async" onerror="this.onerror=null;this.style.display='none';">` : ""}</div>
         <div class="meta">
           <b>${g.name}</b>
-          <div class="muted">v${g.version || "Latest"}</div>
-          <div class="rating minhaj-rating">${minhajStarLogo()}<span>${g.rating}</span><span>·</span><span>${g.downloads}</span></div>
         </div>
       </div>
-      <button type="button" class="download game-download" data-game-name="${g.name}">Download</button>
+      <div class="card-meta-row"><span class="version-chip">v${g.version || "Latest"}</span><span class="rating-stars" aria-label="Five star rating">${Array.from({length:5},()=>minhajStarLogo()).join("")}</span></div>
     </div>`).join("");
 }
 
@@ -4302,18 +4400,27 @@ const sideDrawer=document.getElementById("sideDrawer");
 const sideOverlay=document.getElementById("sideOverlay");
 const drawerClose=document.getElementById("drawerClose");
 function openMenu(){
+  if (sideDrawer.classList.contains("show")) return;
+
+  /* Lock the document at its current scroll position while the drawer is open. */
+  window.__minhajMenuScrollY = window.scrollY || window.pageYOffset || 0;
+  document.body.dataset.minhajMenuScrollY = String(window.__minhajMenuScrollY);
+  document.body.classList.add("menu-open");
+  document.body.style.position = "fixed";
+  document.body.style.top = `-${window.__minhajMenuScrollY}px`;
+  document.body.style.left = "0";
+  document.body.style.right = "0";
+  document.body.style.width = "100%";
+
   sideDrawer.classList.add("show");
   sideOverlay.classList.add("show");
   menuBtn.classList.add("is-open");
   sideDrawer.setAttribute("aria-hidden","false");
-  document.body.classList.add("menu-open");
 
-  /* One history layer only. Closing Menu pops this single layer. */
+  /* Menu is an overlay: keep the current URL and page section unchanged. */
   try{
     if(!history.state || history.state.minhajModal!=="menu") {
       var parentSection = (history.state && history.state.minhajSection) || location.hash || "#home";
-      /* Menu is an overlay, not a page section: keep the current URL clean.
-         Store its open/close state in history.state instead of adding #menu. */
       var menuUrl = location.href;
       if (location.hash === "#menu") menuUrl = location.href.split('#')[0];
       history.pushState({minhajModal:"menu", minhajParentSection:parentSection}, "", menuUrl);
@@ -4321,11 +4428,28 @@ function openMenu(){
   }catch(e){}
 }
 function closeMenu(fromPopState=false){
+  if (!sideDrawer.classList.contains("show")) return;
+
   sideDrawer.classList.remove("show");
   sideOverlay.classList.remove("show");
   menuBtn.classList.remove("is-open");
   sideDrawer.setAttribute("aria-hidden","true");
+
+  var restoreY = Number(document.body.dataset.minhajMenuScrollY || window.__minhajMenuScrollY || 0);
   document.body.classList.remove("menu-open");
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.left = "";
+  document.body.style.right = "";
+  document.body.style.width = "";
+  delete document.body.dataset.minhajMenuScrollY;
+
+  /* Restore after removing fixed-body lock so the exact previous position remains. */
+  requestAnimationFrame(function(){
+    window.scrollTo(0, restoreY);
+    requestAnimationFrame(function(){ window.scrollTo(0, restoreY); });
+  });
+
   if(!fromPopState && history.state && history.state.minhajModal==="menu"){
     try{history.back();}catch(e){}
   }
@@ -5180,5 +5304,1261 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeKeyLogin();clo
 })();
 </script>
 
+
+<style id="minhaj-version-rating-card-design">
+/* Clean app-store metadata instead of Download buttons on cards */
+.card-meta-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:13px;border-top:1px solid rgba(128,128,128,.16)}
+.version-chip{display:inline-flex;align-items:center;max-width:58%;padding:5px 8px;border:1px solid rgba(128,128,128,.22);border-radius:7px;background:rgba(128,128,128,.07);color:var(--text-color,#777);font-size:10px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rating-stars{display:inline-flex;align-items:center;gap:1px;color:#f5b400;font-size:13px;letter-spacing:0;line-height:1;white-space:nowrap;text-shadow:0 1px 1px rgba(245,180,0,.12)}
+.rating-stars .minhaj-star-logo{width:12px;height:12px;flex:0 0 12px;display:block;color:#f5b400;filter:drop-shadow(0 1px 1px rgba(245,180,0,.12));}
+.trend-card .rating-stars .minhaj-star-logo{width:12px;height:12px;flex-basis:12px;}
+@media(max-width:520px){.rating-stars .minhaj-star-logo{width:11px;height:11px;flex-basis:11px;}}
+.trend-card .trend-info{min-width:0;align-self:center}
+.trend-card .trend-stars{margin-top:6px;font-size:12px}
+.app-grid .app-card{gap:0}
+.app-grid .app-card .app-top{margin-bottom:13px}
+.game-card.app-card .app-top{margin-bottom:13px}
+@media(max-width:520px){.card-meta-row{padding-top:10px;gap:5px}.version-chip{font-size:9px;padding:5px 6px}.rating-stars{font-size:12px}.trend-card .trend-stars{font-size:11px}}
+body.dark-mode .card-meta-row{border-top-color:rgba(255,255,255,.12)}
+body.dark-mode .version-chip{border-color:rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#c5c5c5}
+</style>
+
+
+<style id="minhaj-three-cards-per-row-mobile">
+/* Compact three-column layout for Apps and Games on phones. */
+@media(max-width:760px){
+  #appGrid.app-grid,#gameGrid.game-grid{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:9px!important;
+    align-items:stretch!important;
+  }
+  #appGrid .app-card,#gameGrid .game-card{
+    min-width:0!important;
+    padding:8px!important;
+    border-radius:14px!important;
+    gap:0!important;
+  }
+  #appGrid .app-top,#gameGrid .app-top{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    gap:8px!important;
+    margin-bottom:10px!important;
+    min-width:0!important;
+  }
+  #appGrid .logo,#gameGrid .game-icon.logo{
+    width:42px!important;height:42px!important;min-width:42px!important;
+    flex:0 0 42px!important;border-radius:11px!important;
+  }
+  #appGrid .meta,#gameGrid .meta{width:100%!important;min-width:0!important}
+  #appGrid .meta b,#gameGrid .meta b{
+    display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;
+    overflow:hidden!important;white-space:normal!important;overflow-wrap:anywhere!important;
+    font-size:11px!important;line-height:1.3!important;min-height:28px!important;
+  }
+  #appGrid .card-meta-row,#gameGrid .card-meta-row{
+    display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+    justify-content:center!important;gap:7px!important;padding-top:9px!important;margin-top:auto!important;
+  }
+  #appGrid .version-chip,#gameGrid .version-chip{
+    max-width:100%!important;font-size:9px!important;padding:4px 6px!important;
+  }
+  #appGrid .rating-stars,#gameGrid .rating-stars{font-size:11px!important;letter-spacing:-.4px!important}
+}
+@media(max-width:360px){
+  #appGrid.app-grid,#gameGrid.game-grid{gap:7px!important}
+  #appGrid .app-card,#gameGrid .game-card{padding:7px!important}
+  #appGrid .logo,#gameGrid .game-icon.logo{width:38px!important;height:38px!important;min-width:38px!important;flex-basis:38px!important}
+}
+</style>
+
+
+<style id="minhaj-centered-app-game-cards">
+/* Premium centered icon and title layout for Apps + Games cards */
+#appGrid .app-card,
+#gameGrid .game-card{
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  text-align:center!important;min-width:0!important;
+  border:1px solid rgba(128,128,128,.19)!important;
+  border-radius:15px!important;
+  background:var(--card-bg,#fff)!important;
+  box-shadow:0 5px 18px rgba(15,23,42,.055)!important;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important;
+}
+#appGrid .app-card:hover,
+#gameGrid .game-card:hover{
+  transform:translateY(-3px)!important;
+  box-shadow:0 12px 26px rgba(15,23,42,.10)!important;
+  border-color:rgba(128,128,128,.34)!important;
+}
+#appGrid .app-top,
+#gameGrid .app-top{
+  width:100%!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:flex-start!important;
+  gap:9px!important;margin:0 0 12px!important;text-align:center!important;
+}
+#appGrid .logo,
+#gameGrid .game-icon.logo{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:54px!important;height:54px!important;min-width:54px!important;
+  flex:0 0 54px!important;border-radius:14px!important;object-fit:cover!important;
+  margin:0 auto!important;box-shadow:0 4px 12px rgba(15,23,42,.10)!important;
+}
+#appGrid .logo img,
+#gameGrid .game-icon.logo img{
+  display:block!important;width:100%!important;height:100%!important;
+  object-fit:cover!important;border-radius:inherit!important;
+}
+#appGrid .meta,
+#gameGrid .meta{
+  width:100%!important;min-width:0!important;text-align:center!important;
+}
+#appGrid .meta b,
+#gameGrid .meta b{
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;overflow:hidden!important;
+  white-space:normal!important;text-overflow:ellipsis!important;
+  overflow-wrap:anywhere!important;text-align:center!important;
+  font-size:12px!important;font-weight:750!important;line-height:1.4!important;
+  min-height:34px!important;margin:0!important;
+}
+#appGrid .card-meta-row,
+#gameGrid .card-meta-row{
+  width:100%!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;gap:7px!important;
+  margin-top:auto!important;padding-top:10px!important;
+  border-top:1px solid rgba(128,128,128,.15)!important;
+}
+#appGrid .version-chip,
+#gameGrid .version-chip{max-width:100%!important;align-self:center!important}
+#appGrid .rating-stars,
+#gameGrid .rating-stars{justify-content:center!important;text-align:center!important}
+@media(min-width:761px){
+  #appGrid .app-card,#gameGrid .game-card{padding:14px!important}
+  #appGrid .logo,#gameGrid .game-icon.logo{width:62px!important;height:62px!important;min-width:62px!important;flex-basis:62px!important;border-radius:16px!important}
+  #appGrid .meta b,#gameGrid .meta b{font-size:13px!important}
+}
+@media(max-width:760px){
+  #appGrid .app-card,#gameGrid .game-card{padding:8px 6px!important;border-radius:13px!important}
+  #appGrid .logo,#gameGrid .game-icon.logo{width:44px!important;height:44px!important;min-width:44px!important;flex-basis:44px!important;border-radius:12px!important}
+  #appGrid .app-top,#gameGrid .app-top{gap:8px!important;margin-bottom:9px!important}
+  #appGrid .meta b,#gameGrid .meta b{font-size:10.5px!important;line-height:1.35!important;min-height:29px!important}
+  #appGrid .card-meta-row,#gameGrid .card-meta-row{gap:6px!important;padding-top:8px!important}
+  #appGrid .version-chip,#gameGrid .version-chip{font-size:8px!important;padding:4px 5px!important}
+  #appGrid .rating-stars,#gameGrid .rating-stars{font-size:10px!important;letter-spacing:0!important}
+}
+@media(max-width:360px){
+  #appGrid .logo,#gameGrid .game-icon.logo{width:40px!important;height:40px!important;min-width:40px!important;flex-basis:40px!important}
+  #appGrid .meta b,#gameGrid .meta b{font-size:10px!important}
+}
+body.dark-mode #appGrid .app-card,body.dark-mode #gameGrid .game-card{
+  background:var(--card-bg,#111827)!important;border-color:rgba(255,255,255,.13)!important;
+  box-shadow:0 5px 18px rgba(0,0,0,.16)!important;
+}
+body.dark-mode #appGrid .card-meta-row,body.dark-mode #gameGrid .card-meta-row{border-top-color:rgba(255,255,255,.12)!important}
+</style>
+
+
+
+<style id="minhaj-card-polish-final-v2">
+/* Refined compact app/game cards: larger icons, centered names, no separator line or dead space */
+#appGrid.app-grid,#gameGrid.game-grid{align-items:stretch!important;}
+#appGrid .app-card,#gameGrid .game-card{
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  justify-content:flex-start!important;gap:0!important;padding:12px!important;
+  height:auto!important;min-height:0!important;
+  border:1px solid rgba(128,128,128,.17)!important;border-radius:15px!important;
+  box-shadow:0 3px 12px rgba(15,23,42,.045)!important;
+}
+#appGrid .app-top,#gameGrid .app-top{
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  justify-content:flex-start!important;gap:8px!important;width:100%!important;
+  margin:0!important;padding:0!important;
+}
+#appGrid .logo,#gameGrid .game-icon.logo{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:68px!important;height:68px!important;min-width:68px!important;
+  flex:0 0 68px!important;margin:0 auto!important;border-radius:16px!important;
+  object-fit:cover!important;box-shadow:0 3px 10px rgba(15,23,42,.09)!important;
+}
+#appGrid .logo img,#gameGrid .game-icon.logo img{
+  width:100%!important;height:100%!important;display:block!important;
+  object-fit:cover!important;border-radius:inherit!important;
+}
+#appGrid .meta,#gameGrid .meta{width:100%!important;min-width:0!important;text-align:center!important;margin:0!important;padding:0!important}
+#appGrid .meta b,#gameGrid .meta b{
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;
+  overflow:hidden!important;white-space:normal!important;text-overflow:ellipsis!important;
+  overflow-wrap:anywhere!important;text-align:center!important;
+  font-size:12px!important;font-weight:700!important;line-height:1.32!important;
+  min-height:0!important;height:auto!important;margin:0!important;padding:0!important;
+}
+#appGrid .card-meta-row,#gameGrid .card-meta-row{
+  width:100%!important;display:flex!important;flex-direction:row!important;
+  align-items:center!important;justify-content:center!important;flex-wrap:wrap!important;
+  gap:6px!important;margin:7px 0 0!important;padding:0!important;
+  border:0!important;border-top:0!important;min-height:0!important;
+}
+#appGrid .version-chip,#gameGrid .version-chip{
+  max-width:100%!important;align-self:center!important;margin:0!important;
+  font-size:9px!important;padding:4px 6px!important;border-radius:6px!important;
+}
+#appGrid .rating-stars,#gameGrid .rating-stars{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  margin:0!important;padding:0!important;font-size:11px!important;line-height:1!important;
+  letter-spacing:-.2px!important;white-space:nowrap!important;
+}
+#appGrid .app-card:hover,#gameGrid .game-card:hover{transform:translateY(-2px)!important;box-shadow:0 8px 18px rgba(15,23,42,.09)!important}
+@media(max-width:760px){
+  #appGrid.app-grid,#gameGrid.game-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important}
+  #appGrid .app-card,#gameGrid .game-card{padding:9px 5px!important;border-radius:12px!important}
+  #appGrid .logo,#gameGrid .game-icon.logo{width:56px!important;height:56px!important;min-width:56px!important;flex-basis:56px!important;border-radius:13px!important}
+  #appGrid .app-top,#gameGrid .app-top{gap:7px!important}
+  #appGrid .meta b,#gameGrid .meta b{font-size:10.5px!important;line-height:1.32!important}
+  #appGrid .card-meta-row,#gameGrid .card-meta-row{gap:4px!important;margin-top:6px!important}
+  #appGrid .version-chip,#gameGrid .version-chip{font-size:8px!important;padding:4px 5px!important}
+  #appGrid .rating-stars,#gameGrid .rating-stars{font-size:10px!important;letter-spacing:-.4px!important}
+}
+@media(max-width:360px){
+  #appGrid.app-grid,#gameGrid.game-grid{gap:7px!important}
+  #appGrid .app-card,#gameGrid .game-card{padding:8px 4px!important}
+  #appGrid .logo,#gameGrid .game-icon.logo{width:50px!important;height:50px!important;min-width:50px!important;flex-basis:50px!important}
+  #appGrid .meta b,#gameGrid .meta b{font-size:10px!important}
+}
+body.dark-mode #appGrid .app-card,body.dark-mode #gameGrid .game-card{
+  box-shadow:0 3px 12px rgba(0,0,0,.15)!important;
+}
+body.dark-mode #appGrid .card-meta-row,body.dark-mode #gameGrid .card-meta-row{border:0!important}
+</style>
+
+<style id="minhaj-professional-app-game-cards-v3">
+/* Professional card proportions: taller cards, larger logos, compact names, version then stars */
+#appGrid.app-grid,#gameGrid.game-grid{align-items:stretch!important;gap:12px!important;}
+#appGrid .app-card,#gameGrid .game-card{
+  min-height:174px!important;height:auto!important;aspect-ratio:auto!important;
+  padding:13px 9px 12px!important;border-radius:15px!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  justify-content:flex-start!important;gap:0!important;
+}
+#appGrid .app-top,#gameGrid .app-top{
+  width:100%!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:flex-start!important;gap:9px!important;
+  margin:0!important;padding:0!important;flex:0 0 auto!important;
+}
+#appGrid .logo,#gameGrid .game-icon.logo{
+  width:68px!important;height:68px!important;min-width:68px!important;
+  flex:0 0 68px!important;margin:0 auto!important;border-radius:15px!important;
+  object-fit:cover!important;
+}
+#appGrid .logo img,#gameGrid .game-icon.logo img{
+  width:100%!important;height:100%!important;display:block!important;
+  object-fit:cover!important;border-radius:inherit!important;
+}
+#appGrid .meta,#gameGrid .meta{width:100%!important;min-width:0!important;text-align:center!important;margin:0!important;padding:0!important;}
+#appGrid .meta b,#gameGrid .meta b{
+  display:block!important;width:100%!important;max-width:100%!important;
+  overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  overflow-wrap:normal!important;min-height:0!important;height:auto!important;
+  font-size:12px!important;line-height:1.35!important;font-weight:700!important;
+  text-align:center!important;margin:0!important;padding:0 1px!important;
+}
+#appGrid .card-meta-row,#gameGrid .card-meta-row{
+  width:100%!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:flex-start!important;flex-wrap:nowrap!important;
+  gap:7px!important;margin:10px 0 0!important;padding:0!important;
+  border:0!important;min-height:0!important;
+}
+#appGrid .version-chip,#gameGrid .version-chip{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  max-width:100%!important;margin:0!important;padding:4px 8px!important;
+  font-size:10px!important;line-height:1.2!important;border-radius:7px!important;
+}
+#appGrid .rating-stars,#gameGrid .rating-stars{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  margin:0!important;padding:0!important;font-size:12px!important;line-height:1!important;
+  letter-spacing:0!important;white-space:nowrap!important;color:#f5b400!important;
+}
+#appGrid .app-card:hover,#gameGrid .game-card:hover{transform:translateY(-2px)!important;}
+@media(max-width:760px){
+  #appGrid.app-grid,#gameGrid.game-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;}
+  #appGrid .app-card,#gameGrid .game-card{min-height:166px!important;padding:11px 6px 12px!important;border-radius:13px!important;}
+  #appGrid .logo,#gameGrid .game-icon.logo{width:60px!important;height:60px!important;min-width:60px!important;flex-basis:60px!important;border-radius:13px!important;}
+  #appGrid .app-top,#gameGrid .app-top{gap:8px!important;}
+  #appGrid .meta b,#gameGrid .meta b{font-size:11px!important;line-height:1.3!important;}
+  #appGrid .card-meta-row,#gameGrid .card-meta-row{gap:7px!important;margin-top:9px!important;}
+  #appGrid .version-chip,#gameGrid .version-chip{font-size:9px!important;padding:4px 7px!important;}
+  #appGrid .rating-stars,#gameGrid .rating-stars{font-size:11px!important;letter-spacing:0!important;}
+}
+@media(max-width:360px){
+  #appGrid.app-grid,#gameGrid.game-grid{gap:8px!important;}
+  #appGrid .app-card,#gameGrid .game-card{min-height:158px!important;padding:10px 4px 11px!important;}
+  #appGrid .logo,#gameGrid .game-icon.logo{width:54px!important;height:54px!important;min-width:54px!important;flex-basis:54px!important;}
+  #appGrid .meta b,#gameGrid .meta b{font-size:10px!important;}
+  #appGrid .rating-stars,#gameGrid .rating-stars{font-size:10px!important;}
+}
+</style>
+
+
+<style id="minhaj-card-spacing-and-tap-feedback-fix">
+/* Tight, balanced cards: no unused space below the rating */
+#appGrid .app-card,#gameGrid .game-card{
+  min-height:0!important;
+  height:auto!important;
+  padding:10px 8px 9px!important;
+  gap:0!important;
+  justify-content:flex-start!important;
+  transition:transform .16s ease, box-shadow .16s ease, background-color .16s ease, border-color .16s ease!important;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+#appGrid .app-top,#gameGrid .app-top{gap:7px!important;margin:0!important;}
+#appGrid .card-meta-row,#gameGrid .card-meta-row{
+  margin:7px 0 0!important;
+  gap:4px!important;
+}
+#appGrid .version-chip,#gameGrid .version-chip{padding:3px 7px!important;}
+#appGrid .rating-stars,#gameGrid .rating-stars{line-height:1!important;min-height:0!important;}
+/* Only show brief press feedback; never leave a card selected after navigating back */
+#appGrid .app-card.card-tap-feedback,#gameGrid .game-card.card-tap-feedback{
+  transform:scale(.975)!important;border-color:#12b886!important;
+  box-shadow:inset 0 0 0 2px rgba(18,184,134,.24),0 5px 14px rgba(18,184,134,.16)!important;
+}
+body.dark-mode #appGrid .app-card.card-tap-feedback,body.dark-mode #gameGrid .game-card.card-tap-feedback{
+  border-color:#35c99b!important;box-shadow:inset 0 0 0 2px rgba(53,201,155,.22),0 5px 14px rgba(0,0,0,.25)!important;
+}
+@media(max-width:760px){
+  #appGrid.app-grid,#gameGrid.game-grid{gap:9px!important;}
+  #appGrid .app-card,#gameGrid .game-card{padding:9px 5px 8px!important;}
+  #appGrid .card-meta-row,#gameGrid .card-meta-row{margin-top:6px!important;gap:4px!important;}
+}
+</style>
+<script id="minhaj-card-tap-feedback-fix">
+(function(){
+  let clearTapTimer;
+  document.addEventListener('pointerdown',function(e){
+    const card=e.target.closest('#appGrid .app-card, #gameGrid .game-card');
+    if(!card) return;
+    document.querySelectorAll('#appGrid .card-tap-feedback, #gameGrid .card-tap-feedback').forEach(el=>el.classList.remove('card-tap-feedback'));
+    card.classList.add('card-tap-feedback');
+    clearTimeout(clearTapTimer);
+    clearTapTimer=setTimeout(()=>card.classList.remove('card-tap-feedback'),220);
+  },{passive:true});
+  document.addEventListener('pointerup',function(e){
+    const card=e.target.closest('#appGrid .app-card, #gameGrid .game-card');
+    if(card){ clearTimeout(clearTapTimer); clearTapTimer=setTimeout(()=>card.classList.remove('card-tap-feedback'),180); }
+  },{passive:true});
+  document.addEventListener('pointercancel',function(e){
+    const card=e.target.closest('#appGrid .app-card, #gameGrid .game-card');
+    if(card) card.classList.remove('card-tap-feedback');
+  },{passive:true});
+})();
+</script>
+
+<style id="minhaj-reset-stuck-card-state">
+/* Prevent Android/Chrome touch hover or focus from leaving one card visibly different */
+#appGrid .app-card,#gameGrid .game-card{
+  outline:none!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+#appGrid .app-card:focus,#appGrid .app-card:focus-visible,#appGrid .app-card:active,
+#gameGrid .game-card:focus,#gameGrid .game-card:focus-visible,#gameGrid .game-card:active{
+  outline:none!important;
+  border-color:var(--card-border, rgba(148,163,184,.22))!important;
+  box-shadow:var(--card-shadow, 0 4px 14px rgba(15,23,42,.07))!important;
+  transform:none!important;
+}
+#appGrid .app-card.card-tap-feedback,#gameGrid .game-card.card-tap-feedback{
+  border-color:inherit!important;box-shadow:inherit!important;transform:none!important;
+}
+@media(hover:none){
+  #appGrid .app-card:hover,#gameGrid .game-card:hover{transform:none!important;}
+}
+</style>
+<script id="minhaj-clear-stuck-card-state">
+(function(){
+  function resetCardState(){
+    document.querySelectorAll('#appGrid .card-tap-feedback,#gameGrid .card-tap-feedback').forEach(function(card){card.classList.remove('card-tap-feedback');});
+    if(document.activeElement && document.activeElement.matches && document.activeElement.matches('#appGrid .app-card,#gameGrid .game-card')){document.activeElement.blur();}
+  }
+  window.addEventListener('pageshow',resetCardState);
+  window.addEventListener('popstate',resetCardState);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden) resetCardState();});
+  document.addEventListener('pointerdown',function(e){
+    if(!e.target.closest('#appGrid .app-card,#gameGrid .game-card')) resetCardState();
+  },true);
+})();
+</script>
+
+<style id="minhaj-final-scroll-and-trending-fix">
+/* Fix Android touch-hover sticking/flicker while scrolling. */
+@media (hover: none), (pointer: coarse) {
+  #appGrid .app-card:hover, #gameGrid .game-card:hover,
+  #trending .trend-card:hover, #appGrid .app-card:active,
+  #gameGrid .game-card:active, #trending .trend-card:active {
+    transform: none !important;
+    border-color: var(--mh-border, #e5eaf2) !important;
+    box-shadow: var(--mh-shadow, 0 4px 14px rgba(15,23,42,.07)) !important;
+    filter: none !important;
+  }
+  #appGrid .app-card:focus, #appGrid .app-card:focus-visible,
+  #gameGrid .game-card:focus, #gameGrid .game-card:focus-visible,
+  #trending .trend-card:focus, #trending .trend-card:focus-visible {
+    outline: none !important;
+    border-color: var(--mh-border, #e5eaf2) !important;
+    box-shadow: var(--mh-shadow, 0 4px 14px rgba(15,23,42,.07)) !important;
+  }
+}
+/* Prevent cards/images from being skipped or flashing during mobile scrolling. */
+.app-card, .trend-card, .prompt-card, img {
+  content-visibility: visible !important;
+  contain-intrinsic-size: auto !important;
+}
+/* Keep the sticky header fully opaque so headings never ghost through it. */
+.topbar {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  isolation: isolate !important;
+  z-index: 100 !important;
+}
+body.dark-mode .topbar {
+  background: #111827 !important;
+  background-color: #111827 !important;
+}
+/* Trending Apps: version chip and stars centered, closely grouped under the app name. */
+#trending .trending-grid .trend-card {
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  gap: 0 !important;
+}
+#trending .trending-grid .trend-card .trend-info {
+  width: 100% !important;
+  min-width: 0 !important;
+  margin-top: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 0 !important;
+}
+#trending .trending-grid .trend-card .trend-info b {
+  width: 100% !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.25 !important;
+}
+#trending .trending-grid .trend-card .trend-info .muted {
+  display: block !important;
+  width: 100% !important;
+  margin-top: 5px !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+}
+#trending .trending-grid .trend-card .trend-stars {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin-top: 5px !important;
+  line-height: 1 !important;
+  text-align: center !important;
+}
+</style>
+
+
+<style id="minhaj-mobile-card-scroll-final-fix">
+/* Mobile scroll fix: prevent a touched app/game card from keeping a dark focus border. */
+#appGrid .app-card, #gameGrid .game-card {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+#appGrid .app-card:focus, #appGrid .app-card:focus-visible, #appGrid .app-card:active,
+#gameGrid .game-card:focus, #gameGrid .game-card:focus-visible, #gameGrid .game-card:active {
+  outline: none !important;
+  border-color: #e8e8e8 !important;
+  box-shadow: 0 3px 15px rgba(0,0,0,.055), 0 1px 3px rgba(0,0,0,.04) !important;
+  transform: none !important;
+  filter: none !important;
+}
+#appGrid .app-card.card-tap-feedback, #gameGrid .game-card.card-tap-feedback,
+#appGrid .app-card.press, #gameGrid .game-card.press {
+  outline: none !important;
+  border-color: #e8e8e8 !important;
+  box-shadow: 0 3px 15px rgba(0,0,0,.055), 0 1px 3px rgba(0,0,0,.04) !important;
+  transform: none !important;
+}
+@media (hover: none), (pointer: coarse) {
+  #appGrid .app-card:hover, #gameGrid .game-card:hover {
+    border-color: #e8e8e8 !important;
+    box-shadow: 0 3px 15px rgba(0,0,0,.055), 0 1px 3px rgba(0,0,0,.04) !important;
+    transform: none !important;
+  }
+}
+</style>
+
+<style id="minhaj-svg-stars-size-balance-final">
+/* Keep SVG rating stars compact and visually balanced across all card types. */
+.rating-stars { gap: 1px !important; font-size: 10px !important; line-height: 1 !important; text-shadow: none !important; }
+.rating-stars .minhaj-star-logo { width: 9px !important; height: 9px !important; min-width: 9px !important; flex: 0 0 9px !important; filter: none !important; }
+.trend-card .rating-stars .minhaj-star-logo,
+#trending .trend-stars .minhaj-star-logo { width: 9px !important; height: 9px !important; min-width: 9px !important; flex-basis: 9px !important; }
+#trending .trending-grid .trend-card .trend-stars { gap: 1px !important; margin-top: 4px !important; }
+@media (max-width: 520px) {
+  .rating-stars { font-size: 10px !important; gap: 1px !important; }
+  .rating-stars .minhaj-star-logo { width: 9px !important; height: 9px !important; min-width: 9px !important; flex-basis: 9px !important; }
+}
+</style>
+
+<style id="minhaj-popup-svg-star-match-final">
+/* Match popup rating SVG stars to the compact SVG stars used on app/game cards. */
+#appModalRating.minhaj-rating,
+#appModalQuickStats.minhaj-rating { display:inline-flex!important; align-items:center!important; gap:4px!important; }
+#appModalRating.minhaj-rating .minhaj-star-logo,
+#appModalQuickStats.minhaj-rating .minhaj-star-logo { width:9px!important; height:9px!important; min-width:9px!important; flex:0 0 9px!important; color:#f5b400!important; filter:none!important; vertical-align:middle!important; }
+</style>
+
+<style id="minhaj-popup-star-balanced-and-prompt-corners-final">
+/* Popup rating stars: comfortably readable, matching the same SVG star design. */
+#appModalRating.minhaj-rating,
+#appModalQuickStats.minhaj-rating { display:inline-flex!important; align-items:center!important; gap:5px!important; line-height:1.2!important; }
+#appModalRating.minhaj-rating .minhaj-star-logo,
+#appModalQuickStats.minhaj-rating .minhaj-star-logo { width:14px!important; height:14px!important; min-width:14px!important; flex:0 0 14px!important; color:#f5b400!important; filter:none!important; vertical-align:middle!important; }
+/* AI prompt thumbnails: remove the visible background slivers at the top corners. */
+.prompt-card .prompt-icon { overflow:hidden!important; border-radius:10px!important; background:#f5f5f5!important; isolation:isolate!important; }
+.prompt-card .prompt-icon img,
+.prompt-card .prompt-icon .prompt-image { display:block!important; width:100%!important; height:100%!important; max-width:none!important; object-fit:cover!important; border-radius:0!important; margin:0!important; }
+.prompt-card .prompt-icon:has(img) { padding:0!important; }
+</style>
+
+<style id="minhaj-remove-game-photo-shadow-final">
+/* Remove shadow/glow only from game thumbnails, without changing the game cards. */
+#gameGrid .game-card .game-icon,
+#gameGrid .game-card .game-icon img,
+.game-card .game-icon,
+.game-card .game-icon img {
+  box-shadow:none!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+  text-shadow:none!important;
+}
+#gameGrid .game-card .game-icon::before,
+#gameGrid .game-card .game-icon::after,
+#gameGrid .game-card .game-icon img::before,
+#gameGrid .game-card .game-icon img::after {
+  box-shadow:none!important;
+  filter:none!important;
+  content:none!important;
+}
+</style>
+
+<style id="minhaj-popup-layout-and-scroll-final">
+/* Keep popup above the site header and fully inside the visible phone screen. */
+.prompt-modal-backdrop.show,
+.detail-overlay.show,
+.info-overlay.show {
+  position:fixed!important;
+  inset:0!important;
+  z-index:10000!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  padding:16px 14px!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+.prompt-modal {
+  box-sizing:border-box!important;
+  width:min(100%,430px)!important;
+  max-height:calc(100dvh - 32px)!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  flex-shrink:0!important;
+}
+.prompt-text {
+  max-height:min(28dvh,180px)!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+/* Lock only the background page; do not use position:fixed on body, which can shift the popup. */
+html.minhaj-popup-open, html.minhaj-popup-open body { overflow:hidden!important; }
+</style>
+<script id="minhaj-popup-lock-safe-final">
+(function(){
+  const selectors=['#promptModal','#appModal','#infoModal','#installTutorialModal','#privateDownloadModal','#privateLoginOverlay','#drawerQrModal','#sideOverlay'];
+  function visible(el){
+    if(!el||!el.isConnected||el.hidden||el.getAttribute('aria-hidden')==='true') return false;
+    const s=getComputedStyle(el),r=el.getBoundingClientRect();
+    return s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity||1)>0&&r.width>0&&r.height>0&&(el.classList.contains('show')||el.classList.contains('active')||el.getAttribute('aria-hidden')==='false');
+  }
+  function sync(){
+    const open=selectors.some(sel=>visible(document.querySelector(sel)));
+    document.documentElement.classList.toggle('minhaj-popup-open',open);
+  }
+  function init(){
+    new MutationObserver(sync).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','hidden','aria-hidden']});
+    sync();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
+  document.addEventListener('click',()=>setTimeout(sync,100),true);
+  document.addEventListener('keydown',()=>setTimeout(sync,100),true);
+})();
+</script>
+
+<style id="minhaj-professional-popup-layer-final">
+/* Professional modal layer: overlays cover the whole viewport and sit above the site header/navigation. */
+:root { --minhaj-modal-z: 2147483000; }
+#promptModal.prompt-modal-backdrop,
+#appModal.detail-overlay,
+#infoModal.info-overlay,
+.prompt-modal-backdrop,
+.detail-overlay,
+.info-overlay,
+.install-tutorial-modal,
+.private-overlay,
+.private-download-overlay,
+#sideOverlay,
+.side-overlay,
+.drawer-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: var(--minhaj-modal-z) !important;
+  box-sizing: border-box !important;
+  isolation: isolate !important;
+}
+/* Keep the page header in its normal sticky position while a popup is open.
+   Do not lower its stacking level or apply positioning that makes it jump away. */
+html.minhaj-popup-open .site-header,
+html.minhaj-popup-open header,
+html.minhaj-popup-open .topbar,
+html.minhaj-popup-open .bottom-nav,
+html.minhaj-popup-open .mobile-bottom-nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  transform: none !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#promptModal.prompt-modal-backdrop.show,
+#appModal.detail-overlay.show,
+#infoModal.info-overlay.show,
+.prompt-modal-backdrop.show,
+.detail-overlay.show,
+.info-overlay.show {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  background: rgba(15, 23, 42, .58) !important;
+  -webkit-backdrop-filter: blur(7px) !important;
+  backdrop-filter: blur(7px) !important;
+}
+#promptModal .prompt-modal,
+#appModal .minhaj-detail,
+#appModal .detail-modal,
+#infoModal .info-modal,
+.prompt-modal,
+.minhaj-detail,
+.detail-modal,
+.info-modal {
+  position: relative !important;
+  z-index: calc(var(--minhaj-modal-z) + 1) !important;
+  max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  box-sizing: border-box !important;
+}
+html.minhaj-popup-open body { overflow: hidden !important; }
+</style>
+
+
+
+<style id="minhaj-night-mode-parity-final">
+/* Night-mode parity: support both body.dark-mode and html.dark-mode theme toggles. */
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .prompt-modal-backdrop,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .detail-overlay,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .info-overlay,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .install-tutorial-modal,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .private-overlay,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .private-download-overlay,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .drawer-overlay,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) #sideOverlay,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .side-overlay {
+  background:rgba(2,6,23,.82)!important;
+  -webkit-backdrop-filter:blur(8px)!important;backdrop-filter:blur(8px)!important;
+}
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .prompt-modal,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .minhaj-detail,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .detail-modal,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .info-modal,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .install-tutorial-box,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .private-download-modal,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .private-login-card,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .drawer-qr-card,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) #appModal .modal-content,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .popup-content {
+  background:#111827!important;color:#e5e7eb!important;border-color:#374151!important;
+  box-shadow:0 20px 55px rgba(0,0,0,.48),0 0 0 1px rgba(148,163,184,.10)!important;color-scheme:dark;
+}
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .prompt-modal :is(h1,h2,h3,h4),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .minhaj-detail :is(h1,h2,h3,h4),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .detail-modal :is(h1,h2,h3,h4),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .info-modal :is(h1,h2,h3,h4),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .install-tutorial-box :is(h1,h2,h3,h4),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .private-download-modal :is(h1,h2,h3,h4) {color:#f8fafc!important;}
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .prompt-modal :is(p,label,.muted),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .minhaj-detail :is(p,span,small),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .detail-modal :is(p,span,label,small),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .info-modal :is(p,span,label,small),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .install-tutorial-box :is(p,span,label),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .private-download-modal :is(p,span,label) {color:#cbd5e1!important;}
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .prompt-text,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .prompt-modal :is(input,textarea,select),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .detail-modal :is(input,textarea,select),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .info-modal :is(input,textarea,select),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .private-download-modal :is(input,textarea,select),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .private-login-card :is(input,textarea,select),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .install-tutorial-box :is(input,textarea,select),
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .minhaj-stats,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .minhaj-description {
+  background:#0b1220!important;color:#e5e7eb!important;border-color:#374151!important;color-scheme:dark;
+}
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) .prompt-actions button,
+:where(html.dark-mode,body.dark-mode,[data-theme="dark"]) :is(.minhaj-x,.info-close,.detail-close,.prompt-close,.install-tutorial-close,.private-download-cancel,.private-x,.private-back) {
+  background:#1f2937!important;color:#e5e7eb!important;border-color:#374151!important;
+}
+/* Modal surfaces stay above the website header and bottom navigation in both themes. */
+#promptModal.prompt-modal-backdrop,#appModal.detail-overlay,#infoModal.info-overlay {
+  position:fixed!important;inset:0!important;z-index:2147483000!important;
+  isolation:isolate!important;align-items:center!important;justify-content:center!important;
+}
+#promptModal .prompt-modal,#appModal .minhaj-detail,#appModal .detail-modal,#infoModal .info-modal {
+  position:relative!important;z-index:1!important;max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+  overflow-y:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;
+}
+html.minhaj-popup-open,html.minhaj-popup-open body {overscroll-behavior:none!important;}
+</style>
+
+
+<style id="minhaj-night-scroll-card-outline-fix">
+/* Android night mode: prevent a card (e.g. TikTok) keeping a hover/tap outline while scrolling. */
+@media (hover: none), (pointer: coarse) {
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #appGrid .app-card,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #gameGrid .game-card,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #trending .trend-card {
+    -webkit-tap-highlight-color: transparent !important;
+    outline: none !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #appGrid .app-card:hover,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #appGrid .app-card:active,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #appGrid .app-card:focus,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #appGrid .app-card:focus-visible,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #appGrid .app-card.card-tap-feedback,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #appGrid .app-card.press,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #gameGrid .game-card:hover,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #gameGrid .game-card:active,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #gameGrid .game-card:focus,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #gameGrid .game-card:focus-visible,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #gameGrid .game-card.card-tap-feedback,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #gameGrid .game-card.press,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #trending .trend-card:hover,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #trending .trend-card:active,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #trending .trend-card:focus,
+  :where(html.dark-mode, body.dark-mode, [data-theme="dark"]) #trending .trend-card:focus-visible {
+    outline: none !important;
+    border-color: rgba(255,255,255,.13) !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,.15) !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+</style>
+
+
+<style id="minhaj-menu-visibility-both-themes-fix">
+/* Keep the existing menu behaviour; only ensure the drawer and its contents stay visible above overlays in either theme. */
+#sideDrawer.side-drawer{position:fixed!important;z-index:2147482001!important;display:flex!important;flex-direction:column!important;visibility:visible!important;pointer-events:auto!important;max-height:100dvh!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;}
+#sideDrawer.side-drawer.show{transform:translateX(0)!important;}
+#sideDrawer .drawer-head,#sideDrawer .drawer-links,#sideDrawer .drawer-note{visibility:visible!important;opacity:1!important;pointer-events:auto!important;}
+#sideOverlay.side-overlay{z-index:2147482000!important;}
+#sideDrawer .drawer-links a,#sideDrawer .drawer-links button{pointer-events:auto!important;}
+@media(prefers-color-scheme:light){body:not(.dark-mode) #sideDrawer.side-drawer{background:rgba(255,255,255,.99)!important;color:#222!important;}}
+@media(prefers-color-scheme:dark){body:not(.light-mode).dark-mode #sideDrawer.side-drawer{background:#111827!important;color:#e5e7eb!important;}}
+</style>
+
+
+
+
+
+
+
+
+
+
+<style id="minhaj-header-behind-overlay-specificity-fix">
+/* FIX: override the older ID-level opaque modal backgrounds that were hiding the header. */
+html body #sideOverlay.side-overlay.show {
+  background: rgba(15,15,15,.10) !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+html body #promptModal.prompt-modal-backdrop.show {
+  background: rgba(0,0,0,.12) !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+html body #appModal.detail-overlay.show,
+html body #infoModal.info-overlay.show {
+  background: rgba(0,0,0,.14) !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+html body #installTutorialModal.install-tutorial-modal.show,
+html body #privateDownloadModal.private-download-overlay.show,
+html body #privateLoginOverlay.private-overlay.show {
+  background: rgba(0,0,0,.14) !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+html body #drawerQrModal.drawer-qr-modal.show {
+  background: rgba(0,0,0,.12) !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+/* Keep the header in place behind the translucent overlay; panels still have much higher z-index. */
+html body .topbar,
+html body header.site-header {
+  z-index: 10 !important;
+}
+html.minhaj-popup-open body .topbar,
+body.menu-open .topbar,
+html.minhaj-popup-open body header.site-header,
+body.menu-open header.site-header {
+  position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important;
+  width: 100% !important; transform: none !important; visibility: visible !important;
+  opacity: 1 !important; display: flex !important;
+}
+#sideOverlay.side-overlay { z-index: 2147482000 !important; }
+#sideDrawer.side-drawer { z-index: 2147482001 !important; }
+#promptModal.prompt-modal-backdrop,
+#appModal.detail-overlay,
+#infoModal.info-overlay,
+#installTutorialModal.install-tutorial-modal,
+#privateDownloadModal.private-download-overlay,
+#privateLoginOverlay.private-overlay,
+#drawerQrModal.drawer-qr-modal { z-index: 2147483000 !important; }
+</style>
+
+
+<style id="minhaj-menu-scroll-lock-final">
+/* One consistent drawer layer. The page itself is scroll-locked by openMenu(). */
+html, body { overflow-anchor: none; }
+body.menu-open {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+#sideOverlay.side-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147482000 !important;
+}
+#sideDrawer.side-drawer {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 2147482001 !important;
+}
+</style>
+
+
+<style id="minhaj-header-visible-behind-menu-popup-final-v3">
+/* Header remains visible underneath the translucent menu/popup backdrop. The drawer/modal panel itself stays on top. */
+html body .topbar, html body header.site-header {
+  position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important;
+  width: 100% !important; transform: none !important; visibility: visible !important;
+  opacity: 1 !important; display: flex !important; z-index: 100 !important;
+}
+/* Backdrops must be translucent, not opaque, so the page header is still visible through them. */
+html body #sideOverlay.side-overlay.show,
+html body .side-overlay.show,
+html body .prompt-modal-backdrop.show,
+html body .detail-overlay.show,
+html body .info-overlay.show,
+html body .install-tutorial-modal.show,
+html body .private-overlay.show,
+html body .private-download-overlay.show,
+html body .drawer-qr-modal.show {
+  background: rgba(15, 23, 42, .22) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+/* Menu and popup content stay above the translucent backdrop and header. */
+html body #sideOverlay.side-overlay { z-index: 200 !important; }
+html body #sideDrawer.side-drawer { z-index: 201 !important; }
+html body .prompt-modal-backdrop,
+html body .detail-overlay,
+html body .info-overlay,
+html body .install-tutorial-modal,
+html body .private-overlay,
+html body .private-download-overlay,
+html body .drawer-qr-modal { z-index: 300 !important; }
+html.minhaj-popup-open body .topbar, body.menu-open .topbar { z-index: 100 !important; }
+</style>
+
+
+
+<style id="minhaj-night-card-scroll-and-modal-download-fix-v2">
+/* Night mode mobile: remove sticky tap/focus/hover outlines that remain visible after scrolling. Keep the normal card border. */
+@media (hover: none), (pointer: coarse) {
+  html.dark-mode #appGrid .app-card, body.dark-mode #appGrid .app-card, [data-theme="dark"] #appGrid .app-card,
+  html.dark-mode #gameGrid .game-card, body.dark-mode #gameGrid .game-card, [data-theme="dark"] #gameGrid .game-card,
+  html.dark-mode #trending .trend-card, body.dark-mode #trending .trend-card, [data-theme="dark"] #trending .trend-card {
+    -webkit-tap-highlight-color: transparent !important;
+    outline: 0 !important;
+    filter: none !important;
+    transform: none !important;
+    transition: border-color .12s ease !important;
+  }
+  html.dark-mode #appGrid .app-card:focus, html.dark-mode #appGrid .app-card:focus-visible, html.dark-mode #appGrid .app-card:active,
+  body.dark-mode #appGrid .app-card:focus, body.dark-mode #appGrid .app-card:focus-visible, body.dark-mode #appGrid .app-card:active,
+  html.dark-mode #gameGrid .game-card:focus, html.dark-mode #gameGrid .game-card:focus-visible, html.dark-mode #gameGrid .game-card:active,
+  body.dark-mode #gameGrid .game-card:focus, body.dark-mode #gameGrid .game-card:focus-visible, body.dark-mode #gameGrid .game-card:active,
+  html.dark-mode #trending .trend-card:focus, html.dark-mode #trending .trend-card:focus-visible, html.dark-mode #trending .trend-card:active,
+  body.dark-mode #trending .trend-card:focus, body.dark-mode #trending .trend-card:focus-visible, body.dark-mode #trending .trend-card:active {
+    outline: 0 !important;
+    border-color: #293548 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,.14) !important;
+    transform: none !important;
+  }
+}
+/* Keep the modal download arrow and file size clearly visible in night mode. */
+#appModalDownload {
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  gap: 9px !important; white-space: nowrap !important; overflow: visible !important;
+  color: #111827 !important; background: #f8fafc !important;
+}
+#appModalDownload .download-icon {
+  display: inline-flex !important; visibility: visible !important; opacity: 1 !important;
+  flex: 0 0 20px !important; width: 20px !important; height: 20px !important;
+  color: #64748b !important; margin: 0 !important;
+}
+#appModalDownload .download-icon svg {
+  display: block !important; visibility: visible !important; opacity: 1 !important;
+  width: 20px !important; height: 20px !important; color: #64748b !important;
+}
+#appModalDownload #appModalDownloadSize {
+  display: inline !important; visibility: visible !important; opacity: 1 !important;
+  color: #64748b !important; font-size: 14px !important; font-weight: 800 !important;
+  line-height: 1.2 !important; flex: 0 0 auto !important; min-width: max-content !important;
+}
+body.dark-mode #appModalDownload, html.dark-mode #appModalDownload, [data-theme="dark"] #appModalDownload {
+  background: #f8fafc !important; color: #111827 !important;
+}
+body.dark-mode #appModalDownload .download-icon, body.dark-mode #appModalDownload .download-icon svg,
+html.dark-mode #appModalDownload .download-icon, html.dark-mode #appModalDownload .download-icon svg,
+[data-theme="dark"] #appModalDownload .download-icon, [data-theme="dark"] #appModalDownload .download-icon svg { color: #64748b !important; }
+body.dark-mode #appModalDownload #appModalDownloadSize, html.dark-mode #appModalDownload #appModalDownloadSize, [data-theme="dark"] #appModalDownload #appModalDownloadSize { color: #64748b !important; }
+@media (max-width: 380px) { #appModalDownload { gap: 6px !important; padding-inline: 10px !important; font-size: 12px !important; } #appModalDownload #appModalDownloadSize { font-size: 12px !important; } }
+</style>
+
+
+<style id="minhaj-fixed-header-search-visibility-fix">
+/* The site header is fixed by the existing header rules. Reserve its height in document flow so the Search bar never sits underneath it. */
+@media (min-width: 761px) {
+  body { padding-top: 64px !important; }
+}
+@media (max-width: 760px) {
+  body { padding-top: 70px !important; }
+}
+</style>
+
+
+<style id="minhaj-final-fixed-bottom-nav-and-popup-layer">
+/* Final override: keep the ORIGINAL bottom navigation visible while menus and app/game dialogs are open. */
+@media (max-width: 800px) {
+  html body .bottom-nav {
+    position: fixed !important;
+    top: auto !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    left: 3.5% !important; right: 3.5% !important; width: auto !important;
+    z-index: 900 !important;
+    display: flex !important; visibility: visible !important; opacity: 1 !important;
+    transform: none !important; pointer-events: auto !important;
+  }
+  /* Keep the backdrop above the page but stop it before the fixed navigation. */
+  html body #appModal.detail-overlay.show,
+  html body #promptModal.prompt-modal-backdrop.show,
+  html body #infoModal.info-overlay.show {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important; right: 0 !important;
+    bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+    z-index: 2147483000 !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+  }
+  html body #appModal .minhaj-detail,
+  html body #appModal .detail-modal,
+  html body #promptModal .prompt-modal,
+  html body #infoModal .info-modal {
+    max-height: calc(100% - 24px) !important;
+    margin-bottom: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+</style>
+
+
+<style id="minhaj-bottom-nav-portal-day-night-fix">
+/* Keep mobile navigation in the top-level stacking context in BOTH Day and Night modes. */
+@media (max-width: 800px) {
+  body > .bottom-nav, html body .bottom-nav.minhaj-nav-portal {
+    position: fixed !important; left: 3.5% !important; right: 3.5% !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important; top: auto !important;
+    width: auto !important; height: 62px !important; z-index: 900 !important;
+    display: flex !important; visibility: visible !important; opacity: 1 !important;
+    transform: none !important; pointer-events: auto !important; isolation: isolate !important;
+  }
+  /* Dialog/backdrop ends above the nav, so it cannot paint over or block it. */
+  html body #appModal.detail-overlay.show,
+  html body #promptModal.prompt-modal-backdrop.show,
+  html body #infoModal.info-overlay.show {
+    bottom: calc(78px + env(safe-area-inset-bottom)) !important; padding-bottom: 12px !important;
+  }
+}
+</style>
+<script id="minhaj-bottom-nav-portal-day-night-fix-js">
+(function () {
+  function keepBottomNavOnTop() {
+    var nav = document.querySelector('.bottom-nav');
+    if (!nav || !document.body) return;
+    /* Move nav out of ancestor stacking contexts that let the popup cover it. */
+    if (nav.parentElement !== document.body) document.body.appendChild(nav);
+    nav.classList.add('minhaj-nav-portal');
+    nav.style.setProperty('z-index', '20', 'important');
+    nav.style.setProperty('position', 'fixed', 'important');
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', keepBottomNavOnTop, { once: true });
+  } else { keepBottomNavOnTop(); }
+  window.addEventListener('load', keepBottomNavOnTop, { once: true });
+})();
+</script>
+
+
+<style id="minhaj-navigation-same-layer-as-header-day-night">
+/* Match the header behavior: bottom navigation stays fixed and above popup overlays
+   on every screen, in both Day Mode and Night Mode. */
+html body .bottom-nav,
+html body .mobile-bottom-nav {
+  position: fixed !important;
+  z-index: 900 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto !important;
+}
+@media (max-width: 800px) {
+  html body .bottom-nav,
+  html body .mobile-bottom-nav {
+    left: 12px !important; right: 12px !important;
+    bottom: max(7px, env(safe-area-inset-bottom, 0px)) !important;
+    top: auto !important; width: auto !important; display: flex !important;
+  }
+  /* Popup backdrop stops above the persistent navigation, like the header remains visible. */
+  html body #appModal.detail-overlay.show,
+  html body #promptModal.prompt-modal-backdrop.show,
+  html body #infoModal.info-overlay.show {
+    z-index: 2147483000 !important;
+    bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  html body #appModal .minhaj-detail,
+  html body #appModal .detail-modal,
+  html body #promptModal .prompt-modal,
+  html body #infoModal .info-modal {
+    max-height: calc(100dvh - 110px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+    overflow-y: auto !important;
+  }
+}
+</style>
+
+
+<style id="minhaj-nav-under-popup-and-menu-like-header-final">
+/* Navigation stays fixed, but is layered UNDER dialogs and the site menu, like the header. */
+@media (max-width: 800px) {
+  html body .bottom-nav,
+  html body .mobile-bottom-nav {
+    position: fixed !important;
+    top: auto !important;
+    bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+    left: 3.5% !important;
+    right: 3.5% !important;
+    width: auto !important;
+    z-index: 900 !important;
+    transform: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  html body .detail-overlay.show,
+  html body .prompt-modal-backdrop.show,
+  html body .info-overlay.show {
+    z-index: 10000 !important;
+  }
+  html body .side-drawer,
+  html body .drawer-overlay,
+  html body .menu-overlay,
+  html body #drawerQrModal.drawer-qr-modal {
+    z-index: 10001 !important;
+  }
+}
+</style>
+
+
+<style id="minhaj-final-layering-fix">
+/* Match header layering: navigation is behind app popups and the menu in Day and Night modes. */
+@media (max-width: 800px) {
+  html body .bottom-nav,
+  html body .mobile-bottom-nav {
+    position: fixed !important;
+    z-index: 20 !important;
+    bottom: max(7px, env(safe-area-inset-bottom, 0px)) !important;
+    top: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  html body #appModal.detail-overlay,
+  html body #promptModal.prompt-modal-backdrop,
+  html body #infoModal.info-overlay,
+  html body .detail-overlay.show,
+  html body .prompt-modal-backdrop.show,
+  html body .info-overlay.show {
+    position: fixed !important;
+    inset: 0 !important;
+    bottom: 0 !important;
+    z-index: 10000 !important;
+  }
+  html body .drawer-overlay,
+  html body .menu-overlay,
+  html body .side-overlay.show,
+  html body .side-drawer,
+  html body #drawerQrModal.drawer-qr-modal {
+    z-index: 10001 !important;
+  }
+}
+</style>
 </body>
 </html>
+
+
+<style id="minhaj-app-popup-upper-center-fullscreen-backdrop-fix">
+/* App/game popup: upper-center placement with a true full-screen dim backdrop. */
+html body #appModal.detail-overlay,
+html body .detail-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  box-sizing: border-box !important;
+  display: none !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  padding: max(82px, calc(env(safe-area-inset-top, 0px) + 72px)) 12px max(16px, env(safe-area-inset-bottom, 0px)) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  background: rgba(0, 0, 0, .42) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+  backdrop-filter: blur(3px) !important;
+  z-index: 2147483000 !important;
+  isolation: isolate !important;
+}
+html body #appModal.detail-overlay.show,
+html body .detail-overlay.show {
+  display: flex !important;
+}
+html body #appModal .minhaj-detail,
+html body #appModal .detail-modal {
+  position: relative !important;
+  inset: auto !important;
+  flex: 0 0 auto !important;
+  width: min(400px, calc(100vw - 24px)) !important;
+  max-width: 100% !important;
+  max-height: calc(100dvh - 112px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  margin: 0 auto !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  z-index: 1 !important;
+}
+@media (max-width: 520px) {
+  html body #appModal.detail-overlay,
+  html body .detail-overlay {
+    padding-top: max(76px, calc(env(safe-area-inset-top, 0px) + 68px)) !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)) !important;
+  }
+  html body #appModal .minhaj-detail,
+  html body #appModal .detail-modal {
+    width: min(380px, calc(100vw - 20px)) !important;
+    max-height: calc(100dvh - 100px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+/* The fixed bottom navigation remains in its normal layer, behind the full-screen overlay. */
+@media (max-width: 800px) {
+  html body .bottom-nav,
+  html body .bottom-nav.minhaj-nav-portal {
+    z-index: 900 !important;
+  }
+}
+</style>
+
+<style id="minhaj-final-android-night-card-glow-override">
+/* Final override: on touch devices, scrolling must never leave app/game/trending cards glowing.
+   Keep the normal theme-specific card surface and border; remove only transient hover/tap/focus feedback. */
+@media (hover: none), (pointer: coarse) {
+  :is(html.dark-mode, body.dark-mode, html[data-theme="dark"], body[data-theme="dark"], [data-theme="dark"]) #appGrid .app-card,
+  :is(html.dark-mode, body.dark-mode, html[data-theme="dark"], body[data-theme="dark"], [data-theme="dark"]) #gameGrid .game-card,
+  :is(html.dark-mode, body.dark-mode, html[data-theme="dark"], body[data-theme="dark"], [data-theme="dark"]) #trending .trend-card {
+    -webkit-tap-highlight-color: transparent !important;
+    outline: 0 !important;
+    filter: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  :is(html.dark-mode, body.dark-mode, html[data-theme="dark"], body[data-theme="dark"], [data-theme="dark"]) #appGrid .app-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback),
+  :is(html.dark-mode, body.dark-mode, html[data-theme="dark"], body[data-theme="dark"], [data-theme="dark"]) #gameGrid .game-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback),
+  :is(html.dark-mode, body.dark-mode, html[data-theme="dark"], body[data-theme="dark"], [data-theme="dark"]) #trending .trend-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback) {
+    outline: 0 !important;
+    border-color: rgba(255,255,255,.13) !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,.15) !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+/* Stop the card tap-feedback script from leaving a green glow after a touch. */
+#appGrid .app-card.card-tap-feedback, #gameGrid .game-card.card-tap-feedback,
+#appGrid .app-card.press, #gameGrid .game-card.press {
+  border-color: inherit !important;
+  box-shadow: inherit !important;
+  transform: none !important;
+}
+@media (hover: none), (pointer: coarse) {
+  #appGrid .app-card:hover, #gameGrid .game-card:hover, #trending .trend-card:hover {
+    transform: none !important;
+  }
+}
+</style>
+
