@@ -3542,10 +3542,10 @@ function updateSectionCounts(){
 }
 
 const prompts = [
-  {name:"Car Prompt",icon:"👤",image:"https://i.postimg.cc/PxZDfQ1w/Picsart-26-10-17-09-51-15-540.jpg",prompt:"Cinematic moody portrait of a young man standing in an underground parking garage, captured in a 3:4 vertical frame from a slightly low eye-level angle. The man has curly black hair, a well-groomed short beard and mustache, and is wearing black sunglasses. He is dressed in a relaxed-fit white button-down shirt with the sleeves slightly rolled up, paired with light blue relaxed-fit jeans and clean white sneakers.He is standing beside a white SUV with the driver-side door open, casually holding the edge of the open door with one hand while looking to his right with a calm, confident expression. His posture is relaxed and natural.The environment is dark and cinematic, featuring an underground parking garage with concrete walls, subtle oil marks, dim warm overhead lighting, deep shadows, and a slightly hazy atmosphere. Another white SUV is partially visible in the foreground, adding depth to the composition.Ultra-realistic photography, cinematic color grading, moody atmosphere, realistic skin texture, natural proportions, shallow depth of field, soft highlights, dramatic shadows, detailed clothing texture, premium editorial fashion photography, high-end cinematic look, photorealistic, 8K quality."},
-  {name:"৮০ দর্শকের Prompt",icon:"👤",image:"https://i.postimg.cc/fycH8HgJ/Picsart-26-09-14-18-29-26-598.jpg",prompt:"Create Your 80s Look:Transform the person in the uploaded photo into an authentic 1980s look. Keep their face natural and recognizable. Add era-appropriate hairstyle, outfit, vintage setting, warm cinematic lighting, faded colors and realistic film grain. Photorealistic, 9:16."},
-  {name:"গালফ্রেন্ড Prompt",icon:"🎬",image:"https://i.postimg.cc/Y0KnfcRY/Picsart-26-09-14-18-28-54-509.jpg",prompt:"Create a cinematic, soft monochrome portrait based on the reference image.Keep the main male subject in the foreground, positioned very close to the camera on the left side of the frame, with only part of his face visible.He is wearing a loose white shirt with the collar slightly open.Behind his shoulder, place a young woman partially hidden, gently peeking from behind him, with only her face and eyes clearly visible.Use a soft natural window light coming from the right side, creating a bright, dreamy and slightly faded atmosphere.Keep the background minimal with a softly blurred curtain / window.Use a subtle black - and - white / desaturated teal monochrome color grade, soft film texture, realistic skin texture, shallow depth of field, gentle highlights and cinematic contrast.IMPORTANT: Preserve the male subject 's original face, facial features, hairstyle, expression, skin texture, and identity exactly as provided in the input photo. Do not change his face or body shape. Match the reference composition and camera angle as closely as possible. Photorealistic, cinematic photography, natural lighting, high detail, vertical portrait, 4:5 aspect ratio."},
-  {name:"Wether Prompt",icon:"🌌",image:"https://i.postimg.cc/qMbkwjfq/Picsart-26-09-14-18-52-21-801.jpg",prompt:"Same face outfit Same ultrawide Upper-angle low-angle shot of a young man Seat this bov in a stvlish pose on the topmost stone visible in the background; the pose needs to look realistic.And add some more clouds according to the color of the sky! Increases quality.Instagrammable 4:5 ratio."},
+  {name:"Car Prompt 🛒",icon:"👤",image:"https://i.postimg.cc/PxZDfQ1w/Picsart-26-10-17-09-51-15-540.jpg",prompt:"Cinematic moody portrait of a young man standing in an underground parking garage, captured in a 3:4 vertical frame from a slightly low eye-level angle. The man has curly black hair, a well-groomed short beard and mustache, and is wearing black sunglasses. He is dressed in a relaxed-fit white button-down shirt with the sleeves slightly rolled up, paired with light blue relaxed-fit jeans and clean white sneakers.He is standing beside a white SUV with the driver-side door open, casually holding the edge of the open door with one hand while looking to his right with a calm, confident expression. His posture is relaxed and natural.The environment is dark and cinematic, featuring an underground parking garage with concrete walls, subtle oil marks, dim warm overhead lighting, deep shadows, and a slightly hazy atmosphere. Another white SUV is partially visible in the foreground, adding depth to the composition.Ultra-realistic photography, cinematic color grading, moody atmosphere, realistic skin texture, natural proportions, shallow depth of field, soft highlights, dramatic shadows, detailed clothing texture, premium editorial fashion photography, high-end cinematic look, photorealistic, 8K quality."},
+  {name:"৮০ দর্শকের Prompt 🛒",icon:"👤",image:"https://i.postimg.cc/fycH8HgJ/Picsart-26-09-14-18-29-26-598.jpg",prompt:"Create Your 80s Look:Transform the person in the uploaded photo into an authentic 1980s look. Keep their face natural and recognizable. Add era-appropriate hairstyle, outfit, vintage setting, warm cinematic lighting, faded colors and realistic film grain. Photorealistic, 9:16."},
+  {name:"গালফ্রেন্ড Prompt 🛒",icon:"🎬",image:"https://i.postimg.cc/Y0KnfcRY/Picsart-26-09-14-18-28-54-509.jpg",prompt:"Create a cinematic, soft monochrome portrait based on the reference image.Keep the main male subject in the foreground, positioned very close to the camera on the left side of the frame, with only part of his face visible.He is wearing a loose white shirt with the collar slightly open.Behind his shoulder, place a young woman partially hidden, gently peeking from behind him, with only her face and eyes clearly visible.Use a soft natural window light coming from the right side, creating a bright, dreamy and slightly faded atmosphere.Keep the background minimal with a softly blurred curtain / window.Use a subtle black - and - white / desaturated teal monochrome color grade, soft film texture, realistic skin texture, shallow depth of field, gentle highlights and cinematic contrast.IMPORTANT: Preserve the male subject 's original face, facial features, hairstyle, expression, skin texture, and identity exactly as provided in the input photo. Do not change his face or body shape. Match the reference composition and camera angle as closely as possible. Photorealistic, cinematic photography, natural lighting, high detail, vertical portrait, 4:5 aspect ratio."},
+  {name:"Wether Prompt 🛒",icon:"🌌",image:"https://i.postimg.cc/qMbkwjfq/Picsart-26-09-14-18-52-21-801.jpg",prompt:"Same face outfit Same ultrawide Upper-angle low-angle shot of a young man Seat this bov in a stvlish pose on the topmost stone visible in the background; the pose needs to look realistic.And add some more clouds according to the color of the sky! Increases quality.Instagrammable 4:5 ratio."},
   
 ];
 
@@ -4546,9 +4546,14 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInfo();});
     if(!main) return;
 
     var searchInput=document.getElementById('search');
-    if(searchInput && searchInput.value.trim()){
+    /* Every section navigation starts from a clean search state, including
+       the stale no-results message left behind after an unsuccessful search. */
+    if(searchInput){
       searchInput.value='';
-      main.classList.remove('search-mode');
+      main.classList.remove('search-mode','search-show-apps','search-show-games','search-show-prompts',
+        'search-source-apps','search-source-games','search-source-prompts');
+      var noResults=document.getElementById('searchNoResults');
+      if(noResults) noResults.hidden=true;
       var resultTitle=document.getElementById('searchResultsTitle');
       var emptyAppMessage=document.getElementById('empty');
       var appHead=document.querySelector('#apps .section-head');
@@ -6499,6 +6504,75 @@ html body .mobile-bottom-nav {
 }
 </style>
 
+
+
+<style id="minhaj-ai-prompt-popup-outer-size-only-v6">
+/* Change only the outer AI Prompt dialog dimensions. Preserve every child element's original styling and image dimensions. */
+html body #promptModal .prompt-modal {
+  box-sizing: border-box !important;
+  width: min(430px, calc(100vw - 24px)) !important;
+  max-width: calc(100vw - 24px) !important;
+  height: auto !important;
+  max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+@supports not (height: 100dvh) {
+  html body #promptModal .prompt-modal {
+    max-height: calc(100vh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+</style>
+
+
+
+<style id="minhaj-app-game-popup-viewport-auto-fit-v7">
+/* App/Game popup container only: adapt the outer dialog to the visible viewport.
+   Intentionally do not set image, thumbnail, text, or button dimensions. */
+html body #appModal.detail-overlay,
+html body #appModal.detail-overlay.show {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: max(12px, env(safe-area-inset-top, 0px)) 12px max(12px, env(safe-area-inset-bottom, 0px)) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+html body #appModal .minhaj-detail,
+html body #appModal .detail-modal {
+  box-sizing: border-box !important;
+  width: min(460px, calc(100vw - 24px)) !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  max-height: calc(100vh - 24px) !important;
+  max-height: calc(100dvh - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  margin: auto !important;
+  flex: 0 1 auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+@media (max-width: 520px) {
+  html body #appModal .minhaj-detail,
+  html body #appModal .detail-modal {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+}
+</style>
 </body>
 </html>
 
@@ -6603,3 +6677,45 @@ html body #appModal .detail-modal {
 }
 </style>
 
+
+
+<style id="minhaj-ai-prompt-fullscreen-light-backdrop-center-fix-v4">
+/* AI Prompt popup only: light full-screen dim layer and vertically centered dialog. */
+html body #promptModal.prompt-modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  box-sizing: border-box !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: max(16px, env(safe-area-inset-top, 0px)) 12px max(16px, env(safe-area-inset-bottom, 0px)) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  background: rgba(0, 0, 0, .32) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+  backdrop-filter: blur(3px) !important;
+  z-index: 2147483000 !important;
+  isolation: isolate !important;
+}
+html body #promptModal.prompt-modal-backdrop.show {
+  display: flex !important;
+}
+html body #promptModal .prompt-modal {
+  position: relative !important;
+  inset: auto !important;
+  flex: 0 1 auto !important;
+  width: min(430px, calc(100vw - 24px)) !important;
+  max-width: 100% !important;
+  max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  margin: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  z-index: 1 !important;
+}
+</style>
