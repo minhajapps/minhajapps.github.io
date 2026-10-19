@@ -6458,6 +6458,47 @@ html body .mobile-bottom-nav {
   }
 }
 </style>
+
+
+<style id="minhaj-final-both-themes-touch-card-state-fix-v3">
+/* Mobile/touch browsers can keep :hover or focus styles after scrolling.
+   Cancel only transient card states in BOTH themes; preserve each theme's normal card surface, border and shadow. */
+@media (hover: none), (pointer: coarse) {
+  #appGrid .app-card, #gameGrid .game-card, #trending .trend-card {
+    -webkit-tap-highlight-color: transparent !important;
+    outline: none !important;
+    transition: none !important;
+  }
+  html body #appGrid .app-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback),
+  html body #gameGrid .game-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback),
+  html body #trending .trend-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback) {
+    outline: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  /* Day mode: return to the existing neutral card border and resting shadow. */
+  html body:not(.dark-mode):not([data-theme="dark"]) #appGrid .app-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback),
+  html body:not(.dark-mode):not([data-theme="dark"]) #gameGrid .game-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback) {
+    border-color: rgba(128,128,128,.19) !important;
+    box-shadow: 0 5px 18px rgba(15,23,42,.055) !important;
+  }
+  html body:not(.dark-mode):not([data-theme="dark"]) #trending .trend-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback) {
+    border-color: #e8e8e8 !important;
+    box-shadow: 0 3px 14px rgba(0,0,0,.055) !important;
+  }
+  /* Night mode: return to the existing subdued dark-theme card border and shadow. */
+  :is(html.dark-mode, body.dark-mode, html[data-theme="dark"], body[data-theme="dark"], [data-theme="dark"]) #appGrid .app-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback),
+  :is(html.dark-mode, body.dark-mode, html[data-theme="dark"], body[data-theme="dark"], [data-theme="dark"]) #gameGrid .game-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback) {
+    border-color: rgba(255,255,255,.13) !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,.15) !important;
+  }
+  :is(html.dark-mode, body.dark-mode, html[data-theme="dark"], body[data-theme="dark"], [data-theme="dark"]) #trending .trend-card:is(:hover,:active,:focus,:focus-visible,.press,.card-tap-feedback) {
+    border-color: rgba(255,255,255,.13) !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,.15) !important;
+  }
+}
+</style>
+
 </body>
 </html>
 
