@@ -11,8 +11,8 @@
   <meta name="theme-color" content="#10b981" />
 
   <link rel="canonical" href="https://minhajapps.github.io/" />
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/k5qxxjHd/Tik-Tok-Logo-9D2F901.png" />
-  <link rel="apple-touch-icon" href="https://i.postimg.cc/k5qxxjHd/Tik-Tok-Logo-9D2F901.png" />
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/N0TXBvgz/favicon.png" />
+  <link rel="apple-touch-icon" href="https://i.postimg.cc/N0TXBvgz/favicon.png" />
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Minhaj Apps" />
@@ -20,12 +20,12 @@
   <meta property="og:description" content="Minhaj Apps by Minhaj Afrad — Curated Android apps, mobile games, and AI prompts directory." />
   <meta property="og:url" content="https://minhajapps.github.io/" />
   <meta property="og:locale" content="bn_BD" />
-  <meta property="og:image" content="https://i.postimg.cc/k5qxxjHd/Tik-Tok-Logo-9D2F901.png" />
+  <meta property="og:image" content="https://i.postimg.cc/N0TXBvgz/favicon.png" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Minhaj Apps — Android Apps, Games & AI Prompts" />
   <meta name="twitter:description" content="Minhaj Apps by Minhaj Afrad — Curated Android apps, mobile games, and AI prompts directory." />
-  <meta name="twitter:image" content="https://i.postimg.cc/k5qxxjHd/Tik-Tok-Logo-9D2F901.png" />
+  <meta name="twitter:image" content="https://i.postimg.cc/N0TXBvgz/favicon.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -99,7 +99,6 @@
     html {
       background: var(--bg);
       min-height: 100%;
-      scroll-behavior: smooth;
     }
 
     body {
@@ -171,10 +170,6 @@
       font-weight: 700;
       color: var(--text);
       letter-spacing: 0.3px;
-    }
-
-    .logo-text .green-dot {
-      color: #10b981;
     }
 
     .header-actions {
@@ -255,7 +250,7 @@
     .menu-dropdown.show {
       display: block;
       transform-origin: top right;
-      animation: dropdownPop 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation: modalZoomIn 0.2s ease-out;
     }
 
     .menu-item {
@@ -375,12 +370,16 @@
       align-items: center;
       gap: 10px;
       box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-      animation: slideDown 0.45s ease-out, glowPulse 2s infinite;
+      animation: glowPulse 2s infinite;
       position: relative;
       overflow: hidden;
       cursor: pointer;
       transition: transform 0.25s ease;
       text-decoration: none;
+    }
+
+    .notice-bar.notice-init {
+      animation: slideDown 0.5s ease-out, glowPulse 2s infinite;
     }
 
     .notice-bar:hover {
@@ -392,7 +391,7 @@
     }
 
     @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-16px); }
+      from { opacity: 0; transform: translateY(-30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -454,11 +453,19 @@
       100% { transform: translate3d(-50%, 0, 0); }
     }
 
+    .bullhorn-svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+      color: #ffffff;
+    }
+
     @media (max-width: 600px) {
       .notice-badge { display: none; }
       .notice-bar { padding: 8px 12px; }
       .notice-icon { width: 28px; height: 28px; }
-      .notice-track { font-size: 11.5px; animation-duration: 9.5s; }
+      .bullhorn-svg { width: 14px; height: 14px; }
+      .notice-track { font-size: 11px; animation-duration: 10s; }
     }
 
     /* Poloja Section Title */
@@ -742,48 +749,25 @@
       overflow: hidden;
     }
 
-    /* Professional App Detail Popup / Sheet & Modal Spring Animations */
-    @keyframes detailPop {
-      0% { opacity: 0; transform: translate3d(0, 24px, 0) scale(0.96); }
-      68% { opacity: 1; transform: translate3d(0, -2px, 0) scale(1.004); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    /* Exact Poloja.top Details & Popup Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes iconPop {
-      0% { opacity: 0; transform: scale(0.82); }
-      70% { opacity: 1; transform: scale(1.04); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes cardRise {
-      0% { opacity: 0; transform: translate3d(0, 16px, 0); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-
-    @keyframes feedIn {
-      0% { opacity: 0; transform: translate3d(0, 10px, 0); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-
-    @keyframes dropdownPop {
-      0% { opacity: 0; transform: translate3d(0, -8px, 0) scale(0.94); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-    }
-
-    @keyframes backdropIn {
+    @keyframes lbFadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
 
-    @keyframes modalPop {
-      0% { opacity: 0; transform: translate3d(0, 22px, 0) scale(0.89); }
-      70% { opacity: 1; transform: translate3d(0, -2px, 0) scale(1.014); }
-      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    @keyframes lbZoomIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
-    @keyframes lightboxZoom {
-      0% { opacity: 0; transform: scale(0.78); }
-      100% { opacity: 1; transform: scale(1); }
+    @keyframes modalZoomIn {
+      from { transform: scale(0.82); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
     /* Poloja Details View */
@@ -791,36 +775,15 @@
       padding: 16px 20px 30px;
       max-width: 800px;
       margin: 0 auto;
-      animation: detailPop 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
-      will-change: transform, opacity;
+      animation: fadeIn 0.5s ease;
     }
 
     .feed-enter {
-      animation: feedIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-
-    .icon-pop {
-      animation: iconPop 0.46s cubic-bezier(0.34, 1.45, 0.64, 1) 0.04s both;
-    }
-
-    .stagger-1 {
-      animation: cardRise 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.04s both;
-    }
-
-    .stagger-2 {
-      animation: cardRise 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.09s both;
-    }
-
-    .stagger-3 {
-      animation: cardRise 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
-    }
-
-    .stagger-4 {
-      animation: cardRise 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.19s both;
+      animation: lbFadeIn 0.22s ease;
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .detail-container, .feed-enter, .icon-pop, .stagger-1, .stagger-2, .stagger-3, .stagger-4, .menu-dropdown.show, .overlay.open, .overlay.open .modal-box, .overlay.open #lightboxImg {
+      .detail-container, .feed-enter, .menu-dropdown.show, .overlay.open, .overlay.open .modal-box, .overlay.open #lightboxImg {
         animation: none !important;
       }
     }
@@ -832,12 +795,24 @@
       background: none;
       border: 0;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 500;
+      line-height: 1;
+      min-height: 36px;
       cursor: pointer;
       padding: 6px 0;
       margin-bottom: 8px;
       transition: color 0.15s ease, transform 0.15s ease;
+    }
+
+    .back-btn svg {
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .back-btn span {
+      display: inline-block;
+      line-height: 1;
     }
 
     .back-btn:hover {
@@ -1025,7 +1000,7 @@
       padding: 16px 20px 30px;
       max-width: 800px;
       margin: 0 auto;
-      animation: detailPop 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation: fadeIn 0.5s ease;
     }
 
     .vault-top {
@@ -1205,15 +1180,15 @@
 
     .overlay.open {
       display: flex;
-      animation: backdropIn 0.22s ease-out both;
+      animation: lbFadeIn 0.2s ease;
     }
 
     .overlay.open .modal-box {
-      animation: modalPop 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation: modalZoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .overlay.open #lightboxImg {
-      animation: lightboxZoom 0.3s cubic-bezier(0.34, 1.45, 0.64, 1) both;
+      animation: lbZoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .modal-box {
@@ -1310,7 +1285,7 @@
     <div class="header-inner">
       <button type="button" class="logo-link" id="brandHomeBtn">
         <img src="https://i.postimg.cc/k5qxxjHd/Tik-Tok-Logo-9D2F901.png" alt="Logo" class="logo-img" referrerpolicy="no-referrer" />
-        <span class="logo-text">Minhaj<span class="green-dot">.</span>Apps</span>
+        <span class="logo-text">Minhaj Apps</span>
       </button>
 
       <div class="header-actions">
@@ -1409,7 +1384,7 @@
   "BRAND_CONFIG": {
     "name": "Minhaj Apps",
     "owner": "MD Mahin Afrad",
-    "logo": "https://i.postimg.cc/k5qxxjHd/Tik-Tok-Logo-9D2F901.png",
+    "logo": "https://i.postimg.cc/N0TXBvgz/favicon.png",
     "qrScannerImage": "https://i.postimg.cc/sgZNM20Z/Picsart-26-10-11-18-49-38-494.jpg",
     "telegramUrl": "https://t.me/minhajafrad",
     "contactTelegramUrl": "https://t.me/minhajafrad/298",
@@ -2260,6 +2235,23 @@
         : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
     }
 
+    var savedScrollY = 0;
+    var routeDepth = 0;
+    var modalHistoryPushed = false;
+    var ignoreNextPop = false;
+    var noticeAnimatedOnce = false;
+
+    function scrollToInstant(y) {
+      var target = typeof y === "number" ? y : 0;
+      try {
+        window.scrollTo({ top: target, left: 0, behavior: "instant" });
+      } catch (e) {
+        window.scrollTo(0, target);
+      }
+      document.documentElement.scrollTop = target;
+      document.body.scrollTop = target;
+    }
+
     function pushStateSafe() {
       try {
         history.pushState({
@@ -2268,6 +2260,71 @@
           priv: state.privateUnlocked
         }, "");
       } catch (e) {}
+    }
+
+    function replaceStateSafe() {
+      try {
+        history.replaceState({
+          tab: state.tab,
+          slug: state.selectedItem ? state.selectedItem.slug : null,
+          priv: state.privateUnlocked
+        }, "");
+      } catch (e) {}
+    }
+
+    function pushModalHistoryIfNeeded() {
+      if (modalHistoryPushed) return;
+      try {
+        history.pushState({
+          tab: state.tab,
+          slug: state.selectedItem ? state.selectedItem.slug : null,
+          priv: state.privateUnlocked,
+          modal: true
+        }, "");
+        modalHistoryPushed = true;
+      } catch (e) {}
+    }
+
+    function isAnyOverlayOpen() {
+      var m = document.getElementById("modalOverlay");
+      var lb = document.getElementById("lightboxOverlay");
+      return Boolean((m && m.classList.contains("open")) || (lb && lb.classList.contains("open")));
+    }
+
+    function stopAndCloseOverlaysSilent() {
+      var box = document.getElementById("modalBox");
+      if (box) {
+        var vids = box.querySelectorAll("video");
+        for (var i = 0; i < vids.length; i++) {
+          try {
+            vids[i].pause();
+            vids[i].removeAttribute("src");
+            vids[i].load();
+          } catch (e) {}
+        }
+        box.innerHTML = "";
+      }
+      var m = document.getElementById("modalOverlay");
+      if (m) m.classList.remove("open");
+      var lb = document.getElementById("lightboxOverlay");
+      if (lb) lb.classList.remove("open");
+      var lbImg = document.getElementById("lightboxImg");
+      if (lbImg) lbImg.src = "";
+      document.body.style.overflow = "";
+    }
+
+    function closeOverlaysFromUI() {
+      stopAndCloseOverlaysSilent();
+      if (modalHistoryPushed) {
+        modalHistoryPushed = false;
+        ignoreNextPop = true;
+        setTimeout(function() { ignoreNextPop = false; }, 300);
+        try {
+          history.back();
+        } catch (e) {
+          ignoreNextPop = false;
+        }
+      }
     }
 
     function syncNavHighlight() {
@@ -2318,49 +2375,75 @@
       var all = DATA.APPS.concat(DATA.GAMES, DATA.AI_PROMPTS);
       var found = all.find(function(x){ return x.slug === slug; });
       if (!found) return;
+      savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      stopAndCloseOverlaysSilent();
+      modalHistoryPushed = false;
+      scrollToInstant(0);
       state.selectedItem = found;
       state.privateUnlocked = false;
+      routeDepth += 1;
       pushStateSafe();
       render();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToInstant(0);
     };
 
     window.backToMain = function() {
+      var restoreY = savedScrollY;
+      stopAndCloseOverlaysSilent();
+      modalHistoryPushed = false;
       state.selectedItem = null;
       state.privateUnlocked = false;
-      pushStateSafe();
       render();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToInstant(restoreY);
+      if (routeDepth > 0) {
+        routeDepth -= 1;
+        ignoreNextPop = true;
+        setTimeout(function() { ignoreNextPop = false; }, 300);
+        try {
+          history.back();
+          return;
+        } catch (e) {
+          ignoreNextPop = false;
+        }
+      }
+      pushStateSafe();
     };
 
     window.switchTab = function(tab) {
+      stopAndCloseOverlaysSilent();
+      modalHistoryPushed = false;
+      savedScrollY = 0;
+      scrollToInstant(0);
       state.tab = tab;
       state.selectedItem = null;
       state.privateUnlocked = false;
       state.search = "";
+      routeDepth += 1;
       pushStateSafe();
       render();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToInstant(0);
     };
 
     window.openLightbox = function(src) {
       if (!src) return;
+      pushModalHistoryIfNeeded();
       document.getElementById("lightboxImg").src = src;
       document.getElementById("lightboxOverlay").classList.add("open");
+      document.body.style.overflow = "hidden";
     };
 
     window.closeLightbox = function() {
-      document.getElementById("lightboxOverlay").classList.remove("open");
+      closeOverlaysFromUI();
     };
 
     function renderDetail(item) {
       var isPrompt = item.category === "prompt";
       var cleanVotes = String(item.downloads || "").replace(/\+$/, "");
       var html = '<div class="detail-container">' +
-        '<button type="button" class="back-btn" onclick="backToMain()">← Back</button>' +
+        '<button type="button" class="back-btn" onclick="backToMain()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back</span></button>' +
         '<h1 class="detail-heading' + (isPrompt ? ' center-title' : '') + '">' + esc(item.name) + '</h1>' +
-        '<div class="app-info-box stagger-1">' +
-          '<button type="button" class="detail-icon-btn icon-pop" onclick="openLightbox(\'' + esc(item.image) + '\')">' +
+        '<div class="app-info-box">' +
+          '<button type="button" class="detail-icon-btn" onclick="openLightbox(\'' + esc(item.image) + '\')">' +
             '<img src="' + esc(item.image) + '" alt="' + esc(item.name) + '" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'" />' +
             '<span class="zoom-badge">' + ICONS.zoom + '</span>' +
           '</button>' +
@@ -2374,25 +2457,25 @@
         '</div>';
 
       if (isPrompt && item.promptText) {
-        html += '<div class="desc-box stagger-2">' +
+        html += '<div class="desc-box">' +
           '<div class="desc-title">AI Prompt Text</div>' +
           '<div class="prompt-text-box">' + esc(item.promptText) + '</div>' +
         '</div>';
       }
 
-      html += '<div class="desc-box stagger-2">' +
+      html += '<div class="desc-box">' +
         '<div class="desc-title">Description & Information</div>' +
         '<div>' + esc(item.description) + '</div>' +
       '</div>';
 
       if (!isPrompt && item.playStoreUrl) {
-        html += '<a href="' + esc(item.playStoreUrl) + '" target="_blank" rel="noopener noreferrer" class="play-store stagger-3">' +
+        html += '<a href="' + esc(item.playStoreUrl) + '" target="_blank" rel="noopener noreferrer" class="play-store">' +
           '<svg width="24" height="24" viewBox="0 0 24 24"><path d="M3 3.6v16.8c0 .6.7 1 1.2.7l10.2-8.4L4.2 3c-.5-.4-1.2 0-1.2.6Z" fill="#00d639"/><path d="m14.4 12.7 3.2-2.6 3.1 1.7c.7.4.7 1.4 0 1.8l-3.1 1.7-3.2-2.6Z" fill="#00a4ef"/><path d="m4.2 3 13.4 7.5-3.2 2.6L4.2 3Z" fill="#ffcf00"/><path d="m4.2 21 13.4-7.5-3.2-2.6L4.2 21Z" fill="#f44336"/></svg>' +
           '<div style="line-height:1.2;"><div style="font-size:10px;color:var(--muted);">Get it on</div><div style="font-size:15px;font-weight:700;">Google Play</div></div>' +
         '</a>';
       }
 
-      html += '<div class="stagger-3">';
+      html += '<div>';
       if (isPrompt) {
         html += '<button type="button" class="btn-poloja btn-copy" onclick="copyDetailPrompt(\'' + esc(item.slug) + '\', this)">' + ICONS.copyBtn + '<span>COPY HERE</span></button>';
       } else {
@@ -2406,7 +2489,7 @@
       }
       html += '</div>';
 
-      html += '<div class="rating-box stagger-4">' +
+      html += '<div class="rating-box">' +
         '<div style="font-size:30px;font-weight:700;margin-bottom:4px;">' + Number(item.rating).toFixed(1) + '</div>' +
         '<div style="display:flex;justify-content:center;gap:3px;margin-bottom:6px;">' + renderStars(item.rating, 21) + '</div>' +
         '<div style="font-size:12px;color:var(--muted);">Total Votes: ' + esc(cleanVotes) + '</div>' +
@@ -2442,7 +2525,7 @@
 
       return '<div class="vault-wrap">' +
         '<div class="vault-top">' +
-          '<button type="button" class="back-btn" style="margin:0;" onclick="backToMain()">← Back to Home</button>' +
+          '<button type="button" class="back-btn" style="margin:0;" onclick="backToMain()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back to Home</span></button>' +
           '<button type="button" class="lock-btn" onclick="backToMain()">Lock Vault</button>' +
         '</div>' +
         '<div class="vault-header">' +
@@ -2479,8 +2562,10 @@
       '</div></div>';
 
       if (!q && state.tab === "home") {
-        html += '<div class="notice-container"><a href="' + esc(DATA.BRAND_CONFIG.telegramUrl) + '" target="_blank" rel="noopener noreferrer" class="notice-bar">' +
-          '<div class="notice-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4 10h4l9-5v14l-9-5H4a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1zm15-2c1.2 1.1 1.8 2.5 1.8 4s-.6 2.9-1.8 4"/></svg></div>' +
+        var noticeCls = "notice-bar" + (noticeAnimatedOnce ? "" : " notice-init");
+        noticeAnimatedOnce = true;
+        html += '<div class="notice-container"><a href="' + esc(DATA.BRAND_CONFIG.telegramUrl) + '" target="_blank" rel="noopener noreferrer" class="' + noticeCls + '">' +
+          '<div class="notice-icon"><svg class="bullhorn-svg" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M480 32c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9L381.7 53c-48 48-113.1 75-181 75H192 160 64c-35.3 0-64 28.7-64 64v96c0 35.3 28.7 64 64 64l0 128c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32V352l8.7 0c67.9 0 133 27 181 75l43.6 43.6c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V300.4c18.6-8.8 32-32.5 32-60.4s-13.4-51.6-32-60.4V32zm-64 76.7V240 371.3C357.2 317.8 280.5 288 200.7 288H192V192h8.7c79.8 0 156.5-29.8 215.3-83.3z"/></svg></div>' +
           '<span class="notice-badge">📢 নতুন ঘোষণা</span>' +
           '<div class="notice-content"><div class="notice-track"><span>' + esc(DATA.BRAND_CONFIG.announcementText) + '</span><span aria-hidden="true">' + esc(DATA.BRAND_CONFIG.announcementText) + '</span></div></div>' +
         '</a></div>';
@@ -2558,13 +2643,15 @@
 
     /* Modals */
     function openModalHTML(inner) {
+      pushModalHistoryIfNeeded();
       var box = document.getElementById("modalBox");
       box.innerHTML = '<button type="button" class="modal-close" onclick="closeModal()">✕</button>' + inner;
       document.getElementById("modalOverlay").classList.add("open");
+      document.body.style.overflow = "hidden";
     }
 
     window.closeModal = function() {
-      document.getElementById("modalOverlay").classList.remove("open");
+      closeOverlaysFromUI();
     };
 
     window.openQrModal = function() {
@@ -2635,12 +2722,20 @@
       var val = (inp ? inp.value : "").trim();
       if (!val) { err.textContent = "অনুগ্রহ করে আপনার Access Key লিখুন।"; return; }
       if (val === DATA.BRAND_CONFIG.privateAccessKey) {
-        closeModal();
+        savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        stopAndCloseOverlaysSilent();
+        scrollToInstant(0);
         state.privateUnlocked = true;
         state.selectedItem = null;
-        pushStateSafe();
+        routeDepth += 1;
+        if (modalHistoryPushed) {
+          modalHistoryPushed = false;
+          replaceStateSafe();
+        } else {
+          pushStateSafe();
+        }
         render();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        scrollToInstant(0);
       } else {
         err.textContent = "ভুল Access Key দেওয়া হয়েছে।";
         inp.value = "";
@@ -2658,7 +2753,7 @@
           '<p style="font-size:13px;line-height:1.6;color:var(--muted);margin-bottom:18px;">' + esc(res.description) + '</p>' +
           '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
             '<button type="button" class="btn-poloja btn-tut" style="min-height:44px;border-radius:12px;font-size:13px;margin:0;" onclick="closeModal()">Cancel</button>' +
-            '<a href="' + esc(res.downloadUrl) + '" target="_blank" rel="noopener noreferrer" class="btn-poloja btn-dl" style="min-height:44px;border-radius:12px;font-size:13px;margin:0;" onclick="closeModal()">Download Now</a>' +
+            '<a href="' + esc(res.downloadUrl) + '" target="_blank" rel="noopener noreferrer" class="btn-poloja btn-dl" style="min-height:44px;border-radius:12px;font-size:13px;margin:0;" onclick="setTimeout(closeModal,80)">Download Now</a>' +
           '</div>' +
         '</div>'
       );
@@ -2732,7 +2827,25 @@
       document.getElementById("modalOverlay").addEventListener("click", closeModal);
       document.getElementById("lightboxOverlay").addEventListener("click", closeLightbox);
 
+      document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape" && isAnyOverlayOpen()) {
+          closeOverlaysFromUI();
+        }
+      });
+
+      replaceStateSafe();
+
       window.addEventListener("popstate", function(e) {
+        if (ignoreNextPop) {
+          ignoreNextPop = false;
+          return;
+        }
+        if (isAnyOverlayOpen()) {
+          modalHistoryPushed = false;
+          stopAndCloseOverlaysSilent();
+          return;
+        }
+        closeDropdown();
         var st = e.state || {};
         state.tab = st.tab || "home";
         state.privateUnlocked = Boolean(st.priv);
@@ -2742,7 +2855,13 @@
         } else {
           state.selectedItem = null;
         }
+        if (routeDepth > 0) routeDepth -= 1;
         render();
+        if (!state.selectedItem && !state.privateUnlocked) {
+          scrollToInstant(savedScrollY);
+        } else {
+          scrollToInstant(0);
+        }
       });
 
       render();
