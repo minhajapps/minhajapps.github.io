@@ -126,7 +126,7 @@
     /* Poloja Header */
     .app-header {
       background: var(--header-bg);
-      padding: 14px 20px;
+      padding: 13px clamp(15px, 4vw, 20px);
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -141,17 +141,22 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+      flex-wrap: nowrap;
     }
 
     .logo-link {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: clamp(9px, 2.5vw, 12px);
       background: none;
       border: 0;
+      padding: 0;
       cursor: pointer;
       text-decoration: none;
+      text-align: left;
+      white-space: nowrap;
+      flex-shrink: 0;
       color: var(--text);
     }
 
@@ -162,32 +167,37 @@
       border: 2px solid #10b981;
       object-fit: cover;
       display: block;
+      flex-shrink: 0;
       background: var(--surface-2);
     }
 
     .logo-text {
-      font-size: 18px;
+      font-size: clamp(14.5px, 4.4vw, 18.5px);
       font-weight: 700;
+      line-height: 1.15;
+      white-space: nowrap;
       color: var(--text);
-      letter-spacing: 0.3px;
+      letter-spacing: 0.2px;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 13px;
+      gap: clamp(9px, 2.6vw, 13px);
+      flex-shrink: 0;
     }
 
     .theme-toggle, .menu-btn {
       background: var(--surface-2);
       border: 1px solid var(--border);
       color: var(--text);
-      width: 40px;
-      height: 40px;
+      width: clamp(38px, 10vw, 40px);
+      height: clamp(38px, 10vw, 40px);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
       cursor: pointer;
       transition: 0.2s;
     }
@@ -204,8 +214,9 @@
 
     .telegram-icon {
       background: linear-gradient(135deg, #0088cc, #00aaff);
-      width: 40px;
-      height: 40px;
+      width: clamp(38px, 10vw, 40px);
+      height: clamp(38px, 10vw, 40px);
+      flex-shrink: 0;
       border-radius: 50%;
       display: flex;
       align-items: center;
