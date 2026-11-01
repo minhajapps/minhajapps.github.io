@@ -54,6 +54,14 @@
         if (saved === 'dark' || (!saved && prefersDark)) {
           document.documentElement.classList.add('dark');
         }
+        var params = new URLSearchParams(window.location.search);
+        var redirected = params.get('r') || sessionStorage.getItem('minhaj_spa_redirect');
+        if (redirected) {
+          try { sessionStorage.removeItem('minhaj_spa_redirect'); } catch (e) {}
+          if (redirected.charAt(0) === '/' && redirected.indexOf('//') !== 0) {
+            history.replaceState(history.state, '', redirected);
+          }
+        }
       } catch (e) {}
     })();
   </script>
@@ -1404,7 +1412,7 @@
     "qrScannerImage": "https://i.postimg.cc/sgZNM20Z/Picsart-26-10-11-18-49-38-494.jpg",
     "telegramUrl": "https://t.me/minhajafrad",
     "contactTelegramUrl": "https://t.me/minhajafrad/298",
-    "defaultTutorialVideoUrl": "./Fix_Tutorial.mp4",
+    "defaultTutorialVideoUrl": "/Fix_Tutorial.mp4",
     "privateAccessKey": "ff",
     "announcementText": "ঘোষণা — Minhaj Apps ওয়েবসাইটে আপনার প্রয়োজনীয় সকল প্রিমিয়াম Apps, জনপ্রিয় Games এবং AI Prompt একসাথে একদম সহজে পাবেন"
   },
@@ -2345,16 +2353,6 @@
       return info;
     }
 
-    var RESERVED_ROUTE_IDS = {
-      "home": true,
-      "all-apps": true,
-      "all-games": true,
-      "ai-prompts": true,
-      "qr-scanner": true,
-      "private-login": true,
-      "private-vault": true
-    };
-
     function slugifyForId(text) {
       return String(text || "")
         .toLowerCase()
@@ -2363,46 +2361,161 @@
         .replace(/^-+|-+$/g, "");
     }
 
+    function getCategoryPrefix(cat) {
+      if (cat === "game") return "game";
+      if (cat === "prompt") return "prompt";
+      return "app";
+    }
+
+    function cleanPrefixSlug(raw, prefix) {
+      var s = slugifyForId(raw);
+      if (s.indexOf(prefix + "-") === 0 && s.length > prefix.length + 1) {
+        return s.slice(prefix.length + 1);
+      }
+      return s;
+    }
+
     function ensureUniqueIds() {
       var usedIds = {};
-      Object.keys(RESERVED_ROUTE_IDS).forEach(function(k) {
-        usedIds[k] = true;
-      });
+      var usedRoutePaths = {
+        "/": true,
+        "/apps": true,
+        "/games": true,
+        "/prompts": true,
+        "/qr-scanner": true,
+        "/private-login": true,
+        "/private-vault": true
+      };
 
-      function assignListIds(list, prefix, defaultCategory) {
+      function assignCatalogList(list, prefix, categoryName) {
         if (!Array.isArray(list)) return;
+
+        var idCounts = {};
+        var slugCounts = {};
+        for (var c = 0; c < list.length; c++) {
+          var ci = list[c];
+          if (!ci || typeof ci !== "object") continue;
+          var cid = String(ci.id || "").trim();
+          var cslug = String(ci.slug || "").trim();
+          if (cid) idCounts[cid] = (idCounts[cid] || 0) + 1;
+          if (cslug) slugCounts[cslug] = (slugCounts[cslug] || 0) + 1;
+        }
+
         for (var i = 0; i < list.length; i++) {
           var item = list[i];
           if (!item || typeof item !== "object") continue;
-          if (defaultCategory && !item.category) {
-            item.category = defaultCategory;
-          }
+          if (!item.category) item.category = categoryName;
+
           var rawId = String(item.id || "").trim();
-          if (!rawId || usedIds[rawId]) {
-            var baseSlug = slugifyForId(item.slug || item.key || item.name || item.title);
-            var candidate = baseSlug
-              ? (baseSlug.indexOf(prefix + "-") === 0 ? baseSlug : prefix + "-" + baseSlug)
-              : (prefix + "-" + (i + 1));
-            var finalId = candidate;
-            var counter = 2;
-            while (usedIds[finalId]) {
-              finalId = candidate + "-" + counter;
-              counter++;
-            }
-            item.id = finalId;
+          var rawSlug = String(item.slug || "").trim();
+          var nameSlug = slugifyForId(item.name);
+
+          var idIsDupMismatch = rawId && idCounts[rawId] > 1 && nameSlug && cleanPrefixSlug(rawId, prefix) !== nameSlug;
+          var slugIsDupMismatch = rawSlug && slugCounts[rawSlug] > 1 && nameSlug && slugifyForId(rawSlug) !== nameSlug;
+
+          var baseSlug = "";
+          if (rawSlug && !slugIsDupMismatch && !usedRoutePaths["/" + prefix + "/" + slugifyForId(rawSlug)]) {
+            baseSlug = slugifyForId(rawSlug);
+          } else if (rawId && !idIsDupMismatch && !usedIds[rawId]) {
+            baseSlug = cleanPrefixSlug(rawId, prefix);
+          } else if (nameSlug) {
+            baseSlug = nameSlug;
           }
-          if (!item.slug && defaultCategory) {
-            item.slug = slugifyForId(item.name) || item.id;
+
+          if (!baseSlug) {
+            baseSlug = prefix + "-" + (i + 1);
           }
+
+          var finalRouteSlug = baseSlug;
+          var routeCounter = 2;
+          while (usedRoutePaths["/" + prefix + "/" + finalRouteSlug]) {
+            finalRouteSlug = baseSlug + "-" + routeCounter;
+            routeCounter++;
+          }
+
+          var candidateId = (rawId && !idIsDupMismatch && !usedIds[rawId])
+            ? rawId
+            : (finalRouteSlug.indexOf(prefix + "-") === 0 ? finalRouteSlug : prefix + "-" + finalRouteSlug);
+          var finalId = candidateId;
+          var idCounter = 2;
+          while (usedIds[finalId]) {
+            finalId = candidateId + "-" + idCounter;
+            idCounter++;
+          }
+
+          item.id = finalId;
+          item.slug = finalRouteSlug;
+          item.routeSlug = finalRouteSlug;
+          item.routePath = "/" + prefix + "/" + finalRouteSlug;
+
           usedIds[item.id] = item;
+          usedRoutePaths[item.routePath] = item;
         }
       }
 
-      assignListIds(DATA.APPS, "app", "app");
-      assignListIds(DATA.GAMES, "game", "game");
-      assignListIds(DATA.AI_PROMPTS, "prompt", "prompt");
-      assignListIds(DATA.PRIVATE_RESOURCES, "priv", null);
-      assignListIds(DATA.FOOTER_INFO_ITEMS, "info", null);
+      assignCatalogList(DATA.APPS, "app", "app");
+      assignCatalogList(DATA.GAMES, "game", "game");
+      assignCatalogList(DATA.AI_PROMPTS, "prompt", "prompt");
+
+      if (Array.isArray(DATA.PRIVATE_RESOURCES)) {
+        for (var p = 0; p < DATA.PRIVATE_RESOURCES.length; p++) {
+          var pr = DATA.PRIVATE_RESOURCES[p];
+          if (!pr || typeof pr !== "object") continue;
+          var rawPrId = String(pr.id || "").trim();
+          if (!rawPrId || usedIds[rawPrId]) {
+            var prBase = slugifyForId(pr.title) || ("resource-" + (p + 1));
+            var prCand = prBase.indexOf("priv-") === 0 ? prBase : ("priv-" + prBase);
+            var prFinal = prCand;
+            var prCnt = 2;
+            while (usedIds[prFinal]) {
+              prFinal = prCand + "-" + prCnt;
+              prCnt++;
+            }
+            pr.id = prFinal;
+          }
+          var prSlugBase = cleanPrefixSlug(pr.id, "priv") || slugifyForId(pr.title) || ("item-" + (p + 1));
+          var prSlug = prSlugBase;
+          var prSlugCnt = 2;
+          while (usedRoutePaths["/vault/" + prSlug]) {
+            prSlug = prSlugBase + "-" + prSlugCnt;
+            prSlugCnt++;
+          }
+          pr.routeSlug = prSlug;
+          pr.routePath = "/vault/" + prSlug;
+          usedIds[pr.id] = pr;
+          usedRoutePaths[pr.routePath] = pr;
+        }
+      }
+
+      if (Array.isArray(DATA.FOOTER_INFO_ITEMS)) {
+        for (var f = 0; f < DATA.FOOTER_INFO_ITEMS.length; f++) {
+          var fi = DATA.FOOTER_INFO_ITEMS[f];
+          if (!fi || typeof fi !== "object") continue;
+          var fiKey = slugifyForId(fi.key || fi.label || fi.title) || ("page-" + (f + 1));
+          var rawFiId = String(fi.id || "").trim();
+          if (!rawFiId || usedIds[rawFiId]) {
+            var fiCand = fiKey.indexOf("info-") === 0 ? fiKey : ("info-" + fiKey);
+            var fiFinal = fiCand;
+            var fiCnt = 2;
+            while (usedIds[fiFinal]) {
+              fiFinal = fiCand + "-" + fiCnt;
+              fiCnt++;
+            }
+            fi.id = fiFinal;
+          }
+          var fiSlugBase = cleanPrefixSlug(fiKey, "info") || fiKey;
+          var fiSlug = fiSlugBase;
+          var fiSlugCnt = 2;
+          while (usedRoutePaths["/info/" + fiSlug]) {
+            fiSlug = fiSlugBase + "-" + fiSlugCnt;
+            fiSlugCnt++;
+          }
+          fi.routeSlug = fiSlug;
+          fi.routePath = "/info/" + fiSlug;
+          usedIds[fi.id] = fi;
+          usedRoutePaths[fi.routePath] = fi;
+        }
+      }
 
       if (Array.isArray(DATA.TRENDING_APPS)) {
         for (var t = 0; t < DATA.TRENDING_APPS.length; t++) {
@@ -2416,24 +2529,31 @@
           });
           if (matchedApp) {
             tr.id = matchedApp.id;
-            if (!tr.slug) tr.slug = matchedApp.slug;
+            tr.slug = matchedApp.slug;
+            tr.routeSlug = matchedApp.routeSlug;
+            tr.routePath = matchedApp.routePath;
           } else {
-            var trRawId = String(tr.id || "").trim();
-            if (!trRawId || usedIds[trRawId]) {
-              var trBase = slugifyForId(tr.slug || tr.name);
-              var trCand = trBase
-                ? (trBase.indexOf("app-") === 0 ? trBase : "app-" + trBase)
-                : ("app-trending-" + (t + 1));
-              var trFinal = trCand;
-              var trCount = 2;
-              while (usedIds[trFinal]) {
-                trFinal = trCand + "-" + trCount;
-                trCount++;
-              }
-              tr.id = trFinal;
+            var trBase = cleanPrefixSlug(tr.slug || tr.id || tr.name, "app") || ("trending-" + (t + 1));
+            var trRouteSlug = trBase;
+            var trRCnt = 2;
+            while (usedRoutePaths["/app/" + trRouteSlug]) {
+              trRouteSlug = trBase + "-" + trRCnt;
+              trRCnt++;
             }
-            if (!tr.slug) tr.slug = slugifyForId(tr.name) || tr.id;
+            var trRawId = String(tr.id || "").trim();
+            var trIdCand = (trRawId && !usedIds[trRawId]) ? trRawId : ("app-" + trRouteSlug);
+            var trIdFinal = trIdCand;
+            var trIdCnt = 2;
+            while (usedIds[trIdFinal]) {
+              trIdFinal = trIdCand + "-" + trIdCnt;
+              trIdCnt++;
+            }
+            tr.id = trIdFinal;
+            tr.slug = trRouteSlug;
+            tr.routeSlug = trRouteSlug;
+            tr.routePath = "/app/" + trRouteSlug;
             usedIds[tr.id] = tr;
+            usedRoutePaths[tr.routePath] = tr;
           }
         }
       }
@@ -2454,14 +2574,45 @@
       return list;
     }
 
-    function findCatalogItem(idOrSlug) {
+    function findCatalogItem(idOrSlug, categoryHint) {
       if (!idOrSlug) return null;
       var key = String(idOrSlug).trim();
+      var lowerKey = key.toLowerCase();
       var all = getAllCatalogItems();
-      var exact = all.find(function(x) { return x.id === key; });
+
+      if (categoryHint) {
+        var catMatch = all.find(function(x) {
+          return x.category === categoryHint && (
+            x.routeSlug === lowerKey ||
+            x.slug === lowerKey ||
+            x.id === key ||
+            x.id === lowerKey ||
+            x.routePath === ("/" + categoryHint + "/" + lowerKey)
+          );
+        });
+        if (catMatch) return catMatch;
+      }
+
+      var exact = all.find(function(x) {
+        return x.id === key ||
+               x.id === lowerKey ||
+               x.routeSlug === lowerKey ||
+               x.slug === lowerKey ||
+               x.routePath === key ||
+               x.routePath === lowerKey;
+      });
       if (exact) return exact;
-      var bySlug = all.find(function(x) { return x.slug === key; });
-      if (bySlug) return bySlug;
+
+      var numOnly = key.match(/^(\d+)$/);
+      if (numOnly && categoryHint) {
+        var nIdx = parseInt(numOnly[1], 10) - 1;
+        if (nIdx >= 0) {
+          if (categoryHint === "app" && DATA.APPS[nIdx]) return DATA.APPS[nIdx];
+          if (categoryHint === "game" && DATA.GAMES[nIdx]) return DATA.GAMES[nIdx];
+          if (categoryHint === "prompt" && DATA.AI_PROMPTS[nIdx]) return DATA.AI_PROMPTS[nIdx];
+        }
+      }
+
       var numMatch = key.match(/^(app|game|prompt)-(\d+)$/i);
       if (numMatch) {
         var kind = numMatch[1].toLowerCase();
@@ -2477,9 +2628,24 @@
 
     function findFooterInfoItem(idOrKey) {
       if (!idOrKey) return null;
-      var k = String(idOrKey).trim();
+      var k = String(idOrKey).trim().toLowerCase();
       return DATA.FOOTER_INFO_ITEMS.find(function(x) {
-        return x.id === k || x.key === k || ("info-" + x.key) === k;
+        return x.id.toLowerCase() === k ||
+               String(x.key || "").toLowerCase() === k ||
+               x.routeSlug === k ||
+               x.routePath === k ||
+               ("info-" + String(x.key || "").toLowerCase()) === k;
+      }) || null;
+    }
+
+    function findPrivateResourceItem(idOrSlug) {
+      if (!idOrSlug) return null;
+      var k = String(idOrSlug).trim().toLowerCase();
+      return DATA.PRIVATE_RESOURCES.find(function(r) {
+        return r.id.toLowerCase() === k ||
+               r.routeSlug === k ||
+               r.routePath === k ||
+               ("priv-" + k) === r.id.toLowerCase();
       }) || null;
     }
 
@@ -2505,20 +2671,17 @@
 
     window.startPrivateDownload = function(id, ev) {
       if (ev && ev.preventDefault) ev.preventDefault();
-      var res = DATA.PRIVATE_RESOURCES.find(function(r){ return r.id === id; });
+      var res = findPrivateResourceItem(id);
       if (!res || !res.downloadUrl) return false;
       triggerDirectDownload(res.downloadUrl, res.title);
       showToast(res.title + " ডাউনলোড শুরু হচ্ছে...");
       setTimeout(function() {
         stopAndCloseOverlaysSilent();
-        try {
-          var prevCanBack = Boolean(history.state && history.state.canBackToList);
-          history.replaceState({
-            tab: state.tab,
-            canBackToList: prevCanBack,
-            vaultScrollY: window.scrollY || document.documentElement.scrollTop || 0
-          }, "", buildUrlWithId("private-vault"));
-        } catch (e) {}
+        setHistorySafe("replace", {
+          tab: state.tab,
+          canBackToList: Boolean(history.state && history.state.canBackToList),
+          vaultScrollY: window.scrollY || document.documentElement.scrollTop || 0
+        }, "/private-vault");
         updateDocumentTitle();
       }, 120);
       return false;
@@ -2535,7 +2698,7 @@
     var savedScrollY = 0;
     var noticeAnimatedOnce = false;
     var currentRenderedKey = "";
-    var pendingPrivateTargetId = null;
+    var pendingPrivateTargetPath = null;
     var BASE_DOC_TITLE = "Minhaj Apps";
 
     function isSessionPrivUnlocked() {
@@ -2564,36 +2727,41 @@
       document.body.scrollTop = target;
     }
 
-    function tabToRouteId(tab) {
-      if (tab === "apps") return "all-apps";
-      if (tab === "games") return "all-games";
-      if (tab === "prompts") return "ai-prompts";
-      return null;
-    }
-
-    function routeIdToTab(routeId) {
-      if (routeId === "all-apps" || routeId === "apps") return "apps";
-      if (routeId === "all-games" || routeId === "games") return "games";
-      if (routeId === "ai-prompts" || routeId === "prompts") return "prompts";
-      if (routeId === "home") return "home";
-      return null;
-    }
-
-    function getUrlRouteId() {
-      try {
-        var params = new URLSearchParams(window.location.search);
-        var val = params.get("id");
-        return val ? val.trim() : null;
-      } catch (e) {
-        var m = String(window.location.search || "").match(/[?&]id=([^&]+)/);
-        return m ? decodeURIComponent(m[1]).trim() : null;
+    function normalizePathname(rawPath) {
+      var p = String(rawPath || "/").trim();
+      try { p = decodeURIComponent(p); } catch (e) {}
+      p = p.replace(/\/index\.html$/i, "/").replace(/\/+/g, "/");
+      if (p.length > 1 && p.charAt(p.length - 1) === "/") {
+        p = p.slice(0, -1);
       }
+      return p || "/";
     }
 
-    function buildUrlWithId(id) {
-      var base = window.location.pathname || "/";
-      if (!id) return base;
-      return base + "?id=" + encodeURIComponent(id);
+    function getCurrentCleanPath() {
+      return normalizePathname(window.location.pathname);
+    }
+
+    function tabToPath(tab) {
+      if (tab === "apps") return "/apps";
+      if (tab === "games") return "/games";
+      if (tab === "prompts") return "/prompts";
+      return "/";
+    }
+
+    function setHistorySafe(mode, stateObj, targetPath) {
+      var cleanTarget = normalizePathname(targetPath || "/");
+      try {
+        if (window.location.protocol === "file:") {
+          if (mode === "replace") history.replaceState(stateObj, "");
+          else history.pushState(stateObj, "");
+          return;
+        }
+        if (mode === "replace" || getCurrentCleanPath() === cleanTarget) {
+          history.replaceState(stateObj, "", cleanTarget);
+        } else {
+          history.pushState(stateObj, "", cleanTarget);
+        }
+      } catch (e) {}
     }
 
     function computeCurrentBaseKey() {
@@ -2666,29 +2834,20 @@
       document.body.style.overflow = "";
     }
 
-    function pushModalRoute(modalId) {
+    function pushModalPath(modalPath) {
       saveCurrentScrollToHistory();
-      var underlyingItemId = state.selectedItem ? state.selectedItem.id : null;
-      var underlyingPrivate = Boolean(state.privateUnlocked);
-      var prevCanBackToList = Boolean(history.state && history.state.canBackToList);
       var nextHist = {
         tab: state.tab,
-        underlyingItemId: underlyingItemId,
-        underlyingPrivate: underlyingPrivate,
+        underlyingItemId: state.selectedItem ? state.selectedItem.id : null,
+        underlyingPrivate: Boolean(state.privateUnlocked),
         canBackFromModal: true,
-        canBackToList: prevCanBackToList
+        canBackToList: Boolean(history.state && history.state.canBackToList)
       };
-      try {
-        if (getUrlRouteId() === modalId) {
-          history.replaceState(nextHist, "", buildUrlWithId(modalId));
-        } else {
-          history.pushState(nextHist, "", buildUrlWithId(modalId));
-        }
-      } catch (e) {}
+      setHistorySafe("push", nextHist, modalPath);
     }
 
     function closeOverlaysFromUI() {
-      pendingPrivateTargetId = null;
+      pendingPrivateTargetPath = null;
       if (history.state && history.state.canBackFromModal) {
         try {
           history.back();
@@ -2696,22 +2855,20 @@
         } catch (e) {}
       }
       stopAndCloseOverlaysSilent();
-      var fallbackRouteId = null;
+      var fallbackPath = "/";
       if (state.privateUnlocked) {
-        fallbackRouteId = "private-vault";
+        fallbackPath = "/private-vault";
       } else if (state.selectedItem) {
-        fallbackRouteId = state.selectedItem.id;
+        fallbackPath = state.selectedItem.routePath;
       } else {
-        fallbackRouteId = tabToRouteId(state.tab);
+        fallbackPath = tabToPath(state.tab);
       }
-      try {
-        history.pushState({
-          tab: state.tab,
-          itemId: state.selectedItem ? state.selectedItem.id : null,
-          canBackToList: false,
-          canBackFromModal: false
-        }, "", buildUrlWithId(fallbackRouteId));
-      } catch (e) {}
+      setHistorySafe("push", {
+        tab: state.tab,
+        itemId: state.selectedItem ? state.selectedItem.id : null,
+        canBackToList: false,
+        canBackFromModal: false
+      }, fallbackPath);
       updateDocumentTitle();
     }
 
@@ -2738,7 +2895,7 @@
       var badgeInner = isTrending
         ? ICONS.dlTiny + '<span>' + esc(cleanDl) + '</span>'
         : 'v' + esc(item.version);
-      return '<a href="?id=' + encodeURIComponent(item.id) + '" class="app-card' + (isTrending ? ' trend-card' : '') + '" onclick="return handleCardClick(event, \'' + esc(item.id) + '\')">' +
+      return '<a href="' + esc(item.routePath) + '" class="app-card' + (isTrending ? ' trend-card' : '') + '" onclick="return handleCardClick(event, \'' + esc(item.id) + '\')">' +
         '<div class="app-icon"><img src="' + esc(item.image) + '" alt="' + esc(item.name) + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.parentElement.textContent=\'' + esc(initials(item.name)) + '\';" /></div>' +
         '<div class="app-title">' + esc(item.name) + '</div>' +
         '<div class="card-stars">' + renderStars(item.rating, 10) + '</div>' +
@@ -2747,7 +2904,7 @@
     }
 
     function promptCardHTML(item) {
-      return '<a href="?id=' + encodeURIComponent(item.id) + '" class="prompt-card-poloja" onclick="return handleCardClick(event, \'' + esc(item.id) + '\')">' +
+      return '<a href="' + esc(item.routePath) + '" class="prompt-card-poloja" onclick="return handleCardClick(event, \'' + esc(item.id) + '\')">' +
         '<div class="prompt-thumb"><span class="pop-badge">AI</span><img src="' + esc(item.image) + '" alt="' + esc(item.name) + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.parentElement.textContent=\'AI\';" /></div>' +
         '<div class="title-wrapper">' +
           '<div class="prompt-title-text">' + esc(item.name) + '</div>' +
@@ -2781,20 +2938,13 @@
         : true;
       state.selectedItem = found;
       state.privateUnlocked = false;
-      var nextState = {
+      setHistorySafe("push", {
         tab: state.tab,
         itemId: found.id,
         canBackToList: canBack,
         canBackFromModal: false,
         detailScrollY: 0
-      };
-      try {
-        if (getUrlRouteId() === found.id) {
-          history.replaceState(nextState, "", buildUrlWithId(found.id));
-        } else {
-          history.pushState(nextState, "", buildUrlWithId(found.id));
-        }
-      } catch (e) {}
+      }, found.routePath);
       render();
       updateDocumentTitle();
       scrollToInstant(0);
@@ -2802,7 +2952,7 @@
     window.openItemBySlug = window.openItemById;
 
     window.backToMain = function(forceLockVault) {
-      pendingPrivateTargetId = null;
+      pendingPrivateTargetPath = null;
       if (forceLockVault || state.privateUnlocked) {
         setSessionPrivUnlocked(false);
       }
@@ -2816,22 +2966,19 @@
       stopAndCloseOverlaysSilent();
       state.selectedItem = null;
       state.privateUnlocked = false;
-      var targetRouteId = tabToRouteId(state.tab);
-      try {
-        history.pushState({
-          tab: state.tab,
-          scrollY: restoreY,
-          canBackToList: false,
-          canBackFromModal: false
-        }, "", buildUrlWithId(targetRouteId));
-      } catch (e) {}
+      setHistorySafe("push", {
+        tab: state.tab,
+        scrollY: restoreY,
+        canBackToList: false,
+        canBackFromModal: false
+      }, tabToPath(state.tab));
       render();
       updateDocumentTitle();
       scrollToInstant(restoreY);
     };
 
     window.switchTab = function(tab) {
-      pendingPrivateTargetId = null;
+      pendingPrivateTargetPath = null;
       saveCurrentScrollToHistory();
       if (state.privateUnlocked) {
         setSessionPrivUnlocked(false);
@@ -2842,21 +2989,12 @@
       state.selectedItem = null;
       state.privateUnlocked = false;
       state.search = "";
-      var targetRouteId = tabToRouteId(tab);
-      var currentRouteId = getUrlRouteId();
-      var nextState = {
+      setHistorySafe("push", {
         tab: tab,
         scrollY: 0,
         canBackToList: false,
         canBackFromModal: false
-      };
-      try {
-        if (currentRouteId === targetRouteId || (!currentRouteId && !targetRouteId)) {
-          history.replaceState(nextState, "", buildUrlWithId(targetRouteId));
-        } else {
-          history.pushState(nextState, "", buildUrlWithId(targetRouteId));
-        }
-      } catch (e) {}
+      }, tabToPath(tab));
       render();
       updateDocumentTitle();
       scrollToInstant(0);
@@ -2872,9 +3010,9 @@
 
     window.openLightbox = function(src, itemId) {
       if (!src) return;
-      var targetId = itemId || (state.selectedItem ? state.selectedItem.id : null);
-      if (targetId) {
-        pushModalRoute("preview-" + targetId);
+      var item = findCatalogItem(itemId) || state.selectedItem;
+      if (item) {
+        pushModalPath(item.routePath + "/preview");
       }
       showLightboxSilent(src);
     };
@@ -3113,7 +3251,7 @@
     }
 
     window.openQrModal = function() {
-      pushModalRoute("qr-scanner");
+      pushModalPath("/qr-scanner");
       renderQrModalSilent();
       updateDocumentTitle("Official QR");
     };
@@ -3129,14 +3267,15 @@
     window.openInfoModal = function(keyOrId) {
       var info = findFooterInfoItem(keyOrId);
       if (!info) return;
-      pushModalRoute(info.id);
+      pushModalPath(info.routePath);
       renderInfoModalSilent(info);
       updateDocumentTitle(info.title);
     };
 
     function renderTutorialModalSilent(item) {
       var name = item ? item.name : "App";
-      var videoSrc = (item && item.tutorialVideoUrl) || DATA.BRAND_CONFIG.defaultTutorialVideoUrl;
+      var rawVideoSrc = (item && item.tutorialVideoUrl) || DATA.BRAND_CONFIG.defaultTutorialVideoUrl || "/Fix_Tutorial.mp4";
+      var videoSrc = String(rawVideoSrc).replace(/^\.\//, "/");
       showModalHTMLSilent(
         '<h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Install Problem Fix Tutorial</h3>' +
         '<video controls playsinline preload="metadata" controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture style="width:100%;aspect-ratio:9/16;max-height:64vh;border-radius:16px;background:#000;object-fit:contain;" onerror="this.style.display=\'none\';document.getElementById(\x27tutFallback\x27).style.display=\'block\';">' +
@@ -3155,8 +3294,8 @@
 
     window.openTutorialModal = function(idOrSlug) {
       var item = findCatalogItem(idOrSlug) || state.selectedItem;
-      var modalId = item ? ("tutorial-" + item.id) : "tutorial";
-      pushModalRoute(modalId);
+      var modalPath = item ? (item.routePath + "/tutorial") : "/qr-scanner";
+      pushModalPath(modalPath);
       renderTutorialModalSilent(item);
       updateDocumentTitle(item ? (item.name + " Tutorial") : "Install Tutorial");
     };
@@ -3180,8 +3319,8 @@
     }
 
     window.openPrivateLoginModal = function() {
-      pendingPrivateTargetId = null;
-      pushModalRoute("private-login");
+      pendingPrivateTargetPath = null;
+      pushModalPath("/private-login");
       renderPrivateLoginModalSilent();
       updateDocumentTitle("Private Vault Login");
     };
@@ -3207,9 +3346,9 @@
     }
 
     window.openPrivateDlConfirm = function(id) {
-      var res = DATA.PRIVATE_RESOURCES.find(function(r){ return r.id === id; });
+      var res = findPrivateResourceItem(id);
       if (!res) return;
-      pushModalRoute(res.id);
+      pushModalPath(res.routePath);
       renderPrivateDlConfirmSilent(res);
       updateDocumentTitle(res.title);
     };
@@ -3223,10 +3362,8 @@
       if (val === DATA.BRAND_CONFIG.privateAccessKey) {
         setSessionPrivUnlocked(true);
         var wasFromModal = Boolean(history.state && history.state.canBackFromModal);
-        var targetPrivRes = pendingPrivateTargetId
-          ? DATA.PRIVATE_RESOURCES.find(function(r) { return r.id === pendingPrivateTargetId; })
-          : null;
-        pendingPrivateTargetId = null;
+        var targetPrivRes = pendingPrivateTargetPath ? findPrivateResourceItem(pendingPrivateTargetPath) : null;
+        pendingPrivateTargetPath = null;
 
         stopAndCloseOverlaysSilent();
         state.privateUnlocked = true;
@@ -3235,25 +3372,21 @@
         scrollToInstant(0);
 
         if (targetPrivRes) {
-          try {
-            history.replaceState({
-              tab: state.tab,
-              underlyingPrivate: true,
-              canBackFromModal: false,
-              canBackToList: wasFromModal
-            }, "", buildUrlWithId(targetPrivRes.id));
-          } catch (err2) {}
+          setHistorySafe("replace", {
+            tab: state.tab,
+            underlyingPrivate: true,
+            canBackFromModal: false,
+            canBackToList: wasFromModal
+          }, targetPrivRes.routePath);
           renderPrivateDlConfirmSilent(targetPrivRes);
           updateDocumentTitle(targetPrivRes.title);
         } else {
-          try {
-            history.replaceState({
-              tab: state.tab,
-              canBackToList: wasFromModal,
-              canBackFromModal: false,
-              vaultScrollY: 0
-            }, "", buildUrlWithId("private-vault"));
-          } catch (err3) {}
+          setHistorySafe("replace", {
+            tab: state.tab,
+            canBackToList: wasFromModal,
+            canBackFromModal: false,
+            vaultScrollY: 0
+          }, "/private-vault");
           updateDocumentTitle();
         }
       } else {
@@ -3295,13 +3428,109 @@
       }
     }
 
+    function parseLocationRoute() {
+      var pathname = getCurrentCleanPath();
+
+      // Legacy ?id=... support for backwards compatibility
+      try {
+        var qParams = new URLSearchParams(window.location.search);
+        var legacyId = qParams.get("id");
+        if (pathname === "/" && legacyId) {
+          var lid = legacyId.trim();
+          if (lid === "home") return { type: "home", canonicalPath: "/" };
+          if (lid === "all-apps" || lid === "apps") return { type: "tab", tab: "apps", canonicalPath: "/apps" };
+          if (lid === "all-games" || lid === "games") return { type: "tab", tab: "games", canonicalPath: "/games" };
+          if (lid === "ai-prompts" || lid === "prompts") return { type: "tab", tab: "prompts", canonicalPath: "/prompts" };
+          if (lid === "qr-scanner") return { type: "qr", canonicalPath: "/qr-scanner" };
+          if (lid === "private-login") return { type: "private-login", canonicalPath: "/private-login" };
+          if (lid === "private-vault") return { type: "private-vault", canonicalPath: "/private-vault" };
+          if (lid.indexOf("tutorial-") === 0) {
+            var ltItem = findCatalogItem(lid.slice(9));
+            if (ltItem) return { type: "tutorial", item: ltItem, canonicalPath: ltItem.routePath + "/tutorial" };
+          }
+          if (lid.indexOf("preview-") === 0) {
+            var lpItem = findCatalogItem(lid.slice(8));
+            if (lpItem) return { type: "preview", item: lpItem, canonicalPath: lpItem.routePath + "/preview" };
+          }
+          var lInfo = findFooterInfoItem(lid);
+          if (lInfo) return { type: "info", info: lInfo, canonicalPath: lInfo.routePath };
+          var lPriv = findPrivateResourceItem(lid);
+          if (lPriv) return { type: "priv-res", res: lPriv, canonicalPath: lPriv.routePath };
+          var lCat = findCatalogItem(lid);
+          if (lCat) return { type: "detail", item: lCat, canonicalPath: lCat.routePath };
+        }
+      } catch (e) {}
+
+      if (pathname === "/") {
+        return { type: "home", canonicalPath: "/" };
+      }
+
+      var segments = pathname.slice(1).split("/");
+      var first = (segments[0] || "").toLowerCase();
+      var second = segments[1] || "";
+      var third = (segments[2] || "").toLowerCase();
+
+      if (first === "apps" || first === "all-apps") {
+        return { type: "tab", tab: "apps", canonicalPath: "/apps" };
+      }
+      if (first === "games" || first === "all-games") {
+        return { type: "tab", tab: "games", canonicalPath: "/games" };
+      }
+      if (first === "prompts" || first === "ai-prompts") {
+        return { type: "tab", tab: "prompts", canonicalPath: "/prompts" };
+      }
+      if (first === "qr-scanner") {
+        return { type: "qr", canonicalPath: "/qr-scanner" };
+      }
+      if (first === "private-login") {
+        return { type: "private-login", canonicalPath: "/private-login" };
+      }
+      if (first === "private-vault") {
+        return { type: "private-vault", canonicalPath: "/private-vault" };
+      }
+      if (first === "info" && second) {
+        var infoObj = findFooterInfoItem(second);
+        if (infoObj) return { type: "info", info: infoObj, canonicalPath: infoObj.routePath };
+      }
+      if (first === "vault" && second) {
+        var privObj = findPrivateResourceItem(second);
+        if (privObj) return { type: "priv-res", res: privObj, canonicalPath: privObj.routePath };
+      }
+      if ((first === "app" || first === "game" || first === "prompt") && second) {
+        var catItem = findCatalogItem(second, first);
+        if (catItem) {
+          if (third === "tutorial") {
+            return { type: "tutorial", item: catItem, canonicalPath: catItem.routePath + "/tutorial" };
+          }
+          if (third === "preview") {
+            return { type: "preview", item: catItem, canonicalPath: catItem.routePath + "/preview" };
+          }
+          return { type: "detail", item: catItem, canonicalPath: catItem.routePath };
+        }
+      }
+      if (first === "tutorial" && second) {
+        var tutTarget = findCatalogItem(second);
+        if (tutTarget) return { type: "tutorial", item: tutTarget, canonicalPath: tutTarget.routePath + "/tutorial" };
+      }
+
+      if (segments.length === 1) {
+        var singleInfo = findFooterInfoItem(first);
+        if (singleInfo) return { type: "info", info: singleInfo, canonicalPath: singleInfo.routePath };
+        var singlePriv = findPrivateResourceItem(first);
+        if (singlePriv) return { type: "priv-res", res: singlePriv, canonicalPath: singlePriv.routePath };
+        var singleCat = findCatalogItem(first);
+        if (singleCat) return { type: "detail", item: singleCat, canonicalPath: singleCat.routePath };
+      }
+
+      return { type: "unknown", canonicalPath: "/" };
+    }
+
     function applyRouteFromLocation(histState, isInitialLoad) {
       var hs = histState || {};
-      var routeId = getUrlRouteId();
-      pendingPrivateTargetId = null;
+      var parsed = parseLocationRoute();
+      pendingPrivateTargetPath = null;
 
-      // 1. Home (no ?id= or ?id=home)
-      if (!routeId || routeId === "home") {
+      if (parsed.type === "home") {
         stopAndCloseOverlaysSilent();
         state.selectedItem = null;
         state.privateUnlocked = false;
@@ -3309,153 +3538,122 @@
         syncBaseRenderAndScroll(hs, isInitialLoad);
         updateDocumentTitle();
         if (isInitialLoad) {
-          try {
-            history.replaceState({
-              tab: "home",
-              scrollY: hs.scrollY || 0,
-              canBackToList: false,
-              canBackFromModal: false
-            }, "", buildUrlWithId(null));
-          } catch (e) {}
+          setHistorySafe("replace", {
+            tab: "home",
+            scrollY: hs.scrollY || 0,
+            canBackToList: false,
+            canBackFromModal: false
+          }, "/");
         }
         return;
       }
 
-      // 2. Navigation Tabs (?id=all-apps | all-games | ai-prompts)
-      var mappedTab = routeIdToTab(routeId);
-      if (mappedTab) {
+      if (parsed.type === "tab") {
         stopAndCloseOverlaysSilent();
         state.selectedItem = null;
         state.privateUnlocked = false;
-        state.tab = mappedTab;
+        state.tab = parsed.tab;
         syncBaseRenderAndScroll(hs, isInitialLoad);
         updateDocumentTitle();
         if (isInitialLoad) {
-          try {
-            history.replaceState({
-              tab: mappedTab,
-              scrollY: hs.scrollY || 0,
-              canBackToList: Boolean(hs.canBackToList),
-              canBackFromModal: false
-            }, "", buildUrlWithId(tabToRouteId(mappedTab)));
-          } catch (e) {}
+          setHistorySafe("replace", {
+            tab: parsed.tab,
+            scrollY: hs.scrollY || 0,
+            canBackToList: Boolean(hs.canBackToList),
+            canBackFromModal: false
+          }, parsed.canonicalPath);
         }
         return;
       }
 
-      // 3. Tutorial Modal (?id=tutorial-<itemId>)
-      if (routeId === "tutorial" || routeId.indexOf("tutorial-") === 0) {
-        var tutItemId = routeId === "tutorial" ? hs.underlyingItemId : routeId.slice("tutorial-".length);
-        var tutItem = findCatalogItem(tutItemId);
-        if (tutItem) {
-          state.privateUnlocked = false;
-          state.selectedItem = tutItem;
-          if (hs.tab) state.tab = hs.tab;
-          syncBaseRenderAndScroll(hs, isInitialLoad);
-          renderTutorialModalSilent(tutItem);
-          updateDocumentTitle(tutItem.name + " Tutorial");
-          if (isInitialLoad) {
-            try {
-              history.replaceState({
-                tab: state.tab,
-                underlyingItemId: tutItem.id,
-                canBackFromModal: Boolean(hs.canBackFromModal),
-                canBackToList: Boolean(hs.canBackToList)
-              }, "", buildUrlWithId("tutorial-" + tutItem.id));
-            } catch (e) {}
-          }
-          return;
+      if (parsed.type === "tutorial" && parsed.item) {
+        state.privateUnlocked = false;
+        state.selectedItem = parsed.item;
+        if (hs.tab) state.tab = hs.tab;
+        syncBaseRenderAndScroll(hs, isInitialLoad);
+        renderTutorialModalSilent(parsed.item);
+        updateDocumentTitle(parsed.item.name + " Tutorial");
+        if (isInitialLoad) {
+          setHistorySafe("replace", {
+            tab: state.tab,
+            underlyingItemId: parsed.item.id,
+            canBackFromModal: Boolean(hs.canBackFromModal),
+            canBackToList: Boolean(hs.canBackToList)
+          }, parsed.canonicalPath);
         }
+        return;
       }
 
-      // 4. Image Preview Lightbox (?id=preview-<itemId>)
-      if (routeId.indexOf("preview-") === 0) {
-        var prevItemId = routeId.slice("preview-".length);
-        var prevItem = findCatalogItem(prevItemId);
-        if (prevItem && prevItem.image) {
-          state.privateUnlocked = false;
-          state.selectedItem = prevItem;
-          if (hs.tab) state.tab = hs.tab;
-          syncBaseRenderAndScroll(hs, isInitialLoad);
-          showLightboxSilent(prevItem.image);
-          updateDocumentTitle(prevItem.name);
-          if (isInitialLoad) {
-            try {
-              history.replaceState({
-                tab: state.tab,
-                underlyingItemId: prevItem.id,
-                canBackFromModal: Boolean(hs.canBackFromModal),
-                canBackToList: Boolean(hs.canBackToList)
-              }, "", buildUrlWithId("preview-" + prevItem.id));
-            } catch (e) {}
-          }
-          return;
+      if (parsed.type === "preview" && parsed.item && parsed.item.image) {
+        state.privateUnlocked = false;
+        state.selectedItem = parsed.item;
+        if (hs.tab) state.tab = hs.tab;
+        syncBaseRenderAndScroll(hs, isInitialLoad);
+        showLightboxSilent(parsed.item.image);
+        updateDocumentTitle(parsed.item.name);
+        if (isInitialLoad) {
+          setHistorySafe("replace", {
+            tab: state.tab,
+            underlyingItemId: parsed.item.id,
+            canBackFromModal: Boolean(hs.canBackFromModal),
+            canBackToList: Boolean(hs.canBackToList)
+          }, parsed.canonicalPath);
         }
+        return;
       }
 
-      // 5. QR Scanner Modal (?id=qr-scanner)
-      if (routeId === "qr-scanner") {
+      if (parsed.type === "qr") {
         applyUnderlyingState(hs);
         syncBaseRenderAndScroll(hs, isInitialLoad);
         renderQrModalSilent();
         updateDocumentTitle("Official QR");
         if (isInitialLoad) {
-          try {
-            history.replaceState({
-              tab: state.tab,
-              underlyingItemId: state.selectedItem ? state.selectedItem.id : null,
-              underlyingPrivate: Boolean(state.privateUnlocked),
-              canBackFromModal: Boolean(hs.canBackFromModal),
-              canBackToList: Boolean(hs.canBackToList)
-            }, "", buildUrlWithId("qr-scanner"));
-          } catch (e) {}
+          setHistorySafe("replace", {
+            tab: state.tab,
+            underlyingItemId: state.selectedItem ? state.selectedItem.id : null,
+            underlyingPrivate: Boolean(state.privateUnlocked),
+            canBackFromModal: Boolean(hs.canBackFromModal),
+            canBackToList: Boolean(hs.canBackToList)
+          }, "/qr-scanner");
         }
         return;
       }
 
-      // 6. Footer Info Modals (?id=info-about | info-privacy | info-contact | info-disclaimer | info-developer)
-      var infoItem = findFooterInfoItem(routeId);
-      if (infoItem) {
+      if (parsed.type === "info" && parsed.info) {
         applyUnderlyingState(hs);
         syncBaseRenderAndScroll(hs, isInitialLoad);
-        renderInfoModalSilent(infoItem);
-        updateDocumentTitle(infoItem.title);
+        renderInfoModalSilent(parsed.info);
+        updateDocumentTitle(parsed.info.title);
         if (isInitialLoad) {
-          try {
-            history.replaceState({
-              tab: state.tab,
-              underlyingItemId: state.selectedItem ? state.selectedItem.id : null,
-              underlyingPrivate: Boolean(state.privateUnlocked),
-              canBackFromModal: Boolean(hs.canBackFromModal),
-              canBackToList: Boolean(hs.canBackToList)
-            }, "", buildUrlWithId(infoItem.id));
-          } catch (e) {}
+          setHistorySafe("replace", {
+            tab: state.tab,
+            underlyingItemId: state.selectedItem ? state.selectedItem.id : null,
+            underlyingPrivate: Boolean(state.privateUnlocked),
+            canBackFromModal: Boolean(hs.canBackFromModal),
+            canBackToList: Boolean(hs.canBackToList)
+          }, parsed.canonicalPath);
         }
         return;
       }
 
-      // 7. Private Login Modal (?id=private-login)
-      if (routeId === "private-login") {
+      if (parsed.type === "private-login") {
         applyUnderlyingState(hs);
         syncBaseRenderAndScroll(hs, isInitialLoad);
         renderPrivateLoginModalSilent();
         updateDocumentTitle("Private Vault Login");
         if (isInitialLoad) {
-          try {
-            history.replaceState({
-              tab: state.tab,
-              underlyingItemId: state.selectedItem ? state.selectedItem.id : null,
-              underlyingPrivate: false,
-              canBackFromModal: Boolean(hs.canBackFromModal),
-              canBackToList: Boolean(hs.canBackToList)
-            }, "", buildUrlWithId("private-login"));
-          } catch (e) {}
+          setHistorySafe("replace", {
+            tab: state.tab,
+            underlyingItemId: state.selectedItem ? state.selectedItem.id : null,
+            underlyingPrivate: false,
+            canBackFromModal: Boolean(hs.canBackFromModal),
+            canBackToList: Boolean(hs.canBackToList)
+          }, "/private-login");
         }
         return;
       }
 
-      // 8. Private Vault (?id=private-vault)
-      if (routeId === "private-vault") {
+      if (parsed.type === "private-vault") {
         if (isSessionPrivUnlocked()) {
           stopAndCloseOverlaysSilent();
           state.selectedItem = null;
@@ -3463,17 +3661,15 @@
           syncBaseRenderAndScroll(hs, isInitialLoad);
           updateDocumentTitle();
           if (isInitialLoad) {
-            try {
-              history.replaceState({
-                tab: state.tab,
-                canBackToList: Boolean(hs.canBackToList),
-                canBackFromModal: false,
-                vaultScrollY: hs.vaultScrollY || 0
-              }, "", buildUrlWithId("private-vault"));
-            } catch (e) {}
+            setHistorySafe("replace", {
+              tab: state.tab,
+              canBackToList: Boolean(hs.canBackToList),
+              canBackFromModal: false,
+              vaultScrollY: hs.vaultScrollY || 0
+            }, "/private-vault");
           }
         } else {
-          pendingPrivateTargetId = "private-vault";
+          pendingPrivateTargetPath = "/private-vault";
           state.selectedItem = null;
           state.privateUnlocked = false;
           state.tab = hs.tab || "home";
@@ -3481,39 +3677,33 @@
           renderPrivateLoginModalSilent();
           updateDocumentTitle("Private Vault Login");
           if (isInitialLoad) {
-            try {
-              history.replaceState({
-                tab: state.tab,
-                canBackFromModal: Boolean(hs.canBackFromModal),
-                canBackToList: Boolean(hs.canBackToList)
-              }, "", buildUrlWithId("private-vault"));
-            } catch (e) {}
+            setHistorySafe("replace", {
+              tab: state.tab,
+              canBackFromModal: Boolean(hs.canBackFromModal),
+              canBackToList: Boolean(hs.canBackToList)
+            }, "/private-vault");
           }
         }
         return;
       }
 
-      // 9. Private Resource Download Confirm Modal (?id=priv-...)
-      var privRes = DATA.PRIVATE_RESOURCES.find(function(r) { return r.id === routeId; });
-      if (privRes) {
+      if (parsed.type === "priv-res" && parsed.res) {
         if (isSessionPrivUnlocked()) {
           state.selectedItem = null;
           state.privateUnlocked = true;
           syncBaseRenderAndScroll(hs, isInitialLoad);
-          renderPrivateDlConfirmSilent(privRes);
-          updateDocumentTitle(privRes.title);
+          renderPrivateDlConfirmSilent(parsed.res);
+          updateDocumentTitle(parsed.res.title);
           if (isInitialLoad) {
-            try {
-              history.replaceState({
-                tab: state.tab,
-                underlyingPrivate: true,
-                canBackFromModal: Boolean(hs.canBackFromModal),
-                canBackToList: Boolean(hs.canBackToList)
-              }, "", buildUrlWithId(privRes.id));
-            } catch (e) {}
+            setHistorySafe("replace", {
+              tab: state.tab,
+              underlyingPrivate: true,
+              canBackFromModal: Boolean(hs.canBackFromModal),
+              canBackToList: Boolean(hs.canBackToList)
+            }, parsed.canonicalPath);
           }
         } else {
-          pendingPrivateTargetId = privRes.id;
+          pendingPrivateTargetPath = parsed.res.routePath;
           state.selectedItem = null;
           state.privateUnlocked = false;
           state.tab = hs.tab || "home";
@@ -3521,42 +3711,35 @@
           renderPrivateLoginModalSilent();
           updateDocumentTitle("Private Vault Login");
           if (isInitialLoad) {
-            try {
-              history.replaceState({
-                tab: state.tab,
-                canBackFromModal: Boolean(hs.canBackFromModal),
-                canBackToList: Boolean(hs.canBackToList)
-              }, "", buildUrlWithId(privRes.id));
-            } catch (e) {}
+            setHistorySafe("replace", {
+              tab: state.tab,
+              canBackFromModal: Boolean(hs.canBackFromModal),
+              canBackToList: Boolean(hs.canBackToList)
+            }, parsed.canonicalPath);
           }
         }
         return;
       }
 
-      // 10. App / Game / AI Prompt Detail View (?id=app-... | game-... | prompt-...)
-      var catalogItem = findCatalogItem(routeId);
-      if (catalogItem) {
+      if (parsed.type === "detail" && parsed.item) {
         stopAndCloseOverlaysSilent();
         state.privateUnlocked = false;
-        state.selectedItem = catalogItem;
+        state.selectedItem = parsed.item;
         if (hs.tab) state.tab = hs.tab;
         syncBaseRenderAndScroll(hs, isInitialLoad);
         updateDocumentTitle();
         if (isInitialLoad) {
-          try {
-            history.replaceState({
-              tab: state.tab,
-              itemId: catalogItem.id,
-              canBackToList: Boolean(hs.canBackToList),
-              canBackFromModal: false,
-              detailScrollY: hs.detailScrollY || 0
-            }, "", buildUrlWithId(catalogItem.id));
-          } catch (e) {}
+          setHistorySafe("replace", {
+            tab: state.tab,
+            itemId: parsed.item.id,
+            canBackToList: Boolean(hs.canBackToList),
+            canBackFromModal: false,
+            detailScrollY: hs.detailScrollY || 0
+          }, parsed.canonicalPath);
         }
         return;
       }
 
-      // Fallback for unknown ID -> clean Home
       stopAndCloseOverlaysSilent();
       state.selectedItem = null;
       state.privateUnlocked = false;
@@ -3564,14 +3747,12 @@
       render();
       updateDocumentTitle();
       scrollToInstant(0);
-      try {
-        history.replaceState({
-          tab: "home",
-          scrollY: 0,
-          canBackToList: false,
-          canBackFromModal: false
-        }, "", buildUrlWithId(null));
-      } catch (e) {}
+      setHistorySafe("replace", {
+        tab: "home",
+        scrollY: 0,
+        canBackToList: false,
+        canBackFromModal: false
+      }, "/");
     }
 
     /* Init Wire-up */

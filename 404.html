@@ -1,58 +1,16 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, follow">
-  <title>পেজ খুঁজে পাওয়া যায়নি | Minhaj Apps</title>
-  <script>(function () {
-      var base = "/";
-      var baseNoSlash = base.slice(0, -1);
-      var path = window.location.pathname.replace(/\/+$/, "");
-      var route = path.indexOf(baseNoSlash) === 0
-        ? path.slice(baseNoSlash.length).replace(/^\/+/, "")
-        : "";
-
-      var sectionRoutes = ["apps", "game", "ai-prompt", "about", "privacy", "contact", "disclaimer", "developer", "drawer-qr"];
-      if (sectionRoutes.indexOf(route) !== -1) {
-        window.location.replace(base + "?route=" + encodeURIComponent(route));
-        return;
-      }
-
-      if (route.indexOf("game/") === 0) {
-        var gameSlug = route.slice(5).replace(/\/+$/, "");
-        if (gameSlug && gameSlug.indexOf("/") === -1) {
-          window.location.replace(base + "?route=" + encodeURIComponent("game:" + gameSlug));
-        }
-        return;
-      }
-
-      if (route.indexOf("app/") === 0) {
-        var slug = route.slice(4).replace(/\/+$/, "");
-        if (slug && slug.indexOf("/") === -1) {
-          window.location.replace(base + "?route=" + encodeURIComponent("app:" + slug));
-        }
-        return;
-      }
-
-      if (route && route.indexOf("/") === -1) {
-        window.location.replace(base + "?route=" + encodeURIComponent("app:" + route));
-      }
-    })();</script>
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: #f6f8fc; color: #1d2939; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; text-align: center; }
-    main { width: min(100%, 480px); padding: 28px 22px; background: #fff; border: 1px solid #e5eaf2; border-radius: 18px; box-shadow: 0 10px 30px rgba(31,41,55,.07); }
-    h1 { margin: 0 0 10px; font-size: 26px; }
-    p { color: #667085; line-height: 1.65; }
-    a { display: inline-block; margin-top: 10px; padding: 11px 18px; border-radius: 10px; background: #111827; color: #fff; text-decoration: none; font-weight: 700; }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Minhaj Apps</title>
+  <script>
+    (function () {
+      var l = window.location;
+      var fullPath = l.pathname + l.search + l.hash;
+      try { sessionStorage.setItem('minhaj_spa_redirect', fullPath); } catch (e) {}
+      l.replace(l.protocol + '//' + l.host + '/?r=' + encodeURIComponent(fullPath));
+    })();
+  </script>
 </head>
-<body>
-  <main>
-    <h1>পেজটি খুঁজে পাওয়া যায়নি</h1>
-    <p>লিংকটি ভুল হতে পারে অথবা পেজটি সরানো হয়েছে। Minhaj Apps-এর মূল ওয়েবসাইটে ফিরে যান।</p>
-    <a href="/">Minhaj Apps খুলুন</a>
-  </main>
-</body>
+<body></body>
 </html>
