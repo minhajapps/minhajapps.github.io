@@ -120,15 +120,30 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
 
     img, svg {
       -webkit-user-drag: none;
+      -webkit-user-select: none;
       user-select: none;
+      pointer-events: none;
+    }
+
+    a, button {
+      outline: none;
     }
 
     button, input, textarea {
       font-family: inherit;
+    }
+
+    input, textarea {
+      -webkit-user-select: text;
+      user-select: text;
     }
 
     .mono {
@@ -565,15 +580,23 @@
       align-items: center;
       text-align: center;
       border: 1px solid var(--border);
+      outline: none;
       position: relative;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
       box-shadow: var(--shadow);
       cursor: pointer;
       width: 100%;
     }
 
-    .app-card:hover {
-      border-color: rgba(16, 185, 129, 0.4);
+    .app-card * {
+      pointer-events: none;
+    }
+
+    .app-card:hover,
+    .app-card:focus,
+    .app-card:focus-visible {
+      outline: none;
+      border-color: var(--border);
     }
 
     .app-card:active {
@@ -663,18 +686,25 @@
       width: 100%;
       background: var(--surface);
       border: 1px solid var(--border);
+      outline: none;
       border-radius: 20px;
       padding: 9px;
       box-shadow: var(--shadow);
       cursor: pointer;
       text-decoration: none;
       color: var(--text);
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.2s ease;
     }
 
-    .prompt-card-poloja:hover {
-      transform: translateY(-2px);
-      border-color: rgba(139, 92, 246, 0.45);
+    .prompt-card-poloja * {
+      pointer-events: none;
+    }
+
+    .prompt-card-poloja:hover,
+    .prompt-card-poloja:focus,
+    .prompt-card-poloja:focus-visible {
+      outline: none;
+      border-color: var(--border);
     }
 
     .prompt-card-poloja:active {
@@ -744,11 +774,6 @@
       object-fit: cover;
       object-position: top center;
       display: block;
-      transition: transform 0.3s ease;
-    }
-
-    .prompt-card-poloja:hover .prompt-thumb img {
-      transform: scale(1.05);
     }
 
     .title-wrapper {
@@ -1396,7 +1421,9 @@
   <!-- Lightbox Overlay -->
   <div class="overlay" id="lightboxOverlay" style="background:rgba(0,0,0,0.92);cursor:zoom-out;">
     <button type="button" class="modal-close" style="background:rgba(255,255,255,0.16);color:#fff;" onclick="closeLightbox()">✕</button>
-    <img id="lightboxImg" src="" alt="Full Preview" referrerpolicy="no-referrer" style="max-width:95vw;max-height:90vh;border-radius:4px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,0.8);" onclick="event.stopPropagation()" />
+    <div onclick="event.stopPropagation()" style="display:flex;align-items:center;justify-content:center;">
+      <img id="lightboxImg" src="" alt="Full Preview" referrerpolicy="no-referrer" style="max-width:95vw;max-height:90vh;border-radius:4px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,0.8);" />
+    </div>
   </div>
 
   <!-- Toast -->
