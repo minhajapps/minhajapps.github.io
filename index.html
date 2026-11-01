@@ -659,6 +659,8 @@
       padding: 9px;
       box-shadow: var(--shadow);
       cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
       transition: transform 0.2s ease, border-color 0.2s ease;
     }
 
@@ -844,10 +846,7 @@
       line-height: 1.3;
       margin-bottom: 12px;
       color: var(--text);
-    }
-
-    .detail-heading.center-title {
-      text-align: center;
+      text-align: left;
     }
 
     .app-info-box {
@@ -1295,7 +1294,7 @@
 
     .toast.show { display: inline-flex; }
   </style>
-<script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
+</head>
 <body>
   <!-- Poloja Sticky Header -->
   <header class="app-header">
@@ -2089,6 +2088,7 @@
   ],
   "FOOTER_INFO_ITEMS": [
     {
+      "id": "info-about",
       "key": "about",
       "label": "About",
       "title": "About Minhaj Apps",
@@ -2097,6 +2097,7 @@
       ]
     },
     {
+      "id": "info-privacy",
       "key": "privacy",
       "label": "Privacy Policy",
       "title": "Privacy Policy",
@@ -2105,6 +2106,7 @@
       ]
     },
     {
+      "id": "info-contact",
       "key": "contact",
       "label": "Contact",
       "title": "Contact",
@@ -2117,6 +2119,7 @@
       }
     },
     {
+      "id": "info-disclaimer",
       "key": "disclaimer",
       "label": "Disclaimer",
       "title": "Disclaimer",
@@ -2125,6 +2128,7 @@
       ]
     },
     {
+      "id": "info-developer",
       "key": "developer",
       "label": "Developer",
       "title": "Developer",
@@ -2341,10 +2345,147 @@
       return info;
     }
 
-    window.startAppDownload = function(slug, btnEl, ev) {
+    var RESERVED_ROUTE_IDS = {
+      "home": true,
+      "all-apps": true,
+      "all-games": true,
+      "ai-prompts": true,
+      "qr-scanner": true,
+      "private-login": true,
+      "private-vault": true
+    };
+
+    function slugifyForId(text) {
+      return String(text || "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+
+    function ensureUniqueIds() {
+      var usedIds = {};
+      Object.keys(RESERVED_ROUTE_IDS).forEach(function(k) {
+        usedIds[k] = true;
+      });
+
+      function assignListIds(list, prefix, defaultCategory) {
+        if (!Array.isArray(list)) return;
+        for (var i = 0; i < list.length; i++) {
+          var item = list[i];
+          if (!item || typeof item !== "object") continue;
+          if (defaultCategory && !item.category) {
+            item.category = defaultCategory;
+          }
+          var rawId = String(item.id || "").trim();
+          if (!rawId || usedIds[rawId]) {
+            var baseSlug = slugifyForId(item.slug || item.key || item.name || item.title);
+            var candidate = baseSlug
+              ? (baseSlug.indexOf(prefix + "-") === 0 ? baseSlug : prefix + "-" + baseSlug)
+              : (prefix + "-" + (i + 1));
+            var finalId = candidate;
+            var counter = 2;
+            while (usedIds[finalId]) {
+              finalId = candidate + "-" + counter;
+              counter++;
+            }
+            item.id = finalId;
+          }
+          if (!item.slug && defaultCategory) {
+            item.slug = slugifyForId(item.name) || item.id;
+          }
+          usedIds[item.id] = item;
+        }
+      }
+
+      assignListIds(DATA.APPS, "app", "app");
+      assignListIds(DATA.GAMES, "game", "game");
+      assignListIds(DATA.AI_PROMPTS, "prompt", "prompt");
+      assignListIds(DATA.PRIVATE_RESOURCES, "priv", null);
+      assignListIds(DATA.FOOTER_INFO_ITEMS, "info", null);
+
+      if (Array.isArray(DATA.TRENDING_APPS)) {
+        for (var t = 0; t < DATA.TRENDING_APPS.length; t++) {
+          var tr = DATA.TRENDING_APPS[t];
+          if (!tr || typeof tr !== "object") continue;
+          if (!tr.category) tr.category = "app";
+          var matchedApp = DATA.APPS.find(function(a) {
+            return (tr.id && a.id === tr.id && (!tr.name || a.name === tr.name)) ||
+                   (tr.slug && a.slug === tr.slug && (!tr.name || a.name === tr.name)) ||
+                   (tr.name && a.name === tr.name);
+          });
+          if (matchedApp) {
+            tr.id = matchedApp.id;
+            if (!tr.slug) tr.slug = matchedApp.slug;
+          } else {
+            var trRawId = String(tr.id || "").trim();
+            if (!trRawId || usedIds[trRawId]) {
+              var trBase = slugifyForId(tr.slug || tr.name);
+              var trCand = trBase
+                ? (trBase.indexOf("app-") === 0 ? trBase : "app-" + trBase)
+                : ("app-trending-" + (t + 1));
+              var trFinal = trCand;
+              var trCount = 2;
+              while (usedIds[trFinal]) {
+                trFinal = trCand + "-" + trCount;
+                trCount++;
+              }
+              tr.id = trFinal;
+            }
+            if (!tr.slug) tr.slug = slugifyForId(tr.name) || tr.id;
+            usedIds[tr.id] = tr;
+          }
+        }
+      }
+    }
+
+    ensureUniqueIds();
+
+    function getAllCatalogItems() {
+      var list = DATA.APPS.concat(DATA.GAMES, DATA.AI_PROMPTS);
+      if (Array.isArray(DATA.TRENDING_APPS)) {
+        for (var i = 0; i < DATA.TRENDING_APPS.length; i++) {
+          var tr = DATA.TRENDING_APPS[i];
+          if (tr && !list.some(function(x) { return x.id === tr.id; })) {
+            list.push(tr);
+          }
+        }
+      }
+      return list;
+    }
+
+    function findCatalogItem(idOrSlug) {
+      if (!idOrSlug) return null;
+      var key = String(idOrSlug).trim();
+      var all = getAllCatalogItems();
+      var exact = all.find(function(x) { return x.id === key; });
+      if (exact) return exact;
+      var bySlug = all.find(function(x) { return x.slug === key; });
+      if (bySlug) return bySlug;
+      var numMatch = key.match(/^(app|game|prompt)-(\d+)$/i);
+      if (numMatch) {
+        var kind = numMatch[1].toLowerCase();
+        var idx = parseInt(numMatch[2], 10) - 1;
+        if (idx >= 0) {
+          if (kind === "app" && DATA.APPS[idx]) return DATA.APPS[idx];
+          if (kind === "game" && DATA.GAMES[idx]) return DATA.GAMES[idx];
+          if (kind === "prompt" && DATA.AI_PROMPTS[idx]) return DATA.AI_PROMPTS[idx];
+        }
+      }
+      return null;
+    }
+
+    function findFooterInfoItem(idOrKey) {
+      if (!idOrKey) return null;
+      var k = String(idOrKey).trim();
+      return DATA.FOOTER_INFO_ITEMS.find(function(x) {
+        return x.id === k || x.key === k || ("info-" + x.key) === k;
+      }) || null;
+    }
+
+    window.startAppDownload = function(idOrSlug, btnEl, ev) {
       if (ev && ev.preventDefault) ev.preventDefault();
-      var all = DATA.APPS.concat(DATA.GAMES);
-      var item = all.find(function(x){ return x.slug === slug; });
+      var item = findCatalogItem(idOrSlug);
       if (!item || !item.downloadUrl || item.downloadUrl === "#") return false;
       triggerDirectDownload(item.downloadUrl, item.name);
       showToast(item.name + " ডাউনলোড শুরু হচ্ছে...");
@@ -2368,10 +2509,20 @@
       if (!res || !res.downloadUrl) return false;
       triggerDirectDownload(res.downloadUrl, res.title);
       showToast(res.title + " ডাউনলোড শুরু হচ্ছে...");
-      setTimeout(closeModal, 120);
+      setTimeout(function() {
+        stopAndCloseOverlaysSilent();
+        try {
+          var prevCanBack = Boolean(history.state && history.state.canBackToList);
+          history.replaceState({
+            tab: state.tab,
+            canBackToList: prevCanBack,
+            vaultScrollY: window.scrollY || document.documentElement.scrollTop || 0
+          }, "", buildUrlWithId("private-vault"));
+        } catch (e) {}
+        updateDocumentTitle();
+      }, 120);
       return false;
     };
-
 
     function syncThemeIcon() {
       var isDark = document.documentElement.classList.contains("dark");
@@ -2382,10 +2533,25 @@
     }
 
     var savedScrollY = 0;
-    var routeDepth = 0;
-    var modalHistoryPushed = false;
-    var ignoreNextPop = false;
     var noticeAnimatedOnce = false;
+    var currentRenderedKey = "";
+    var pendingPrivateTargetId = null;
+    var BASE_DOC_TITLE = "Minhaj Apps";
+
+    function isSessionPrivUnlocked() {
+      try {
+        return sessionStorage.getItem("minhaj_priv_unlocked") === "1";
+      } catch (e) {
+        return Boolean(state.privateUnlocked);
+      }
+    }
+
+    function setSessionPrivUnlocked(unlocked) {
+      try {
+        if (unlocked) sessionStorage.setItem("minhaj_priv_unlocked", "1");
+        else sessionStorage.removeItem("minhaj_priv_unlocked");
+      } catch (e) {}
+    }
 
     function scrollToInstant(y) {
       var target = typeof y === "number" ? y : 0;
@@ -2398,43 +2564,84 @@
       document.body.scrollTop = target;
     }
 
-    function pushStateSafe() {
-      try {
-        history.pushState({
-          tab: state.tab,
-          slug: state.selectedItem ? state.selectedItem.slug : null,
-          priv: state.privateUnlocked
-        }, "");
-      } catch (e) {}
+    function tabToRouteId(tab) {
+      if (tab === "apps") return "all-apps";
+      if (tab === "games") return "all-games";
+      if (tab === "prompts") return "ai-prompts";
+      return null;
     }
 
-    function replaceStateSafe() {
-      try {
-        history.replaceState({
-          tab: state.tab,
-          slug: state.selectedItem ? state.selectedItem.slug : null,
-          priv: state.privateUnlocked
-        }, "");
-      } catch (e) {}
+    function routeIdToTab(routeId) {
+      if (routeId === "all-apps" || routeId === "apps") return "apps";
+      if (routeId === "all-games" || routeId === "games") return "games";
+      if (routeId === "ai-prompts" || routeId === "prompts") return "prompts";
+      if (routeId === "home") return "home";
+      return null;
     }
 
-    function pushModalHistoryIfNeeded() {
-      if (modalHistoryPushed) return;
+    function getUrlRouteId() {
       try {
-        history.pushState({
-          tab: state.tab,
-          slug: state.selectedItem ? state.selectedItem.slug : null,
-          priv: state.privateUnlocked,
-          modal: true
-        }, "");
-        modalHistoryPushed = true;
-      } catch (e) {}
+        var params = new URLSearchParams(window.location.search);
+        var val = params.get("id");
+        return val ? val.trim() : null;
+      } catch (e) {
+        var m = String(window.location.search || "").match(/[?&]id=([^&]+)/);
+        return m ? decodeURIComponent(m[1]).trim() : null;
+      }
+    }
+
+    function buildUrlWithId(id) {
+      var base = window.location.pathname || "/";
+      if (!id) return base;
+      return base + "?id=" + encodeURIComponent(id);
+    }
+
+    function computeCurrentBaseKey() {
+      if (state.privateUnlocked) return "vault";
+      if (state.selectedItem) return "detail:" + state.selectedItem.id;
+      return "list:" + state.tab + ":" + state.search.trim().toLowerCase();
+    }
+
+    function updateDocumentTitle(customTitle) {
+      if (customTitle) {
+        document.title = customTitle + " — " + BASE_DOC_TITLE;
+      } else if (state.selectedItem && state.selectedItem.name) {
+        document.title = state.selectedItem.name + " — " + BASE_DOC_TITLE;
+      } else if (state.privateUnlocked) {
+        document.title = "Private Vault — " + BASE_DOC_TITLE;
+      } else if (state.tab === "apps") {
+        document.title = "All Apps — " + BASE_DOC_TITLE;
+      } else if (state.tab === "games") {
+        document.title = "Games — " + BASE_DOC_TITLE;
+      } else if (state.tab === "prompts") {
+        document.title = "AI Prompt — " + BASE_DOC_TITLE;
+      } else {
+        document.title = BASE_DOC_TITLE;
+      }
     }
 
     function isAnyOverlayOpen() {
       var m = document.getElementById("modalOverlay");
       var lb = document.getElementById("lightboxOverlay");
       return Boolean((m && m.classList.contains("open")) || (lb && lb.classList.contains("open")));
+    }
+
+    function saveCurrentScrollToHistory() {
+      try {
+        if (isAnyOverlayOpen()) return;
+        var y = window.scrollY || document.documentElement.scrollTop || 0;
+        var cur = Object.assign({}, history.state || {});
+        if (state.privateUnlocked) {
+          cur.vaultScrollY = y;
+        } else if (state.selectedItem) {
+          cur.detailScrollY = y;
+        } else {
+          savedScrollY = y;
+          cur.scrollY = y;
+        }
+        cur.tab = state.tab;
+        history.replaceState(cur, "", window.location.href);
+      } catch (e) {}
     }
 
     function stopAndCloseOverlaysSilent() {
@@ -2459,18 +2666,53 @@
       document.body.style.overflow = "";
     }
 
+    function pushModalRoute(modalId) {
+      saveCurrentScrollToHistory();
+      var underlyingItemId = state.selectedItem ? state.selectedItem.id : null;
+      var underlyingPrivate = Boolean(state.privateUnlocked);
+      var prevCanBackToList = Boolean(history.state && history.state.canBackToList);
+      var nextHist = {
+        tab: state.tab,
+        underlyingItemId: underlyingItemId,
+        underlyingPrivate: underlyingPrivate,
+        canBackFromModal: true,
+        canBackToList: prevCanBackToList
+      };
+      try {
+        if (getUrlRouteId() === modalId) {
+          history.replaceState(nextHist, "", buildUrlWithId(modalId));
+        } else {
+          history.pushState(nextHist, "", buildUrlWithId(modalId));
+        }
+      } catch (e) {}
+    }
+
     function closeOverlaysFromUI() {
-      stopAndCloseOverlaysSilent();
-      if (modalHistoryPushed) {
-        modalHistoryPushed = false;
-        ignoreNextPop = true;
-        setTimeout(function() { ignoreNextPop = false; }, 300);
+      pendingPrivateTargetId = null;
+      if (history.state && history.state.canBackFromModal) {
         try {
           history.back();
-        } catch (e) {
-          ignoreNextPop = false;
-        }
+          return;
+        } catch (e) {}
       }
+      stopAndCloseOverlaysSilent();
+      var fallbackRouteId = null;
+      if (state.privateUnlocked) {
+        fallbackRouteId = "private-vault";
+      } else if (state.selectedItem) {
+        fallbackRouteId = state.selectedItem.id;
+      } else {
+        fallbackRouteId = tabToRouteId(state.tab);
+      }
+      try {
+        history.pushState({
+          tab: state.tab,
+          itemId: state.selectedItem ? state.selectedItem.id : null,
+          canBackToList: false,
+          canBackFromModal: false
+        }, "", buildUrlWithId(fallbackRouteId));
+      } catch (e) {}
+      updateDocumentTitle();
     }
 
     function syncNavHighlight() {
@@ -2480,30 +2722,41 @@
       });
     }
 
+    window.handleCardClick = function(ev, id) {
+      if (ev) {
+        if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey || ev.button === 1) {
+          return true;
+        }
+        if (ev.preventDefault) ev.preventDefault();
+      }
+      openItemById(id);
+      return false;
+    };
+
     function cardHTML(item, isTrending) {
       var cleanDl = String(item.downloads || "").replace(/\+$/, "");
       var badgeInner = isTrending
         ? ICONS.dlTiny + '<span>' + esc(cleanDl) + '</span>'
         : 'v' + esc(item.version);
-      return '<button type="button" class="app-card' + (isTrending ? ' trend-card' : '') + '" onclick="openItemBySlug(\'' + esc(item.slug) + '\')">' +
+      return '<a href="?id=' + encodeURIComponent(item.id) + '" class="app-card' + (isTrending ? ' trend-card' : '') + '" onclick="return handleCardClick(event, \'' + esc(item.id) + '\')">' +
         '<div class="app-icon"><img src="' + esc(item.image) + '" alt="' + esc(item.name) + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.parentElement.textContent=\'' + esc(initials(item.name)) + '\';" /></div>' +
         '<div class="app-title">' + esc(item.name) + '</div>' +
         '<div class="card-stars">' + renderStars(item.rating, 10) + '</div>' +
         '<div class="mod-badge">' + badgeInner + '</div>' +
-      '</button>';
+      '</a>';
     }
 
     function promptCardHTML(item) {
-      return '<button type="button" class="prompt-card-poloja" onclick="openItemBySlug(\'' + esc(item.slug) + '\')">' +
+      return '<a href="?id=' + encodeURIComponent(item.id) + '" class="prompt-card-poloja" onclick="return handleCardClick(event, \'' + esc(item.id) + '\')">' +
         '<div class="prompt-thumb"><span class="pop-badge">AI</span><img src="' + esc(item.image) + '" alt="' + esc(item.name) + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.parentElement.textContent=\'AI\';" /></div>' +
         '<div class="title-wrapper">' +
           '<div class="prompt-title-text">' + esc(item.name) + '</div>' +
         '</div>' +
-      '</button>';
+      '</a>';
     }
 
-    window.copyDetailPrompt = function(slug, btn) {
-      var item = DATA.AI_PROMPTS.find(function(p){ return p.slug === slug; });
+    window.copyDetailPrompt = function(idOrSlug, btn) {
+      var item = findCatalogItem(idOrSlug);
       if (!item || !item.promptText) return;
       copyText(item.promptText, 'Copied "' + item.name + '"');
       if (btn) {
@@ -2517,65 +2770,113 @@
       }
     };
 
-    window.openItemBySlug = function(slug) {
-      var all = DATA.APPS.concat(DATA.GAMES, DATA.AI_PROMPTS);
-      var found = all.find(function(x){ return x.slug === slug; });
+    window.openItemById = function(idOrSlug) {
+      var found = findCatalogItem(idOrSlug);
       if (!found) return;
-      savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      saveCurrentScrollToHistory();
       stopAndCloseOverlaysSilent();
-      modalHistoryPushed = false;
-      scrollToInstant(0);
+      var alreadyInDetail = Boolean(state.selectedItem || state.privateUnlocked);
+      var canBack = alreadyInDetail
+        ? Boolean(history.state && history.state.canBackToList)
+        : true;
       state.selectedItem = found;
       state.privateUnlocked = false;
-      routeDepth += 1;
-      pushStateSafe();
+      var nextState = {
+        tab: state.tab,
+        itemId: found.id,
+        canBackToList: canBack,
+        canBackFromModal: false,
+        detailScrollY: 0
+      };
+      try {
+        if (getUrlRouteId() === found.id) {
+          history.replaceState(nextState, "", buildUrlWithId(found.id));
+        } else {
+          history.pushState(nextState, "", buildUrlWithId(found.id));
+        }
+      } catch (e) {}
       render();
+      updateDocumentTitle();
       scrollToInstant(0);
     };
+    window.openItemBySlug = window.openItemById;
 
-    window.backToMain = function() {
-      var restoreY = savedScrollY;
-      stopAndCloseOverlaysSilent();
-      modalHistoryPushed = false;
-      state.selectedItem = null;
-      state.privateUnlocked = false;
-      render();
-      scrollToInstant(restoreY);
-      if (routeDepth > 0) {
-        routeDepth -= 1;
-        ignoreNextPop = true;
-        setTimeout(function() { ignoreNextPop = false; }, 300);
+    window.backToMain = function(forceLockVault) {
+      pendingPrivateTargetId = null;
+      if (forceLockVault || state.privateUnlocked) {
+        setSessionPrivUnlocked(false);
+      }
+      if (history.state && history.state.canBackToList) {
         try {
           history.back();
           return;
-        } catch (e) {
-          ignoreNextPop = false;
-        }
+        } catch (e) {}
       }
-      pushStateSafe();
+      var restoreY = savedScrollY;
+      stopAndCloseOverlaysSilent();
+      state.selectedItem = null;
+      state.privateUnlocked = false;
+      var targetRouteId = tabToRouteId(state.tab);
+      try {
+        history.pushState({
+          tab: state.tab,
+          scrollY: restoreY,
+          canBackToList: false,
+          canBackFromModal: false
+        }, "", buildUrlWithId(targetRouteId));
+      } catch (e) {}
+      render();
+      updateDocumentTitle();
+      scrollToInstant(restoreY);
     };
 
     window.switchTab = function(tab) {
+      pendingPrivateTargetId = null;
+      saveCurrentScrollToHistory();
+      if (state.privateUnlocked) {
+        setSessionPrivUnlocked(false);
+      }
       stopAndCloseOverlaysSilent();
-      modalHistoryPushed = false;
       savedScrollY = 0;
-      scrollToInstant(0);
       state.tab = tab;
       state.selectedItem = null;
       state.privateUnlocked = false;
       state.search = "";
-      routeDepth += 1;
-      pushStateSafe();
+      var targetRouteId = tabToRouteId(tab);
+      var currentRouteId = getUrlRouteId();
+      var nextState = {
+        tab: tab,
+        scrollY: 0,
+        canBackToList: false,
+        canBackFromModal: false
+      };
+      try {
+        if (currentRouteId === targetRouteId || (!currentRouteId && !targetRouteId)) {
+          history.replaceState(nextState, "", buildUrlWithId(targetRouteId));
+        } else {
+          history.pushState(nextState, "", buildUrlWithId(targetRouteId));
+        }
+      } catch (e) {}
       render();
+      updateDocumentTitle();
       scrollToInstant(0);
     };
 
-    window.openLightbox = function(src) {
+    function showLightboxSilent(src) {
       if (!src) return;
-      pushModalHistoryIfNeeded();
+      stopAndCloseOverlaysSilent();
       document.getElementById("lightboxImg").src = src;
       document.getElementById("lightboxOverlay").classList.add("open");
       document.body.style.overflow = "hidden";
+    }
+
+    window.openLightbox = function(src, itemId) {
+      if (!src) return;
+      var targetId = itemId || (state.selectedItem ? state.selectedItem.id : null);
+      if (targetId) {
+        pushModalRoute("preview-" + targetId);
+      }
+      showLightboxSilent(src);
     };
 
     window.closeLightbox = function() {
@@ -2587,9 +2888,9 @@
       var cleanVotes = String(item.downloads || "").replace(/\+$/, "");
       var html = '<div class="detail-container">' +
         '<button type="button" class="back-btn" onclick="backToMain()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back</span></button>' +
-        '<h1 class="detail-heading' + (isPrompt ? ' center-title' : '') + '">' + esc(item.name) + '</h1>' +
+        '<h1 class="detail-heading">' + esc(item.name) + '</h1>' +
         '<div class="app-info-box">' +
-          '<button type="button" class="detail-icon-btn" onclick="openLightbox(\'' + esc(item.image) + '\')">' +
+          '<button type="button" class="detail-icon-btn" onclick="openLightbox(\'' + esc(item.image) + '\', \'' + esc(item.id) + '\')">' +
             '<img src="' + esc(item.image) + '" alt="' + esc(item.name) + '" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'" />' +
             '<span class="zoom-badge">' + ICONS.zoom + '</span>' +
           '</button>' +
@@ -2623,16 +2924,16 @@
 
       html += '<div>';
       if (isPrompt) {
-        html += '<button type="button" class="btn-poloja btn-copy" onclick="copyDetailPrompt(\'' + esc(item.slug) + '\', this)">' + ICONS.copyBtn + '<span>COPY HERE</span></button>';
+        html += '<button type="button" class="btn-poloja btn-copy" onclick="copyDetailPrompt(\'' + esc(item.id) + '\', this)">' + ICONS.copyBtn + '<span>COPY HERE</span></button>';
       } else {
         var dlInfo = resolveDownloadInfo(item.downloadUrl || "#", item.name);
-        html += '<a href="' + esc(dlInfo.url) + '"' + (dlInfo.isDirectBinary ? ' download="' + esc(dlInfo.fileName) + '"' : '') + ' onclick="return startAppDownload(\'' + esc(item.slug) + '\', this, event)" class="btn-poloja btn-dl">' + ICONS.dlBtn + '<span>DOWNLOAD (' + esc(item.size) + ')</span></a>';
+        html += '<a href="' + esc(dlInfo.url) + '"' + (dlInfo.isDirectBinary ? ' download="' + esc(dlInfo.fileName) + '"' : '') + ' onclick="return startAppDownload(\'' + esc(item.id) + '\', this, event)" class="btn-poloja btn-dl">' + ICONS.dlBtn + '<span>DOWNLOAD (' + esc(item.size) + ')</span></a>';
       }
 
       html += '<a href="' + esc(DATA.BRAND_CONFIG.telegramUrl) + '" target="_blank" rel="noopener noreferrer" class="btn-poloja btn-tg">' + ICONS.tgBtn + '<span>Join Telegram</span></a>';
 
       if (!isPrompt) {
-        html += '<button type="button" class="btn-poloja btn-tut" onclick="openTutorialModal(\'' + esc(item.slug) + '\')">' + ICONS.playCircle + '<span>Install Problem Fix Tutorial</span></button>';
+        html += '<button type="button" class="btn-poloja btn-tut" onclick="openTutorialModal(\'' + esc(item.id) + '\')">' + ICONS.playCircle + '<span>Install Problem Fix Tutorial</span></button>';
       }
       html += '</div>';
 
@@ -2672,8 +2973,8 @@
 
       return '<div class="vault-wrap">' +
         '<div class="vault-top">' +
-          '<button type="button" class="back-btn" style="margin:0;" onclick="backToMain()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back to Home</span></button>' +
-          '<button type="button" class="lock-btn" onclick="backToMain()">Lock Vault</button>' +
+          '<button type="button" class="back-btn" style="margin:0;" onclick="backToMain(true)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back to Home</span></button>' +
+          '<button type="button" class="lock-btn" onclick="backToMain(true)">Lock Vault</button>' +
         '</div>' +
         '<div class="vault-header">' +
           '<div style="display:flex;align-items:center;gap:12px;">' +
@@ -2692,11 +2993,13 @@
 
       if (state.privateUnlocked) {
         root.innerHTML = renderPrivateVault();
+        currentRenderedKey = computeCurrentBaseKey();
         return;
       }
 
       if (state.selectedItem) {
         root.innerHTML = renderDetail(state.selectedItem);
+        currentRenderedKey = computeCurrentBaseKey();
         return;
       }
 
@@ -2765,6 +3068,7 @@
       }
 
       root.innerHTML = html + '</div>';
+      currentRenderedKey = computeCurrentBaseKey();
 
       var sInput = document.getElementById("searchInput");
       if (sInput) {
@@ -2789,8 +3093,8 @@
     }
 
     /* Modals */
-    function openModalHTML(inner) {
-      pushModalHistoryIfNeeded();
+    function showModalHTMLSilent(inner) {
+      stopAndCloseOverlaysSilent();
       var box = document.getElementById("modalBox");
       box.innerHTML = '<button type="button" class="modal-close" onclick="closeModal()">✕</button>' + inner;
       document.getElementById("modalOverlay").classList.add("open");
@@ -2801,29 +3105,39 @@
       closeOverlaysFromUI();
     };
 
-    window.openQrModal = function() {
-      openModalHTML(
+    function renderQrModalSilent() {
+      showModalHTMLSilent(
         '<h3 style="font-size:15px;font-weight:700;margin-bottom:12px;">Minhaj Apps — Official QR</h3>' +
         '<img src="' + esc(DATA.BRAND_CONFIG.qrScannerImage) + '" alt="QR Scanner" referrerpolicy="no-referrer" style="width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:16px;background:#fff;" />'
       );
+    }
+
+    window.openQrModal = function() {
+      pushModalRoute("qr-scanner");
+      renderQrModalSilent();
+      updateDocumentTitle("Official QR");
     };
 
-    window.openInfoModal = function(key) {
-      var info = DATA.FOOTER_INFO_ITEMS.find(function(x){ return x.key === key; });
-      if (!info) return;
+    function renderInfoModalSilent(info) {
       var body = info.paragraphs.map(function(p){ return '<p style="font-size:13.5px;line-height:1.65;color:var(--muted);margin-bottom:10px;">' + esc(p) + '</p>'; }).join("");
       if (info.link) {
         body += '<a href="' + esc(info.link.url) + '" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700;font-size:13.5px;text-decoration:none;">' + esc(info.link.label) + ' ↗</a>';
       }
-      openModalHTML('<h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">' + esc(info.title) + '</h3>' + body);
+      showModalHTMLSilent('<h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">' + esc(info.title) + '</h3>' + body);
+    }
+
+    window.openInfoModal = function(keyOrId) {
+      var info = findFooterInfoItem(keyOrId);
+      if (!info) return;
+      pushModalRoute(info.id);
+      renderInfoModalSilent(info);
+      updateDocumentTitle(info.title);
     };
 
-    window.openTutorialModal = function(slug) {
-      var all = DATA.APPS.concat(DATA.GAMES);
-      var item = all.find(function(x){ return x.slug === slug; });
+    function renderTutorialModalSilent(item) {
       var name = item ? item.name : "App";
       var videoSrc = (item && item.tutorialVideoUrl) || DATA.BRAND_CONFIG.defaultTutorialVideoUrl;
-      openModalHTML(
+      showModalHTMLSilent(
         '<h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Install Problem Fix Tutorial</h3>' +
         '<video controls playsinline preload="metadata" controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture style="width:100%;aspect-ratio:9/16;max-height:64vh;border-radius:16px;background:#000;object-fit:contain;" onerror="this.style.display=\'none\';document.getElementById(\x27tutFallback\x27).style.display=\'block\';">' +
           '<source src="' + esc(videoSrc) + '" type="video/mp4" />' +
@@ -2837,10 +3151,18 @@
           '</ol>' +
         '</div>'
       );
+    }
+
+    window.openTutorialModal = function(idOrSlug) {
+      var item = findCatalogItem(idOrSlug) || state.selectedItem;
+      var modalId = item ? ("tutorial-" + item.id) : "tutorial";
+      pushModalRoute(modalId);
+      renderTutorialModalSilent(item);
+      updateDocumentTitle(item ? (item.name + " Tutorial") : "Install Tutorial");
     };
 
-    window.openPrivateLoginModal = function() {
-      openModalHTML(
+    function renderPrivateLoginModalSilent() {
+      showModalHTMLSilent(
         '<div style="text-align:center;">' +
           '<div style="width:54px;height:54px;border-radius:16px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">' + ICONS.lock + '</div>' +
           '<h3 style="font-size:19px;font-weight:700;margin-bottom:4px;">Private Vault Login</h3>' +
@@ -2855,6 +3177,13 @@
           '<div id="privErr" style="color:#f43f5e;font-size:12px;font-weight:600;margin-top:10px;min-height:18px;"></div>' +
         '</div>'
       );
+    }
+
+    window.openPrivateLoginModal = function() {
+      pendingPrivateTargetId = null;
+      pushModalRoute("private-login");
+      renderPrivateLoginModalSilent();
+      updateDocumentTitle("Private Vault Login");
     };
 
     window.toggleKeyVis = function() {
@@ -2862,37 +3191,8 @@
       if (inp) inp.type = inp.type === "password" ? "text" : "password";
     };
 
-    window.submitPrivateKey = function(e) {
-      e.preventDefault();
-      var inp = document.getElementById("privKeyInput");
-      var err = document.getElementById("privErr");
-      var val = (inp ? inp.value : "").trim();
-      if (!val) { err.textContent = "অনুগ্রহ করে আপনার Access Key লিখুন।"; return; }
-      if (val === DATA.BRAND_CONFIG.privateAccessKey) {
-        savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
-        stopAndCloseOverlaysSilent();
-        scrollToInstant(0);
-        state.privateUnlocked = true;
-        state.selectedItem = null;
-        routeDepth += 1;
-        if (modalHistoryPushed) {
-          modalHistoryPushed = false;
-          replaceStateSafe();
-        } else {
-          pushStateSafe();
-        }
-        render();
-        scrollToInstant(0);
-      } else {
-        err.textContent = "ভুল Access Key দেওয়া হয়েছে।";
-        inp.value = "";
-      }
-    };
-
-    window.openPrivateDlConfirm = function(id) {
-      var res = DATA.PRIVATE_RESOURCES.find(function(r){ return r.id === id; });
-      if (!res) return;
-      openModalHTML(
+    function renderPrivateDlConfirmSilent(res) {
+      showModalHTMLSilent(
         '<div style="text-align:center;">' +
           '<div style="width:48px;height:48px;border-radius:16px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">' + ICONS.dlBtn + '</div>' +
           '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">' + esc(res.title) + '</h3>' +
@@ -2904,7 +3204,375 @@
           '</div>' +
         '</div>'
       );
+    }
+
+    window.openPrivateDlConfirm = function(id) {
+      var res = DATA.PRIVATE_RESOURCES.find(function(r){ return r.id === id; });
+      if (!res) return;
+      pushModalRoute(res.id);
+      renderPrivateDlConfirmSilent(res);
+      updateDocumentTitle(res.title);
     };
+
+    window.submitPrivateKey = function(e) {
+      e.preventDefault();
+      var inp = document.getElementById("privKeyInput");
+      var err = document.getElementById("privErr");
+      var val = (inp ? inp.value : "").trim();
+      if (!val) { err.textContent = "অনুগ্রহ করে আপনার Access Key লিখুন।"; return; }
+      if (val === DATA.BRAND_CONFIG.privateAccessKey) {
+        setSessionPrivUnlocked(true);
+        var wasFromModal = Boolean(history.state && history.state.canBackFromModal);
+        var targetPrivRes = pendingPrivateTargetId
+          ? DATA.PRIVATE_RESOURCES.find(function(r) { return r.id === pendingPrivateTargetId; })
+          : null;
+        pendingPrivateTargetId = null;
+
+        stopAndCloseOverlaysSilent();
+        state.privateUnlocked = true;
+        state.selectedItem = null;
+        render();
+        scrollToInstant(0);
+
+        if (targetPrivRes) {
+          try {
+            history.replaceState({
+              tab: state.tab,
+              underlyingPrivate: true,
+              canBackFromModal: false,
+              canBackToList: wasFromModal
+            }, "", buildUrlWithId(targetPrivRes.id));
+          } catch (err2) {}
+          renderPrivateDlConfirmSilent(targetPrivRes);
+          updateDocumentTitle(targetPrivRes.title);
+        } else {
+          try {
+            history.replaceState({
+              tab: state.tab,
+              canBackToList: wasFromModal,
+              canBackFromModal: false,
+              vaultScrollY: 0
+            }, "", buildUrlWithId("private-vault"));
+          } catch (err3) {}
+          updateDocumentTitle();
+        }
+      } else {
+        err.textContent = "ভুল Access Key দেওয়া হয়েছে।";
+        inp.value = "";
+      }
+    };
+
+    function applyUnderlyingState(st) {
+      var hs = st || {};
+      if (hs.underlyingPrivate && isSessionPrivUnlocked()) {
+        state.privateUnlocked = true;
+        state.selectedItem = null;
+      } else if (hs.underlyingItemId) {
+        var uItem = findCatalogItem(hs.underlyingItemId);
+        state.privateUnlocked = false;
+        state.selectedItem = uItem || null;
+        if (hs.tab) state.tab = hs.tab;
+      } else {
+        state.privateUnlocked = false;
+        state.selectedItem = null;
+        state.tab = hs.tab || "home";
+      }
+    }
+
+    function syncBaseRenderAndScroll(hs, isInitialLoad) {
+      var targetKey = computeCurrentBaseKey();
+      if (isInitialLoad || targetKey !== currentRenderedKey) {
+        render();
+        if (state.selectedItem) {
+          scrollToInstant(hs && typeof hs.detailScrollY === "number" ? hs.detailScrollY : 0);
+        } else if (state.privateUnlocked) {
+          scrollToInstant(hs && typeof hs.vaultScrollY === "number" ? hs.vaultScrollY : 0);
+        } else {
+          scrollToInstant(hs && typeof hs.scrollY === "number" ? hs.scrollY : 0);
+        }
+      } else {
+        syncNavHighlight();
+      }
+    }
+
+    function applyRouteFromLocation(histState, isInitialLoad) {
+      var hs = histState || {};
+      var routeId = getUrlRouteId();
+      pendingPrivateTargetId = null;
+
+      // 1. Home (no ?id= or ?id=home)
+      if (!routeId || routeId === "home") {
+        stopAndCloseOverlaysSilent();
+        state.selectedItem = null;
+        state.privateUnlocked = false;
+        state.tab = "home";
+        syncBaseRenderAndScroll(hs, isInitialLoad);
+        updateDocumentTitle();
+        if (isInitialLoad) {
+          try {
+            history.replaceState({
+              tab: "home",
+              scrollY: hs.scrollY || 0,
+              canBackToList: false,
+              canBackFromModal: false
+            }, "", buildUrlWithId(null));
+          } catch (e) {}
+        }
+        return;
+      }
+
+      // 2. Navigation Tabs (?id=all-apps | all-games | ai-prompts)
+      var mappedTab = routeIdToTab(routeId);
+      if (mappedTab) {
+        stopAndCloseOverlaysSilent();
+        state.selectedItem = null;
+        state.privateUnlocked = false;
+        state.tab = mappedTab;
+        syncBaseRenderAndScroll(hs, isInitialLoad);
+        updateDocumentTitle();
+        if (isInitialLoad) {
+          try {
+            history.replaceState({
+              tab: mappedTab,
+              scrollY: hs.scrollY || 0,
+              canBackToList: Boolean(hs.canBackToList),
+              canBackFromModal: false
+            }, "", buildUrlWithId(tabToRouteId(mappedTab)));
+          } catch (e) {}
+        }
+        return;
+      }
+
+      // 3. Tutorial Modal (?id=tutorial-<itemId>)
+      if (routeId === "tutorial" || routeId.indexOf("tutorial-") === 0) {
+        var tutItemId = routeId === "tutorial" ? hs.underlyingItemId : routeId.slice("tutorial-".length);
+        var tutItem = findCatalogItem(tutItemId);
+        if (tutItem) {
+          state.privateUnlocked = false;
+          state.selectedItem = tutItem;
+          if (hs.tab) state.tab = hs.tab;
+          syncBaseRenderAndScroll(hs, isInitialLoad);
+          renderTutorialModalSilent(tutItem);
+          updateDocumentTitle(tutItem.name + " Tutorial");
+          if (isInitialLoad) {
+            try {
+              history.replaceState({
+                tab: state.tab,
+                underlyingItemId: tutItem.id,
+                canBackFromModal: Boolean(hs.canBackFromModal),
+                canBackToList: Boolean(hs.canBackToList)
+              }, "", buildUrlWithId("tutorial-" + tutItem.id));
+            } catch (e) {}
+          }
+          return;
+        }
+      }
+
+      // 4. Image Preview Lightbox (?id=preview-<itemId>)
+      if (routeId.indexOf("preview-") === 0) {
+        var prevItemId = routeId.slice("preview-".length);
+        var prevItem = findCatalogItem(prevItemId);
+        if (prevItem && prevItem.image) {
+          state.privateUnlocked = false;
+          state.selectedItem = prevItem;
+          if (hs.tab) state.tab = hs.tab;
+          syncBaseRenderAndScroll(hs, isInitialLoad);
+          showLightboxSilent(prevItem.image);
+          updateDocumentTitle(prevItem.name);
+          if (isInitialLoad) {
+            try {
+              history.replaceState({
+                tab: state.tab,
+                underlyingItemId: prevItem.id,
+                canBackFromModal: Boolean(hs.canBackFromModal),
+                canBackToList: Boolean(hs.canBackToList)
+              }, "", buildUrlWithId("preview-" + prevItem.id));
+            } catch (e) {}
+          }
+          return;
+        }
+      }
+
+      // 5. QR Scanner Modal (?id=qr-scanner)
+      if (routeId === "qr-scanner") {
+        applyUnderlyingState(hs);
+        syncBaseRenderAndScroll(hs, isInitialLoad);
+        renderQrModalSilent();
+        updateDocumentTitle("Official QR");
+        if (isInitialLoad) {
+          try {
+            history.replaceState({
+              tab: state.tab,
+              underlyingItemId: state.selectedItem ? state.selectedItem.id : null,
+              underlyingPrivate: Boolean(state.privateUnlocked),
+              canBackFromModal: Boolean(hs.canBackFromModal),
+              canBackToList: Boolean(hs.canBackToList)
+            }, "", buildUrlWithId("qr-scanner"));
+          } catch (e) {}
+        }
+        return;
+      }
+
+      // 6. Footer Info Modals (?id=info-about | info-privacy | info-contact | info-disclaimer | info-developer)
+      var infoItem = findFooterInfoItem(routeId);
+      if (infoItem) {
+        applyUnderlyingState(hs);
+        syncBaseRenderAndScroll(hs, isInitialLoad);
+        renderInfoModalSilent(infoItem);
+        updateDocumentTitle(infoItem.title);
+        if (isInitialLoad) {
+          try {
+            history.replaceState({
+              tab: state.tab,
+              underlyingItemId: state.selectedItem ? state.selectedItem.id : null,
+              underlyingPrivate: Boolean(state.privateUnlocked),
+              canBackFromModal: Boolean(hs.canBackFromModal),
+              canBackToList: Boolean(hs.canBackToList)
+            }, "", buildUrlWithId(infoItem.id));
+          } catch (e) {}
+        }
+        return;
+      }
+
+      // 7. Private Login Modal (?id=private-login)
+      if (routeId === "private-login") {
+        applyUnderlyingState(hs);
+        syncBaseRenderAndScroll(hs, isInitialLoad);
+        renderPrivateLoginModalSilent();
+        updateDocumentTitle("Private Vault Login");
+        if (isInitialLoad) {
+          try {
+            history.replaceState({
+              tab: state.tab,
+              underlyingItemId: state.selectedItem ? state.selectedItem.id : null,
+              underlyingPrivate: false,
+              canBackFromModal: Boolean(hs.canBackFromModal),
+              canBackToList: Boolean(hs.canBackToList)
+            }, "", buildUrlWithId("private-login"));
+          } catch (e) {}
+        }
+        return;
+      }
+
+      // 8. Private Vault (?id=private-vault)
+      if (routeId === "private-vault") {
+        if (isSessionPrivUnlocked()) {
+          stopAndCloseOverlaysSilent();
+          state.selectedItem = null;
+          state.privateUnlocked = true;
+          syncBaseRenderAndScroll(hs, isInitialLoad);
+          updateDocumentTitle();
+          if (isInitialLoad) {
+            try {
+              history.replaceState({
+                tab: state.tab,
+                canBackToList: Boolean(hs.canBackToList),
+                canBackFromModal: false,
+                vaultScrollY: hs.vaultScrollY || 0
+              }, "", buildUrlWithId("private-vault"));
+            } catch (e) {}
+          }
+        } else {
+          pendingPrivateTargetId = "private-vault";
+          state.selectedItem = null;
+          state.privateUnlocked = false;
+          state.tab = hs.tab || "home";
+          syncBaseRenderAndScroll(hs, isInitialLoad);
+          renderPrivateLoginModalSilent();
+          updateDocumentTitle("Private Vault Login");
+          if (isInitialLoad) {
+            try {
+              history.replaceState({
+                tab: state.tab,
+                canBackFromModal: Boolean(hs.canBackFromModal),
+                canBackToList: Boolean(hs.canBackToList)
+              }, "", buildUrlWithId("private-vault"));
+            } catch (e) {}
+          }
+        }
+        return;
+      }
+
+      // 9. Private Resource Download Confirm Modal (?id=priv-...)
+      var privRes = DATA.PRIVATE_RESOURCES.find(function(r) { return r.id === routeId; });
+      if (privRes) {
+        if (isSessionPrivUnlocked()) {
+          state.selectedItem = null;
+          state.privateUnlocked = true;
+          syncBaseRenderAndScroll(hs, isInitialLoad);
+          renderPrivateDlConfirmSilent(privRes);
+          updateDocumentTitle(privRes.title);
+          if (isInitialLoad) {
+            try {
+              history.replaceState({
+                tab: state.tab,
+                underlyingPrivate: true,
+                canBackFromModal: Boolean(hs.canBackFromModal),
+                canBackToList: Boolean(hs.canBackToList)
+              }, "", buildUrlWithId(privRes.id));
+            } catch (e) {}
+          }
+        } else {
+          pendingPrivateTargetId = privRes.id;
+          state.selectedItem = null;
+          state.privateUnlocked = false;
+          state.tab = hs.tab || "home";
+          syncBaseRenderAndScroll(hs, isInitialLoad);
+          renderPrivateLoginModalSilent();
+          updateDocumentTitle("Private Vault Login");
+          if (isInitialLoad) {
+            try {
+              history.replaceState({
+                tab: state.tab,
+                canBackFromModal: Boolean(hs.canBackFromModal),
+                canBackToList: Boolean(hs.canBackToList)
+              }, "", buildUrlWithId(privRes.id));
+            } catch (e) {}
+          }
+        }
+        return;
+      }
+
+      // 10. App / Game / AI Prompt Detail View (?id=app-... | game-... | prompt-...)
+      var catalogItem = findCatalogItem(routeId);
+      if (catalogItem) {
+        stopAndCloseOverlaysSilent();
+        state.privateUnlocked = false;
+        state.selectedItem = catalogItem;
+        if (hs.tab) state.tab = hs.tab;
+        syncBaseRenderAndScroll(hs, isInitialLoad);
+        updateDocumentTitle();
+        if (isInitialLoad) {
+          try {
+            history.replaceState({
+              tab: state.tab,
+              itemId: catalogItem.id,
+              canBackToList: Boolean(hs.canBackToList),
+              canBackFromModal: false,
+              detailScrollY: hs.detailScrollY || 0
+            }, "", buildUrlWithId(catalogItem.id));
+          } catch (e) {}
+        }
+        return;
+      }
+
+      // Fallback for unknown ID -> clean Home
+      stopAndCloseOverlaysSilent();
+      state.selectedItem = null;
+      state.privateUnlocked = false;
+      state.tab = "home";
+      render();
+      updateDocumentTitle();
+      scrollToInstant(0);
+      try {
+        history.replaceState({
+          tab: "home",
+          scrollY: 0,
+          canBackToList: false,
+          canBackFromModal: false
+        }, "", buildUrlWithId(null));
+      } catch (e) {}
+    }
 
     /* Init Wire-up */
     (function init() {
@@ -2968,7 +3636,7 @@
       }).join("");
 
       document.getElementById("footerLinks").innerHTML = DATA.FOOTER_INFO_ITEMS.map(function(f) {
-        return '<button type="button" onclick="openInfoModal(\'' + esc(f.key) + '\')">' + esc(f.label) + '</button><span>|</span>';
+        return '<button type="button" onclick="openInfoModal(\'' + esc(f.id) + '\')">' + esc(f.label) + '</button><span>|</span>';
       }).join("") + '<a href="' + esc(DATA.BRAND_CONFIG.telegramUrl) + '" target="_blank" rel="noopener noreferrer">Telegram</a>';
 
       document.getElementById("modalOverlay").addEventListener("click", closeModal);
@@ -2980,38 +3648,12 @@
         }
       });
 
-      replaceStateSafe();
-
       window.addEventListener("popstate", function(e) {
-        if (ignoreNextPop) {
-          ignoreNextPop = false;
-          return;
-        }
-        if (isAnyOverlayOpen()) {
-          modalHistoryPushed = false;
-          stopAndCloseOverlaysSilent();
-          return;
-        }
         closeDropdown();
-        var st = e.state || {};
-        state.tab = st.tab || "home";
-        state.privateUnlocked = Boolean(st.priv);
-        if (st.slug) {
-          var all = DATA.APPS.concat(DATA.GAMES, DATA.AI_PROMPTS);
-          state.selectedItem = all.find(function(x){ return x.slug === st.slug; }) || null;
-        } else {
-          state.selectedItem = null;
-        }
-        if (routeDepth > 0) routeDepth -= 1;
-        render();
-        if (!state.selectedItem && !state.privateUnlocked) {
-          scrollToInstant(savedScrollY);
-        } else {
-          scrollToInstant(0);
-        }
+        applyRouteFromLocation(e.state || {}, false);
       });
 
-      render();
+      applyRouteFromLocation(history.state || {}, true);
     })();
   </script>
 </body>
