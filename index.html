@@ -1279,31 +1279,92 @@
     .key-input {
       width: 100%;
       height: 48px;
-      padding: 0 42px;
+      padding: 0 38px 0 14px;
       border-radius: 14px;
       border: 1px solid var(--border);
       background: var(--surface-3);
       color: var(--text);
       text-align: center;
-      font-size: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(11.5px, 3.3vw, 13.5px);
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
       outline: 0;
+      transition: border-color 0.2s ease;
+    }
+
+    .key-input::placeholder {
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 500;
+      color: var(--muted);
+      opacity: 0.72;
     }
 
     .key-input:focus { border-color: #10b981; }
 
-    .eye-btn {
+    .key-clear-btn {
       position: absolute;
       right: 6px;
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border: 0;
       border-radius: 8px;
       background: transparent;
       color: var(--muted);
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      font-size: 14px;
+    }
+
+    .key-clear-btn.show {
+      display: flex;
+    }
+
+    .key-helper-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .key-helper-btn {
+      min-height: 42px;
+      padding: 8px 10px;
+      border-radius: 13px;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin: 0;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .vault-session-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px 14px;
+      padding: 11px 15px;
+      margin-bottom: 18px;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      font-size: 12px;
+    }
+
+    .vault-timer-num {
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .vault-timer-num.expiring {
+      color: #f59e0b;
     }
 
     .toast {
@@ -1440,7 +1501,7 @@
     "telegramUrl": "https://t.me/minhajafrad",
     "contactTelegramUrl": "https://t.me/minhajafrad/298",
     "defaultTutorialVideoUrl": "/Fix_Tutorial.mp4",
-    "privateAccessKey": "ff",
+    "keyGeneratorUrl": "https://minhajapps.github.io/free_key/",
     "announcementText": "ঘোষণা — Minhaj Apps ওয়েবসাইটে আপনার প্রয়োজনীয় সকল প্রিমিয়াম Apps, জনপ্রিয় Games এবং AI Prompt একসাথে একদম সহজে পাবেন"
   },
   "SOCIAL_LINKS": [
@@ -2193,7 +2254,8 @@
       zoom: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>',
       lock: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
       shield: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>',
-      eye: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+      keySm: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>',
+      pasteSm: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>',
     };
 
     let state = {
@@ -2698,6 +2760,10 @@
 
     window.startPrivateDownload = function(id, ev) {
       if (ev && ev.preventDefault) ev.preventDefault();
+      if (!isSessionPrivUnlocked()) {
+        forceAutoLockVault("ডাউনলোড করার আগে বৈধ Access Key দিয়ে আবার লগইন করুন।");
+        return false;
+      }
       var res = findPrivateResourceItem(id);
       if (!res || !res.downloadUrl) return false;
       triggerDirectDownload(res.downloadUrl, res.title);
@@ -2728,19 +2794,519 @@
     var pendingPrivateTargetPath = null;
     var BASE_DOC_TITLE = "Minhaj Apps";
 
-    function isSessionPrivUnlocked() {
+    /* ================= FREE_KEY LIVE SECURITY ENGINE ================= */
+    var FREE_KEY_PORTAL_URL = (DATA.BRAND_CONFIG && DATA.BRAND_CONFIG.keyGeneratorUrl) || "https://minhajapps.github.io/free_key/";
+    var FREE_KEY_DB_DOC_ROOT = "projects/nomadic-ceiling-mvr20/databases/ai-studio-minhajkeygenerat-52d66cd9-4e55-4b36-acbb-a14ba79c7887/documents";
+    var FREE_KEY_BATCH_GET_URL = "https://firestore.googleapis.com/v1/" + FREE_KEY_DB_DOC_ROOT + ":batchGet";
+    var VALID_MINHAJ_KEY_RE = /^(MINHAJ-AFRAD|MINHAJ|MHJ)-[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}$/;
+    var DEVICE_ID_RE = /^dev_[a-f0-9]{32}$/;
+    var VAULT_SESSION_STORAGE_KEY = "minhaj_priv_vault_session_v2";
+    var VAULT_CLOCK_OFFSET_KEY = "minhaj_priv_clock_offset_v1";
+    var VAULT_DEVICE_BINDINGS_KEY = "minhaj_priv_device_bindings_v1";
+    var SHARED_RECENT_KEY_V2 = "minhaj_recent_copied_key_v2";
+    var SHARED_RECENT_KEY_V1 = "minhaj_recent_copied_key_v1";
+    var SHARED_ACTIVE_LOCK_V4 = "minhaj_public_active_lock_v4";
+
+    var cachedDeviceIdPromise = null;
+    var vaultClockAnchor = null;
+    var vaultTickTimer = null;
+    var vaultRemoteHeartbeatTimer = null;
+    var vaultRevalidating = false;
+    var keyVerifyInFlight = false;
+
+    try { sessionStorage.removeItem("minhaj_priv_unlocked"); } catch (e) {}
+
+    function getPerfNowMs() {
+      return (typeof performance !== "undefined" && typeof performance.now === "function")
+        ? performance.now()
+        : null;
+    }
+
+    function updateServerClockAnchor(serverTimeMs) {
+      if (!Number.isFinite(serverTimeMs) || serverTimeMs <= 0) return;
+      vaultClockAnchor = {
+        serverMs: serverTimeMs,
+        perfMs: getPerfNowMs(),
+        wallMs: Date.now()
+      };
       try {
-        return sessionStorage.getItem("minhaj_priv_unlocked") === "1";
+        sessionStorage.setItem(VAULT_CLOCK_OFFSET_KEY, String(Math.round(serverTimeMs - Date.now())));
+      } catch (e) {}
+    }
+
+    function getServerNowMs() {
+      if (vaultClockAnchor) {
+        var curPerf = getPerfNowMs();
+        if (vaultClockAnchor.perfMs !== null && curPerf !== null && curPerf >= vaultClockAnchor.perfMs) {
+          return Math.round(vaultClockAnchor.serverMs + (curPerf - vaultClockAnchor.perfMs));
+        }
+        return Math.round(vaultClockAnchor.serverMs + Math.max(0, Date.now() - vaultClockAnchor.wallMs));
+      }
+      try {
+        var rawOffset = Number(sessionStorage.getItem(VAULT_CLOCK_OFFSET_KEY));
+        if (Number.isFinite(rawOffset)) {
+          return Date.now() + rawOffset;
+        }
+      } catch (e) {}
+      return Date.now();
+    }
+
+    function normalizeMinhajKeyInput(raw) {
+      return String(raw || "")
+        .replace(/[\u200B-\u200D\uFEFF]/g, "")
+        .trim()
+        .toUpperCase()
+        .replace(/\bMINHAJ[\s_]+AFRAD\b/g, "MINHAJ-AFRAD");
+    }
+
+    function extractMinhajKeyCode(raw) {
+      var clean = normalizeMinhajKeyInput(raw);
+      if (!clean) return "";
+      var match = clean.match(/\b(?:MINHAJ-AFRAD|MINHAJ|MHJ)-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}\b/);
+      if (match && match[0]) return match[0];
+      return clean.split(/\r?\n/)[0].trim();
+    }
+
+    function getWebglRendererSignature() {
+      try {
+        var canvas = document.createElement("canvas");
+        var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        if (!gl) return "no-webgl";
+        var ext = gl.getExtension("WEBGL_debug_renderer_info");
+        var vendor = ext ? String(gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) || "") : "";
+        var renderer = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || "") : "";
+        return vendor + "::" + renderer;
       } catch (e) {
-        return Boolean(state.privateUnlocked);
+        return "webgl-err";
       }
     }
 
-    function setSessionPrivUnlocked(unlocked) {
+    function fallbackHash32Hex(input) {
+      var seeds = [2166136261, 2654435769, 2246822507, 3266489909];
+      for (var i = 0; i < input.length; i += 1) {
+        var code = input.charCodeAt(i);
+        for (var j = 0; j < 4; j += 1) {
+          seeds[j] = Math.imul(seeds[j] ^ (code + j * 31), 16777619) >>> 0;
+        }
+      }
+      return seeds.map(function(v) { return v.toString(16).padStart(8, "0"); }).join("");
+    }
+
+    function getMinhajDeviceId() {
+      if (cachedDeviceIdPromise) return cachedDeviceIdPromise;
+      cachedDeviceIdPromise = (async function() {
+        var minSide = typeof window !== "undefined" ? Math.min(window.screen.width, window.screen.height) : 0;
+        var maxSide = typeof window !== "undefined" ? Math.max(window.screen.width, window.screen.height) : 0;
+        var dpr = typeof window !== "undefined" ? Math.round((window.devicePixelRatio || 1) * 100) : 100;
+        var depth = (typeof window !== "undefined" && window.screen && window.screen.colorDepth) || 24;
+        var cores = (typeof navigator !== "undefined" && navigator.hardwareConcurrency) || 0;
+        var touch = (typeof navigator !== "undefined" && navigator.maxTouchPoints) || 0;
+        var plat = (typeof navigator !== "undefined" && navigator.platform) || "";
+        var tz = "";
+        try { tz = (typeof Intl !== "undefined" && Intl.DateTimeFormat().resolvedOptions().timeZone) || ""; } catch (e) {}
+        var webgl = typeof document !== "undefined" ? getWebglRendererSignature() : "";
+        var raw = [
+          "minhaj-v3-device-lock",
+          plat,
+          String(cores),
+          String(touch),
+          minSide + "x" + maxSide,
+          String(depth),
+          String(dpr),
+          tz,
+          webgl
+        ].join("|");
+
+        var hex = "";
+        if (typeof window !== "undefined" && window.crypto && window.crypto.subtle && typeof TextEncoder !== "undefined") {
+          try {
+            var bytes = new TextEncoder().encode(raw);
+            var digest = await window.crypto.subtle.digest("SHA-256", bytes);
+            var arr = Array.from(new Uint8Array(digest).slice(0, 16));
+            hex = arr.map(function(b) { return b.toString(16).padStart(2, "0"); }).join("");
+          } catch (e) {
+            hex = fallbackHash32Hex(raw);
+          }
+        } else {
+          hex = fallbackHash32Hex(raw);
+        }
+        var id = "dev_" + hex.toLowerCase().slice(0, 32);
+        return DEVICE_ID_RE.test(id) ? id : ("dev_" + fallbackHash32Hex(raw));
+      })();
+      return cachedDeviceIdPromise;
+    }
+
+    function readLocalDeviceBinding(keyCode, deviceId, epoch) {
       try {
-        if (unlocked) sessionStorage.setItem("minhaj_priv_unlocked", "1");
-        else sessionStorage.removeItem("minhaj_priv_unlocked");
+        var raw = localStorage.getItem(VAULT_DEVICE_BINDINGS_KEY);
+        if (!raw) return false;
+        var map = JSON.parse(raw);
+        return Boolean(map && map[keyCode] === (deviceId + ":" + String(epoch)));
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function saveLocalDeviceBinding(keyCode, deviceId, epoch) {
+      try {
+        var raw = localStorage.getItem(VAULT_DEVICE_BINDINGS_KEY);
+        var map = raw ? JSON.parse(raw) : {};
+        if (!map || typeof map !== "object") map = {};
+        map[keyCode] = deviceId + ":" + String(epoch);
+        var keys = Object.keys(map);
+        if (keys.length > 40) {
+          delete map[keys[0]];
+        }
+        localStorage.setItem(VAULT_DEVICE_BINDINGS_KEY, JSON.stringify(map));
       } catch (e) {}
+    }
+
+    function formatRemainingVaultTime(ms) {
+      var totalSec = Math.max(0, Math.ceil(ms / 1000));
+      var days = Math.floor(totalSec / 86400);
+      var hours = Math.floor((totalSec % 86400) / 3600);
+      var mins = Math.floor((totalSec % 3600) / 60);
+      var secs = totalSec % 60;
+      var pad = function(n) { return String(n).padStart(2, "0"); };
+      if (days > 0) return days + "d " + pad(hours) + "h " + pad(mins) + "m";
+      if (hours > 0) return pad(hours) + "h " + pad(mins) + "m " + pad(secs) + "s";
+      return pad(mins) + "m " + pad(secs) + "s";
+    }
+
+    function getActiveVaultSession() {
+      try {
+        var raw = sessionStorage.getItem(VAULT_SESSION_STORAGE_KEY);
+        if (!raw) return null;
+        var sess = JSON.parse(raw);
+        if (!sess || typeof sess !== "object") return null;
+        if (!VALID_MINHAJ_KEY_RE.test(String(sess.keyCode || ""))) return null;
+        if (!DEVICE_ID_RE.test(String(sess.deviceId || ""))) return null;
+        var exp = Number(sess.expiresAtMs || 0);
+        if (!Number.isFinite(exp) || exp <= getServerNowMs()) {
+          sessionStorage.removeItem(VAULT_SESSION_STORAGE_KEY);
+          return null;
+        }
+        return sess;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function isSessionPrivUnlocked() {
+      return Boolean(getActiveVaultSession());
+    }
+
+    function stopVaultSecurityGuard() {
+      if (vaultTickTimer) {
+        clearInterval(vaultTickTimer);
+        vaultTickTimer = null;
+      }
+      if (vaultRemoteHeartbeatTimer) {
+        clearInterval(vaultRemoteHeartbeatTimer);
+        vaultRemoteHeartbeatTimer = null;
+      }
+    }
+
+    function setSessionPrivUnlocked(unlocked, sessionObj) {
+      try {
+        if (unlocked && sessionObj) {
+          sessionStorage.setItem(VAULT_SESSION_STORAGE_KEY, JSON.stringify(sessionObj));
+          startVaultSecurityGuard();
+        } else {
+          sessionStorage.removeItem(VAULT_SESSION_STORAGE_KEY);
+          stopVaultSecurityGuard();
+        }
+      } catch (e) {
+        if (!unlocked) stopVaultSecurityGuard();
+      }
+    }
+
+    function fsStr(field) {
+      return field && typeof field.stringValue === "string" ? field.stringValue : "";
+    }
+
+    function fsInt(field, fallback) {
+      if (!field) return fallback;
+      var n = Number(field.integerValue !== undefined ? field.integerValue : field.doubleValue);
+      return Number.isFinite(n) ? Math.trunc(n) : fallback;
+    }
+
+    function fsTimeMs(field) {
+      if (!field || typeof field.timestampValue !== "string") return NaN;
+      return Date.parse(field.timestampValue);
+    }
+
+    async function verifyKeyAgainstFirestore(rawInput, opts) {
+      var options = opts || {};
+      var keyCode = extractMinhajKeyCode(rawInput);
+      if (!keyCode) {
+        return { ok: false, code: "empty", message: "অনুগ্রহ করে আপনার Access Key লিখুন।" };
+      }
+      if (!VALID_MINHAJ_KEY_RE.test(keyCode)) {
+        return { ok: false, code: "format", message: "সঠিক Access Key ফরম্যাট দিন (যেমন: MINHAJ-AFRAD-XXXX-XXXX-XXXX)।" };
+      }
+
+      var deviceId = await getMinhajDeviceId();
+      var keyDocName = FREE_KEY_DB_DOC_ROOT + "/licenseKeys/" + keyCode;
+      var devDocName = FREE_KEY_DB_DOC_ROOT + "/licenseKeys/" + keyCode + "/devices/" + deviceId;
+
+      var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      var timeoutId = controller ? setTimeout(function() { try { controller.abort(); } catch (e) {} }, 10000) : null;
+
+      var resp;
+      var payload;
+      try {
+        resp = await fetch(FREE_KEY_BATCH_GET_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store",
+          signal: controller ? controller.signal : undefined,
+          body: JSON.stringify({ documents: [keyDocName] })
+        });
+        var hdrDate = resp.headers ? resp.headers.get("date") : null;
+        if (hdrDate) {
+          var parsedHdr = Date.parse(hdrDate);
+          if (Number.isFinite(parsedHdr)) updateServerClockAnchor(parsedHdr);
+        }
+        if (!resp.ok) {
+          return { ok: false, code: "network_error", message: "Key সার্ভারের সাথে সংযোগ করা যায়নি। আবার চেষ্টা করুন।" };
+        }
+        payload = await resp.json();
+      } catch (err) {
+        return { ok: false, code: "network_error", message: "ইন্টারনেট সংযোগ পরীক্ষা করুন। Key যাচাই করতে অনলাইন সংযোগ প্রয়োজন।" };
+      } finally {
+        if (timeoutId) clearTimeout(timeoutId);
+      }
+
+      if (!Array.isArray(payload)) {
+        return { ok: false, code: "network_error", message: "সার্ভার থেকে সঠিক তথ্য পাওয়া যায়নি। আবার চেষ্টা করুন।" };
+      }
+
+      var foundKeyDoc = null;
+      for (var i = 0; i < payload.length; i += 1) {
+        var row = payload[i];
+        if (row && typeof row.readTime === "string") {
+          var rtMs = Date.parse(row.readTime);
+          if (Number.isFinite(rtMs)) updateServerClockAnchor(rtMs);
+        }
+        if (row && row.found && row.found.name === keyDocName) {
+          foundKeyDoc = row.found;
+        }
+      }
+
+      if (!foundKeyDoc || !foundKeyDoc.fields) {
+        return { ok: false, code: "not_found", message: "এই Key-টি সঠিক নয় বা ডাটাবেসে পাওয়া যায়নি। Key Generator থেকে বৈধ Key নিন।" };
+      }
+
+      var f = foundKeyDoc.fields;
+      var storedCode = fsStr(f.keyCode) || keyCode;
+      if (storedCode !== keyCode) {
+        return { ok: false, code: "not_found", message: "এই Key-টি বৈধ নয়।" };
+      }
+
+      var storedStatus = fsStr(f.status) || "active";
+      if (storedStatus === "revoked") {
+        return { ok: false, code: "revoked", message: "এই Key-টি অ্যাডমিন কর্তৃক বাতিল (Revoked) করা হয়েছে।" };
+      }
+
+      var nowMs = getServerNowMs();
+      var expiresAtMs = fsTimeMs(f.expiresAt);
+      var createdAtMs = fsTimeMs(f.createdAt);
+
+      if (storedStatus !== "active" || !Number.isFinite(expiresAtMs) || expiresAtMs <= nowMs) {
+        return { ok: false, code: "expired", message: "এই Key-এর মেয়াদ শেষ হয়ে গেছে! নতুন Key জেনারেট করে লগইন করুন।" };
+      }
+
+      if (Number.isFinite(createdAtMs) && createdAtMs > nowMs + 120000) {
+        return { ok: false, code: "invalid_time", message: "এই Key-এর সময়সীমা বৈধ নয়।" };
+      }
+
+      var durationMinutes = Math.max(1, fsInt(f.durationMinutes, 15));
+      var maxDevices = Math.max(1, fsInt(f.maxDevices, 1));
+      var boundDevicesCount = Math.max(0, fsInt(f.boundDevicesCount, 0));
+      var deviceResetEpoch = Math.max(0, fsInt(f.deviceResetEpoch, 0));
+      var creatorType = fsStr(f.creatorType) === "admin" ? "admin" : "public";
+      var publicLockId = fsStr(f.publicLockId);
+      var lastBoundDeviceId = fsStr(f.lastBoundDeviceId);
+
+      if (typeof options.expectedEpoch === "number" && deviceResetEpoch !== options.expectedEpoch) {
+        return { ok: false, code: "epoch_reset", message: "অ্যাডমিন এই Key-এর ডিভাইস অ্যাক্সেস রিসেট করেছেন। আবার Key দিয়ে লগইন করুন।" };
+      }
+
+      if (creatorType === "public" && maxDevices <= 1 && deviceResetEpoch === 0 && DEVICE_ID_RE.test(publicLockId) && publicLockId !== deviceId) {
+        return {
+          ok: false,
+          code: "device_mismatch",
+          message: "এই Free Key-টি অন্য ডিভাইসের জন্য তৈরি করা হয়েছে (১ ডিভাইস সীমা)। এই ডিভাইস থেকে নতুন Key জেনারেট করুন।"
+        };
+      }
+
+      var isDeviceBoundHere = Boolean(
+        lastBoundDeviceId === deviceId ||
+        readLocalDeviceBinding(keyCode, deviceId, deviceResetEpoch) ||
+        (creatorType === "public" && publicLockId === deviceId && deviceResetEpoch === 0)
+      );
+
+      if (!isDeviceBoundHere && boundDevicesCount >= maxDevices) {
+        try {
+          var devResp = await fetch(FREE_KEY_BATCH_GET_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+            body: JSON.stringify({ documents: [devDocName] })
+          });
+          if (devResp.ok) {
+            var devArr = await devResp.json();
+            if (Array.isArray(devArr) && devArr[0] && devArr[0].found && devArr[0].found.fields) {
+              var subEpoch = fsInt(devArr[0].found.fields.deviceResetEpoch, deviceResetEpoch);
+              if (subEpoch === deviceResetEpoch) isDeviceBoundHere = true;
+            }
+          }
+        } catch (e) {}
+      }
+
+      if (!isDeviceBoundHere && boundDevicesCount >= maxDevices) {
+        return {
+          ok: false,
+          code: "max_devices",
+          message: "এই Key-এর সর্বোচ্চ ডিভাইস সীমা পূর্ণ হয়ে গেছে (" + boundDevicesCount + "/" + maxDevices + " ডিভাইস)।"
+        };
+      }
+
+      saveLocalDeviceBinding(keyCode, deviceId, deviceResetEpoch);
+
+      return {
+        ok: true,
+        session: {
+          keyCode: keyCode,
+          deviceId: deviceId,
+          expiresAtMs: expiresAtMs,
+          durationMinutes: durationMinutes,
+          maxDevices: maxDevices,
+          deviceResetEpoch: deviceResetEpoch,
+          creatorType: creatorType,
+          verifiedAtServerMs: nowMs
+        }
+      };
+    }
+
+    function updateVaultHeaderCountdownDOM() {
+      var sess = getActiveVaultSession();
+      if (!sess) {
+        if (state.privateUnlocked) {
+          forceAutoLockVault("আপনার Access Key-এর মেয়াদ শেষ হয়ে গেছে। নতুন Key জেনারেট করে লগইন করুন।");
+        }
+        return;
+      }
+      var timerEl = document.getElementById("vaultKeyTimer");
+      if (timerEl) {
+        var rem = Math.max(0, sess.expiresAtMs - getServerNowMs());
+        timerEl.textContent = formatRemainingVaultTime(rem);
+        timerEl.classList.toggle("expiring", rem <= 60000);
+      }
+    }
+
+    async function revalidateActiveVaultSession() {
+      if (vaultRevalidating) return;
+      var sess = getActiveVaultSession();
+      if (!sess) {
+        if (state.privateUnlocked) {
+          forceAutoLockVault("আপনার Access Key-এর মেয়াদ শেষ হয়ে গেছে। নতুন Key দিয়ে আবার লগইন করুন।");
+        }
+        return;
+      }
+      vaultRevalidating = true;
+      try {
+        var check = await verifyKeyAgainstFirestore(sess.keyCode, { expectedEpoch: sess.deviceResetEpoch });
+        if (!check.ok) {
+          if (check.code !== "network_error") {
+            forceAutoLockVault(check.message);
+          } else if (sess.expiresAtMs <= getServerNowMs()) {
+            forceAutoLockVault("আপনার Access Key-এর মেয়াদ শেষ হয়ে গেছে।");
+          }
+          return;
+        }
+        if (state.privateUnlocked && isSessionPrivUnlocked()) {
+          sessionStorage.setItem(VAULT_SESSION_STORAGE_KEY, JSON.stringify(check.session));
+          updateVaultHeaderCountdownDOM();
+        }
+      } catch (e) {} finally {
+        vaultRevalidating = false;
+      }
+    }
+
+    function startVaultSecurityGuard() {
+      stopVaultSecurityGuard();
+      vaultTickTimer = setInterval(updateVaultHeaderCountdownDOM, 1000);
+      vaultRemoteHeartbeatTimer = setInterval(function() {
+        if (state.privateUnlocked) revalidateActiveVaultSession();
+      }, 20000);
+    }
+
+    function forceAutoLockVault(reasonMsg) {
+      setSessionPrivUnlocked(false);
+      pendingPrivateTargetPath = "/private-vault";
+      stopAndCloseOverlaysSilent();
+      state.privateUnlocked = false;
+      state.selectedItem = null;
+      render();
+      scrollToInstant(0);
+      setHistorySafe("replace", {
+        tab: state.tab || "home",
+        underlyingItemId: null,
+        underlyingPrivate: false,
+        canBackFromModal: false,
+        canBackToList: false
+      }, "/private-login");
+      renderPrivateLoginModalSilent(reasonMsg || "আপনার Access Key-এর মেয়াদ শেষ হয়ে গেছে।");
+      updateDocumentTitle("Private Vault Login");
+      showToast("Private Vault লক হয়েছে");
+    }
+
+    async function smartReadMinhajKey() {
+      var isRestrictedWebView = false;
+      try {
+        if (window.self !== window.top) isRestrictedWebView = true;
+      } catch (e) {
+        isRestrictedWebView = true;
+      }
+      var ua = (typeof navigator !== "undefined" && navigator.userAgent) || "";
+      if (/; wv\)|\bwv\b/i.test(ua)) isRestrictedWebView = true;
+
+      if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.readText === "function") {
+        try {
+          var clipPromise = navigator.clipboard.readText();
+          var clipTimeout = new Promise(function(resolve) { setTimeout(function() { resolve(""); }, isRestrictedWebView ? 350 : 1200); });
+          var clipText = await Promise.race([clipPromise, clipTimeout]);
+          var extractedClip = extractMinhajKeyCode(clipText);
+          if (extractedClip && VALID_MINHAJ_KEY_RE.test(extractedClip)) {
+            return extractedClip;
+          }
+        } catch (e) {}
+      }
+
+      try {
+        var recent = sessionStorage.getItem(SHARED_RECENT_KEY_V2) ||
+                     localStorage.getItem(SHARED_RECENT_KEY_V2) ||
+                     localStorage.getItem(SHARED_RECENT_KEY_V1) || "";
+        var codeRecent = extractMinhajKeyCode(recent);
+        if (codeRecent && VALID_MINHAJ_KEY_RE.test(codeRecent)) {
+          return codeRecent;
+        }
+      } catch (e) {}
+
+      try {
+        var rawLock = localStorage.getItem(SHARED_ACTIVE_LOCK_V4);
+        if (rawLock) {
+          var parsedLock = JSON.parse(rawLock);
+          if (parsedLock && parsedLock.status === "active" && Number(parsedLock.expiresAtMs || 0) > getServerNowMs()) {
+            var lockKey = extractMinhajKeyCode(parsedLock.keyCode);
+            if (lockKey && VALID_MINHAJ_KEY_RE.test(lockKey)) return lockKey;
+          }
+        }
+      } catch (e) {}
+
+      return "";
     }
 
     function scrollToInstant(y) {
@@ -3112,6 +3678,11 @@
     }
 
     function renderPrivateVault() {
+      var activeSess = getActiveVaultSession();
+      var remMs = activeSess ? Math.max(0, activeSess.expiresAtMs - getServerNowMs()) : 0;
+      var remLabel = formatRemainingVaultTime(remMs);
+      var expClass = remMs <= 60000 ? " expiring" : "";
+
       var cards = DATA.PRIVATE_RESOURCES.map(function(res, idx) {
         var meta = vaultIconMeta(res.id);
         var isWebsite = res.id === "priv-website-qr";
@@ -3148,6 +3719,12 @@
           '</div>' +
           '<div class="mono" style="font-size:12px;color:var(--accent);font-weight:600;">' + DATA.PRIVATE_RESOURCES.length + ' Private Files · Google Drive</div>' +
         '</div>' +
+        (activeSess
+          ? '<div class="vault-session-bar">' +
+              '<div style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="color:var(--muted);">Active Key: </span><span class="mono" style="font-weight:600;color:var(--text);">' + esc(activeSess.keyCode) + '</span></div>' +
+              '<div style="white-space:nowrap;"><span style="color:var(--muted);">মেয়াদ বাকি: </span><span id="vaultKeyTimer" class="mono vault-timer-num' + expClass + '">' + esc(remLabel) + '</span></div>' +
+            '</div>'
+          : '') +
         '<div class="vault-grid">' + cards + '</div>' +
       '</div>';
     }
@@ -3327,34 +3904,114 @@
       updateDocumentTitle(item ? (item.name + " Tutorial") : "Install Tutorial");
     };
 
-    function renderPrivateLoginModalSilent() {
+    function syncPrivKeyClearBtn() {
+      var inp = document.getElementById("privKeyInput");
+      var clr = document.getElementById("privKeyClearBtn");
+      if (inp && clr) {
+        clr.classList.toggle("show", Boolean(inp.value && inp.value.trim()));
+      }
+    }
+
+    function renderPrivateLoginModalSilent(initialErrorMsg) {
       showModalHTMLSilent(
         '<div style="text-align:center;">' +
           '<div style="width:54px;height:54px;border-radius:16px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">' + ICONS.lock + '</div>' +
           '<h3 style="font-size:19px;font-weight:700;margin-bottom:4px;">Private Vault Login</h3>' +
-          '<p style="font-size:12.5px;color:var(--muted);line-height:1.55;margin-bottom:16px;">প্রাইভেট QR কোড ও প্রিসেট আনলক করতে আপনার গোপন Access Key লিখুন।</p>' +
+          '<p style="font-size:12.5px;color:var(--muted);line-height:1.55;margin-bottom:15px;">Key Generator থেকে বৈধ ও মেয়াদযুক্ত Access Key তৈরি করে নিচে পেস্ট করুন।</p>' +
           '<form onsubmit="submitPrivateKey(event)">' +
             '<div class="key-field-wrap">' +
-              '<input type="password" id="privKeyInput" class="key-input" placeholder="Enter Access Key" autocomplete="off" />' +
-              '<button type="button" class="eye-btn" onclick="toggleKeyVis()" aria-label="Toggle key visibility">' + ICONS.eye + '</button>' +
+              '<input type="text" id="privKeyInput" class="key-input" placeholder="MINHAJ-AFRAD-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" />' +
+              '<button type="button" id="privKeyClearBtn" class="key-clear-btn" onclick="clearPrivKeyInput()" aria-label="Clear key">✕</button>' +
             '</div>' +
-            '<button type="submit" class="btn-poloja btn-dl" style="min-height:46px;border-radius:14px;font-size:14px;margin:0;">Unlock Private Vault</button>' +
+            '<button type="submit" id="privSubmitBtn" class="btn-poloja btn-dl" style="min-height:46px;border-radius:14px;font-size:14px;margin:0;"><span>Unlock Private Vault</span></button>' +
+            '<div class="key-helper-grid">' +
+              '<button type="button" class="btn-poloja btn-tut key-helper-btn" onclick="pastePrivateKey()">' + ICONS.pasteSm + '<span>Paste Key</span></button>' +
+              '<a href="' + esc(FREE_KEY_PORTAL_URL) + '" target="_blank" rel="noopener noreferrer" class="btn-poloja btn-tut key-helper-btn">' + ICONS.keySm + '<span>Get Free Key</span></a>' +
+            '</div>' +
           '</form>' +
-          '<div id="privErr" style="color:#f43f5e;font-size:12px;font-weight:600;margin-top:10px;min-height:18px;"></div>' +
+          '<div id="privErr" style="color:#f43f5e;font-size:12px;font-weight:600;margin-top:10px;min-height:18px;line-height:1.45;">' + esc(initialErrorMsg || "") + '</div>' +
         '</div>'
       );
+
+      var inp = document.getElementById("privKeyInput");
+      if (inp) {
+        inp.addEventListener("input", function() {
+          var err = document.getElementById("privErr");
+          if (err && err.textContent) err.textContent = "";
+          var extracted = extractMinhajKeyCode(inp.value);
+          if (extracted && VALID_MINHAJ_KEY_RE.test(extracted) && inp.value !== extracted) {
+            inp.value = extracted;
+          }
+          syncPrivKeyClearBtn();
+        });
+        inp.addEventListener("paste", function(ev) {
+          try {
+            var pasted = (ev.clipboardData || window.clipboardData).getData("text");
+            var cleanKey = extractMinhajKeyCode(pasted);
+            if (cleanKey && VALID_MINHAJ_KEY_RE.test(cleanKey)) {
+              ev.preventDefault();
+              inp.value = cleanKey;
+              var err = document.getElementById("privErr");
+              if (err) err.textContent = "";
+              syncPrivKeyClearBtn();
+            }
+          } catch (e) {}
+        });
+      }
     }
 
+    window.clearPrivKeyInput = function() {
+      var inp = document.getElementById("privKeyInput");
+      var err = document.getElementById("privErr");
+      if (inp) {
+        inp.value = "";
+        inp.focus();
+      }
+      if (err) err.textContent = "";
+      syncPrivKeyClearBtn();
+    };
+
+    window.pastePrivateKey = async function() {
+      var inp = document.getElementById("privKeyInput");
+      var err = document.getElementById("privErr");
+      if (!inp) return;
+      if (err) err.textContent = "";
+      var foundKey = await smartReadMinhajKey();
+      if (foundKey) {
+        inp.value = foundKey;
+        syncPrivKeyClearBtn();
+        showToast("Access Key পেস্ট হয়েছে");
+        return;
+      }
+      inp.focus();
+      if (err) {
+        err.style.color = "var(--muted)";
+        err.textContent = "ইনপুট বক্সে চেপে ধরে (Long-press) Paste চাপুন অথবা Get Free Key থেকে নতুন Key কপি করুন।";
+      }
+    };
+
     window.openPrivateLoginModal = function() {
+      if (isSessionPrivUnlocked()) {
+        stopAndCloseOverlaysSilent();
+        state.privateUnlocked = true;
+        state.selectedItem = null;
+        setHistorySafe("push", {
+          tab: state.tab,
+          canBackToList: true,
+          canBackFromModal: false,
+          vaultScrollY: 0
+        }, "/private-vault");
+        render();
+        updateDocumentTitle();
+        scrollToInstant(0);
+        startVaultSecurityGuard();
+        revalidateActiveVaultSession();
+        return;
+      }
       pendingPrivateTargetPath = null;
       pushModalPath("/private-login");
       renderPrivateLoginModalSilent();
       updateDocumentTitle("Private Vault Login");
-    };
-
-    window.toggleKeyVis = function() {
-      var inp = document.getElementById("privKeyInput");
-      if (inp) inp.type = inp.type === "password" ? "text" : "password";
     };
 
     function renderPrivateDlConfirmSilent(res) {
@@ -3373,6 +4030,10 @@
     }
 
     window.openPrivateDlConfirm = function(id) {
+      if (!isSessionPrivUnlocked()) {
+        forceAutoLockVault("আপনার Access Key-এর মেয়াদ শেষ হয়ে গেছে। আবার বৈধ Key দিয়ে লগইন করুন।");
+        return;
+      }
       var res = findPrivateResourceItem(id);
       if (!res) return;
       pushModalPath(res.routePath);
@@ -3380,45 +4041,90 @@
       updateDocumentTitle(res.title);
     };
 
-    window.submitPrivateKey = function(e) {
+    window.submitPrivateKey = async function(e) {
       e.preventDefault();
+      if (keyVerifyInFlight) return;
+
       var inp = document.getElementById("privKeyInput");
       var err = document.getElementById("privErr");
-      var val = (inp ? inp.value : "").trim();
-      if (!val) { err.textContent = "অনুগ্রহ করে আপনার Access Key লিখুন।"; return; }
-      if (val === DATA.BRAND_CONFIG.privateAccessKey) {
-        setSessionPrivUnlocked(true);
-        var wasFromModal = Boolean(history.state && history.state.canBackFromModal);
-        var targetPrivRes = pendingPrivateTargetPath ? findPrivateResourceItem(pendingPrivateTargetPath) : null;
-        pendingPrivateTargetPath = null;
+      var btn = document.getElementById("privSubmitBtn");
+      var rawVal = inp ? inp.value : "";
 
-        stopAndCloseOverlaysSilent();
-        state.privateUnlocked = true;
-        state.selectedItem = null;
-        render();
-        scrollToInstant(0);
+      if (err) {
+        err.style.color = "#f43f5e";
+        err.textContent = "";
+      }
 
-        if (targetPrivRes) {
-          setHistorySafe("replace", {
-            tab: state.tab,
-            underlyingPrivate: true,
-            canBackFromModal: false,
-            canBackToList: wasFromModal
-          }, targetPrivRes.routePath);
-          renderPrivateDlConfirmSilent(targetPrivRes);
-          updateDocumentTitle(targetPrivRes.title);
-        } else {
-          setHistorySafe("replace", {
-            tab: state.tab,
-            canBackToList: wasFromModal,
-            canBackFromModal: false,
-            vaultScrollY: 0
-          }, "/private-vault");
-          updateDocumentTitle();
+      var normalizedCandidate = extractMinhajKeyCode(rawVal);
+      if (!normalizedCandidate) {
+        if (err) err.textContent = "অনুগ্রহ করে আপনার Access Key লিখুন।";
+        return;
+      }
+      if (inp && VALID_MINHAJ_KEY_RE.test(normalizedCandidate)) {
+        inp.value = normalizedCandidate;
+        syncPrivKeyClearBtn();
+      }
+
+      keyVerifyInFlight = true;
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = "0.78";
+        btn.innerHTML = ICONS.spinner + "<span>Key যাচাই হচ্ছে...</span>";
+      }
+
+      var result;
+      try {
+        result = await verifyKeyAgainstFirestore(normalizedCandidate);
+      } catch (ex) {
+        result = { ok: false, code: "network_error", message: "Key যাচাই করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।" };
+      } finally {
+        keyVerifyInFlight = false;
+        var currentBtn = document.getElementById("privSubmitBtn");
+        if (currentBtn) {
+          currentBtn.disabled = false;
+          currentBtn.style.opacity = "1";
+          currentBtn.innerHTML = "<span>Unlock Private Vault</span>";
         }
+      }
+
+      if (!result || !result.ok) {
+        var currentErr = document.getElementById("privErr");
+        if (currentErr) {
+          currentErr.style.color = "#f43f5e";
+          currentErr.textContent = (result && result.message) || "ভুল অথবা মেয়াদোত্তীর্ণ Access Key দেওয়া হয়েছে।";
+        }
+        return;
+      }
+
+      setSessionPrivUnlocked(true, result.session);
+      var wasFromModal = Boolean(history.state && history.state.canBackFromModal);
+      var targetPrivRes = pendingPrivateTargetPath ? findPrivateResourceItem(pendingPrivateTargetPath) : null;
+      pendingPrivateTargetPath = null;
+
+      stopAndCloseOverlaysSilent();
+      state.privateUnlocked = true;
+      state.selectedItem = null;
+      render();
+      scrollToInstant(0);
+      showToast("Private Vault আনলক হয়েছে");
+
+      if (targetPrivRes) {
+        setHistorySafe("replace", {
+          tab: state.tab,
+          underlyingPrivate: true,
+          canBackFromModal: false,
+          canBackToList: wasFromModal
+        }, targetPrivRes.routePath);
+        renderPrivateDlConfirmSilent(targetPrivRes);
+        updateDocumentTitle(targetPrivRes.title);
       } else {
-        err.textContent = "ভুল Access Key দেওয়া হয়েছে।";
-        inp.value = "";
+        setHistorySafe("replace", {
+          tab: state.tab,
+          canBackToList: wasFromModal,
+          canBackFromModal: false,
+          vaultScrollY: 0
+        }, "/private-vault");
+        updateDocumentTitle();
       }
     };
 
@@ -3664,6 +4370,22 @@
       }
 
       if (parsed.type === "private-login") {
+        if (isSessionPrivUnlocked()) {
+          stopAndCloseOverlaysSilent();
+          state.selectedItem = null;
+          state.privateUnlocked = true;
+          syncBaseRenderAndScroll(hs, isInitialLoad);
+          updateDocumentTitle();
+          startVaultSecurityGuard();
+          revalidateActiveVaultSession();
+          setHistorySafe("replace", {
+            tab: state.tab,
+            canBackToList: Boolean(hs.canBackToList),
+            canBackFromModal: false,
+            vaultScrollY: hs.vaultScrollY || 0
+          }, "/private-vault");
+          return;
+        }
         applyUnderlyingState(hs);
         syncBaseRenderAndScroll(hs, isInitialLoad);
         renderPrivateLoginModalSilent();
@@ -3687,6 +4409,8 @@
           state.privateUnlocked = true;
           syncBaseRenderAndScroll(hs, isInitialLoad);
           updateDocumentTitle();
+          startVaultSecurityGuard();
+          revalidateActiveVaultSession();
           if (isInitialLoad) {
             setHistorySafe("replace", {
               tab: state.tab,
@@ -3721,6 +4445,8 @@
           syncBaseRenderAndScroll(hs, isInitialLoad);
           renderPrivateDlConfirmSilent(parsed.res);
           updateDocumentTitle(parsed.res.title);
+          startVaultSecurityGuard();
+          revalidateActiveVaultSession();
           if (isInitialLoad) {
             setHistorySafe("replace", {
               tab: state.tab,
@@ -3853,6 +4579,37 @@
       document.addEventListener("keydown", function(e) {
         if (e.key === "Escape" && isAnyOverlayOpen()) {
           closeOverlaysFromUI();
+        }
+      });
+
+      function handleTabReturnSync() {
+        if (state.privateUnlocked) {
+          updateVaultHeaderCountdownDOM();
+          revalidateActiveVaultSession();
+          return;
+        }
+        var inp = document.getElementById("privKeyInput");
+        if (inp && !inp.value.trim()) {
+          try {
+            var rawLock = localStorage.getItem(SHARED_ACTIVE_LOCK_V4);
+            if (rawLock) {
+              var parsedLock = JSON.parse(rawLock);
+              if (parsedLock && parsedLock.status === "active" && Number(parsedLock.expiresAtMs || 0) > getServerNowMs()) {
+                var lockKey = extractMinhajKeyCode(parsedLock.keyCode);
+                if (lockKey && VALID_MINHAJ_KEY_RE.test(lockKey)) {
+                  inp.value = lockKey;
+                  syncPrivKeyClearBtn();
+                }
+              }
+            }
+          } catch (e) {}
+        }
+      }
+
+      window.addEventListener("focus", handleTabReturnSync);
+      document.addEventListener("visibilitychange", function() {
+        if (document.visibilityState === "visible") {
+          handleTabReturnSync();
         }
       });
 
