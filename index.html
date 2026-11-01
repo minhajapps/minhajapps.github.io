@@ -3524,6 +3524,9 @@
       var found = findCatalogItem(idOrSlug);
       if (!found) return;
       saveCurrentScrollToHistory();
+      if (state.privateUnlocked) {
+        setSessionPrivUnlocked(false);
+      }
       stopAndCloseOverlaysSilent();
       var alreadyInDetail = Boolean(state.selectedItem || state.privateUnlocked);
       var canBack = alreadyInDetail
@@ -3991,24 +3994,12 @@
     };
 
     window.openPrivateLoginModal = function() {
-      if (isSessionPrivUnlocked()) {
-        stopAndCloseOverlaysSilent();
-        state.privateUnlocked = true;
-        state.selectedItem = null;
-        setHistorySafe("push", {
-          tab: state.tab,
-          canBackToList: true,
-          canBackFromModal: false,
-          vaultScrollY: 0
-        }, "/private-vault");
-        render();
-        updateDocumentTitle();
-        scrollToInstant(0);
-        startVaultSecurityGuard();
-        revalidateActiveVaultSession();
-        return;
-      }
       pendingPrivateTargetPath = null;
+      setSessionPrivUnlocked(false);
+      if (state.privateUnlocked) {
+        state.privateUnlocked = false;
+        render();
+      }
       pushModalPath("/private-login");
       renderPrivateLoginModalSilent();
       updateDocumentTitle("Private Vault Login");
@@ -4264,6 +4255,7 @@
       pendingPrivateTargetPath = null;
 
       if (parsed.type === "home") {
+        setSessionPrivUnlocked(false);
         stopAndCloseOverlaysSilent();
         state.selectedItem = null;
         state.privateUnlocked = false;
@@ -4282,6 +4274,7 @@
       }
 
       if (parsed.type === "tab") {
+        setSessionPrivUnlocked(false);
         stopAndCloseOverlaysSilent();
         state.selectedItem = null;
         state.privateUnlocked = false;
@@ -4300,6 +4293,7 @@
       }
 
       if (parsed.type === "tutorial" && parsed.item) {
+        setSessionPrivUnlocked(false);
         state.privateUnlocked = false;
         state.selectedItem = parsed.item;
         if (hs.tab) state.tab = hs.tab;
@@ -4318,6 +4312,7 @@
       }
 
       if (parsed.type === "preview" && parsed.item && parsed.item.image) {
+        setSessionPrivUnlocked(false);
         state.privateUnlocked = false;
         state.selectedItem = parsed.item;
         if (hs.tab) state.tab = hs.tab;
@@ -4336,6 +4331,7 @@
       }
 
       if (parsed.type === "qr") {
+        if (!hs.underlyingPrivate) setSessionPrivUnlocked(false);
         applyUnderlyingState(hs);
         syncBaseRenderAndScroll(hs, isInitialLoad);
         renderQrModalSilent();
@@ -4353,6 +4349,7 @@
       }
 
       if (parsed.type === "info" && parsed.info) {
+        if (!hs.underlyingPrivate) setSessionPrivUnlocked(false);
         applyUnderlyingState(hs);
         syncBaseRenderAndScroll(hs, isInitialLoad);
         renderInfoModalSilent(parsed.info);
@@ -4370,23 +4367,9 @@
       }
 
       if (parsed.type === "private-login") {
-        if (isSessionPrivUnlocked()) {
-          stopAndCloseOverlaysSilent();
-          state.selectedItem = null;
-          state.privateUnlocked = true;
-          syncBaseRenderAndScroll(hs, isInitialLoad);
-          updateDocumentTitle();
-          startVaultSecurityGuard();
-          revalidateActiveVaultSession();
-          setHistorySafe("replace", {
-            tab: state.tab,
-            canBackToList: Boolean(hs.canBackToList),
-            canBackFromModal: false,
-            vaultScrollY: hs.vaultScrollY || 0
-          }, "/private-vault");
-          return;
-        }
-        applyUnderlyingState(hs);
+        setSessionPrivUnlocked(false);
+        state.privateUnlocked = false;
+        applyUnderlyingState(Object.assign({}, hs, { underlyingPrivate: false }));
         syncBaseRenderAndScroll(hs, isInitialLoad);
         renderPrivateLoginModalSilent();
         updateDocumentTitle("Private Vault Login");
@@ -4475,6 +4458,7 @@
       }
 
       if (parsed.type === "detail" && parsed.item) {
+        setSessionPrivUnlocked(false);
         stopAndCloseOverlaysSilent();
         state.privateUnlocked = false;
         state.selectedItem = parsed.item;
@@ -4493,6 +4477,7 @@
         return;
       }
 
+      setSessionPrivUnlocked(false);
       stopAndCloseOverlaysSilent();
       state.selectedItem = null;
       state.privateUnlocked = false;
@@ -4586,23 +4571,6 @@
         if (state.privateUnlocked) {
           updateVaultHeaderCountdownDOM();
           revalidateActiveVaultSession();
-          return;
-        }
-        var inp = document.getElementById("privKeyInput");
-        if (inp && !inp.value.trim()) {
-          try {
-            var rawLock = localStorage.getItem(SHARED_ACTIVE_LOCK_V4);
-            if (rawLock) {
-              var parsedLock = JSON.parse(rawLock);
-              if (parsedLock && parsedLock.status === "active" && Number(parsedLock.expiresAtMs || 0) > getServerNowMs()) {
-                var lockKey = extractMinhajKeyCode(parsedLock.keyCode);
-                if (lockKey && VALID_MINHAJ_KEY_RE.test(lockKey)) {
-                  inp.value = lockKey;
-                  syncPrivKeyClearBtn();
-                }
-              }
-            }
-          } catch (e) {}
         }
       }
 
