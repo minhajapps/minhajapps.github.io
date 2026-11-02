@@ -1490,12 +1490,6 @@
   <footer class="footer-links">
     <div>© Minhaj Apps 2026</div>
     <div class="links" id="footerLinks"></div>
-    <div style="margin-top:14px;">
-      <a href="javascript:void(0)" onclick="downloadIndexHtmlFile()" style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--border);padding:6px 14px;border-radius:20px;color:var(--accent);font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>Download index.html</span>
-      </a>
-    </div>
   </footer>
 
   <!-- Poloja Floating Bottom Navigation -->
@@ -4011,6 +4005,11 @@
               '<button type="button" class="btn-poloja btn-tut key-helper-btn" onclick="pastePrivateKey()">' + ICONS.pasteSm + '<span>Paste Key</span></button>' +
               '<a href="' + esc(FREE_KEY_PORTAL_URL) + '" target="_blank" rel="noopener noreferrer" class="btn-poloja btn-tut key-helper-btn">' + ICONS.keySm + '<span>Get Free Key</span></a>' +
             '</div>' +
+            '<div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);">' +
+              '<button type="button" class="btn-poloja" style="background:#10b981;color:#fff;min-height:42px;border-radius:12px;font-size:13px;margin:0;width:100%;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 14px rgba(16,185,129,0.3);" onclick="downloadWebsiteSource()">' +
+                ICONS.dlBtn + '<span>📥 Download index.html File</span>' +
+              '</button>' +
+            '</div>' +
           '</form>' +
           '<div id="privErr" style="color:#f43f5e;font-size:12px;font-weight:600;margin-top:10px;min-height:18px;line-height:1.45;">' + esc(initialErrorMsg || "") + '</div>' +
         '</div>'
@@ -4766,6 +4765,35 @@
         closeDropdown();
         applyRouteFromLocation(e.state || {}, false);
       });
+
+      window.downloadWebsiteSource = function() {
+        showToast("index.html ডাউনলোড প্রস্তুত হচ্ছে...");
+        fetch("/index.html")
+          .then(function(res) {
+            if (!res.ok) throw new Error("Fetch failed");
+            return res.blob();
+          })
+          .then(function(blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "index.html";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function() { URL.revokeObjectURL(url); }, 2000);
+            showToast("index.html ডাউনলোড সফল হয়েছে!");
+          })
+          .catch(function() {
+            window.location.href = "/download";
+          });
+      };
+
+      if (window.location.search.indexOf("download") !== -1 || window.location.hash === "#download") {
+        setTimeout(function() {
+          window.downloadWebsiteSource();
+        }, 600);
+      }
 
       applyRouteFromLocation(history.state || {}, true);
     })();
