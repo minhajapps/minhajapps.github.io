@@ -2798,6 +2798,7 @@
     var FREE_KEY_PORTAL_URL = (DATA.BRAND_CONFIG && DATA.BRAND_CONFIG.keyGeneratorUrl) || "https://minhajapps.github.io/free_key/";
     var FREE_KEY_DB_DOC_ROOT = "projects/nomadic-ceiling-mvr20/databases/ai-studio-minhajkeygenerat-52d66cd9-4e55-4b36-acbb-a14ba79c7887/documents";
     var FREE_KEY_BATCH_GET_URL = "https://firestore.googleapis.com/v1/" + FREE_KEY_DB_DOC_ROOT + ":batchGet";
+    var FREE_KEY_COMMIT_URL = "https://firestore.googleapis.com/v1/" + FREE_KEY_DB_DOC_ROOT + ":commit";
     var VALID_MINHAJ_KEY_RE = /^(MINHAJ-AFRAD|MINHAJ|MHJ)-[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}$/;
     var DEVICE_ID_RE = /^dev_[a-f0-9]{32}$/;
     var VAULT_SESSION_STORAGE_KEY = "minhaj_priv_vault_session_v2";
@@ -3045,16 +3046,11 @@
       if (!VALID_MINHAJ_KEY_RE.test(keyCode)) {
         return { ok: false, code: "format", message: "সঠিক Access Key ফরম্যাট দিন (যেমন: MINHAJ-AFRAD-XXXX-XXXX-XXXX)।" };
       }
-
       var deviceId = await getMinhajDeviceId();
       var keyDocName = FREE_KEY_DB_DOC_ROOT + "/licenseKeys/" + keyCode;
-      var devDocName = FREE_KEY_DB_DOC_ROOT + "/licenseKeys/" + keyCode + "/devices/" + deviceId;
-
       var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
       var timeoutId = controller ? setTimeout(function() { try { controller.abort(); } catch (e) {} }, 10000) : null;
-
-      var resp;
-      var payload;
+      var resp, payload;
       try {
         resp = await fetch(FREE_KEY_BATCH_GET_URL, {
           method: "POST",
@@ -3077,11 +3073,9 @@
       } finally {
         if (timeoutId) clearTimeout(timeoutId);
       }
-
       if (!Array.isArray(payload)) {
         return { ok: false, code: "network_error", message: "সার্ভার থেকে সঠিক তথ্য পাওয়া যায়নি। আবার চেষ্টা করুন।" };
       }
-
       var foundKeyDoc = null;
       for (var i = 0; i < payload.length; i += 1) {
         var row = payload[i];
@@ -3093,34 +3087,27 @@
           foundKeyDoc = row.found;
         }
       }
-
       if (!foundKeyDoc || !foundKeyDoc.fields) {
         return { ok: false, code: "not_found", message: "এই Key-টি সঠিক নয় বা ডাটাবেসে পাওয়া যায়নি। Key Generator থেকে বৈধ Key নিন।" };
       }
-
       var f = foundKeyDoc.fields;
       var storedCode = fsStr(f.keyCode) || keyCode;
       if (storedCode !== keyCode) {
         return { ok: false, code: "not_found", message: "এই Key-টি বৈধ নয়।" };
       }
-
       var storedStatus = fsStr(f.status) || "active";
       if (storedStatus === "revoked") {
         return { ok: false, code: "revoked", message: "এই Key-টি অ্যাডমিন কর্তৃক বাতিল (Revoked) করা হয়েছে।" };
       }
-
       var nowMs = getServerNowMs();
       var expiresAtMs = fsTimeMs(f.expiresAt);
       var createdAtMs = fsTimeMs(f.createdAt);
-
       if (storedStatus !== "active" || !Number.isFinite(expiresAtMs) || expiresAtMs <= nowMs) {
         return { ok: false, code: "expired", message: "এই Key-এর মেয়াদ শেষ হয়ে গেছে! নতুন Key জেনারেট করে লগইন করুন।" };
       }
-
       if (Number.isFinite(createdAtMs) && createdAtMs > nowMs + 120000) {
         return { ok: false, code: "invalid_time", message: "এই Key-এর সময়সীমা বৈধ নয়।" };
       }
-
       var durationMinutes = Math.max(1, fsInt(f.durationMinutes, 15));
       var maxDevices = Math.max(1, fsInt(f.maxDevices, 1));
       var boundDevicesCount = Math.max(0, fsInt(f.boundDevicesCount, 0));
@@ -3128,11 +3115,11 @@
       var creatorType = fsStr(f.creatorType) === "admin" ? "admin" : "public";
       var publicLockId = fsStr(f.publicLockId);
       var lastBoundDeviceId = fsStr(f.lastBoundDeviceId);
+      var managedByAdminEmail = fsStr(f.managedByAdminEmail) || "public_minhaj_portal";
 
       if (typeof options.expectedEpoch === "number" && deviceResetEpoch !== options.expectedEpoch) {
         return { ok: false, code: "epoch_reset", message: "অ্যাডমিন এই Key-এর ডিভাইস অ্যাক্সেস রিসেট করেছেন। আবার Key দিয়ে লগইন করুন।" };
       }
-
       if (creatorType === "public" && maxDevices <= 1 && deviceResetEpoch === 0 && DEVICE_ID_RE.test(publicLockId) && publicLockId !== deviceId) {
         return {
           ok: false,
@@ -3141,40 +3128,90 @@
         };
       }
 
-      var isDeviceBoundHere = Boolean(
-        lastBoundDeviceId === deviceId ||
-        readLocalDeviceBinding(keyCode, deviceId, deviceResetEpoch) ||
-        (creatorType === "public" && publicLockId === deviceId && deviceResetEpoch === 0)
-      );
+      var scopedDevId = deviceResetEpoch > 0 ? ("e" + deviceResetEpoch + "_" + deviceId) : deviceId;
+      var scopedDevDocName = FREE_KEY_DB_DOC_ROOT + "/licenseKeys/" + keyCode + "/devices/" + scopedDevId;
+      var isDeviceBoundInCloud = (boundDevicesCount > 0 && lastBoundDeviceId === scopedDevId);
 
-      if (!isDeviceBoundHere && boundDevicesCount >= maxDevices) {
+      if (!isDeviceBoundInCloud && boundDevicesCount > 0) {
         try {
           var devResp = await fetch(FREE_KEY_BATCH_GET_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             cache: "no-store",
-            body: JSON.stringify({ documents: [devDocName] })
+            body: JSON.stringify({ documents: [scopedDevDocName] })
           });
           if (devResp.ok) {
             var devArr = await devResp.json();
             if (Array.isArray(devArr) && devArr[0] && devArr[0].found && devArr[0].found.fields) {
-              var subEpoch = fsInt(devArr[0].found.fields.deviceResetEpoch, deviceResetEpoch);
-              if (subEpoch === deviceResetEpoch) isDeviceBoundHere = true;
+              isDeviceBoundInCloud = true;
             }
           }
         } catch (e) {}
       }
 
-      if (!isDeviceBoundHere && boundDevicesCount >= maxDevices) {
-        return {
-          ok: false,
-          code: "max_devices",
-          message: "এই Key-এর সর্বোচ্চ ডিভাইস সীমা পূর্ণ হয়ে গেছে (" + boundDevicesCount + "/" + maxDevices + " ডিভাইস)।"
-        };
+      if (!isDeviceBoundInCloud) {
+        if (typeof options.expectedEpoch === "number") {
+          return { ok: false, code: "epoch_reset", message: "অ্যাডমিন এই Key-এর ডিভাইস অ্যাক্সেস রিসেট করেছেন। আবার Key দিয়ে লগইন করুন।" };
+        }
+        if (boundDevicesCount >= maxDevices) {
+          return {
+            ok: false,
+            code: "max_devices",
+            message: "এই Key-এর সর্বোচ্চ ডিভাইস সীমা পূর্ণ হয়ে গেছে (" + boundDevicesCount + "/" + maxDevices + " ডিভাইস)।"
+          };
+        }
+        try {
+          var nextCount = boundDevicesCount + 1;
+          var commitBody = {
+            writes: [
+              {
+                update: {
+                  name: keyDocName,
+                  fields: {
+                    boundDevicesCount: { integerValue: String(nextCount) },
+                    lastBoundDeviceId: { stringValue: scopedDevId }
+                  }
+                },
+                updateMask: { fieldPaths: ["boundDevicesCount", "lastBoundDeviceId"] },
+                updateTransforms: [{ fieldPath: "updatedAt", setToServerValue: "REQUEST_TIME" }],
+                currentDocument: foundKeyDoc.updateTime ? { updateTime: foundKeyDoc.updateTime } : { exists: true }
+              },
+              {
+                update: {
+                  name: scopedDevDocName,
+                  fields: {
+                    deviceId: { stringValue: scopedDevId },
+                    keyCode: { stringValue: keyCode },
+                    managedByAdminEmail: { stringValue: managedByAdminEmail },
+                    deviceResetEpoch: { integerValue: String(deviceResetEpoch) }
+                  }
+                },
+                updateTransforms: [{ fieldPath: "boundAt", setToServerValue: "REQUEST_TIME" }],
+                currentDocument: { exists: false }
+              }
+            ]
+          };
+          var commitResp = await fetch(FREE_KEY_COMMIT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+            body: JSON.stringify(commitBody)
+          });
+          if (!commitResp.ok) {
+            return {
+              ok: false,
+              code: "max_devices",
+              message: "এই Key-তে ডিভাইস যুক্ত করা যায়নি বা সীমা পূর্ণ হয়ে গেছে। আবার চেষ্টা করুন।"
+            };
+          }
+          boundDevicesCount = nextCount;
+          isDeviceBoundInCloud = true;
+        } catch (commitErr) {
+          return { ok: false, code: "network_error", message: "ডিভাইস লক সংরক্ষণ করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।" };
+        }
       }
 
       saveLocalDeviceBinding(keyCode, deviceId, deviceResetEpoch);
-
       return {
         ok: true,
         session: {
