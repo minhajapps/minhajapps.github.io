@@ -100,17 +100,12 @@
       color-scheme: dark;
     }
 
-    *, *::before, *::after {
+    * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
       font-family: 'Poppins', 'Noto Sans Bengali', sans-serif;
-      -webkit-tap-highlight-color: transparent !important;
-    }
-
-    *:focus,
-    *:focus-visible {
-      outline: none !important;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html {
@@ -139,12 +134,7 @@
     }
 
     a, button {
-      outline: none !important;
-      -webkit-tap-highlight-color: transparent !important;
-    }
-
-    a, [href] {
-      -webkit-touch-callout: default !important;
+      outline: none;
     }
 
     button, input, textarea {
@@ -209,7 +199,7 @@
     }
 
     .logo-text {
-      font-size: clamp(15px, 4.4vw, 18.5px);
+      font-size: clamp(14.5px, 4.4vw, 18.5px);
       font-weight: 700;
       line-height: 1.15;
       white-space: nowrap;
@@ -318,7 +308,6 @@
       transition: 0.2s;
       text-align: left;
       white-space: nowrap;
-      -webkit-touch-callout: default !important;
     }
 
     .menu-item:hover {
@@ -339,11 +328,6 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-    }
-
-    .menu-icon-slot svg {
-      width: 20px;
-      height: 20px;
     }
 
     .menu-footer {
@@ -620,8 +604,8 @@
     }
 
     .horizontal-list .app-card.trend-card {
-      min-width: 118px;
-      width: 118px;
+      min-width: 112px;
+      width: 112px;
       flex-shrink: 0;
     }
 
@@ -732,8 +716,8 @@
     }
 
     .horizontal-list .prompt-card-poloja {
-      min-width: 140px;
-      width: 140px;
+      min-width: 136px;
+      width: 136px;
       flex-shrink: 0;
     }
 
@@ -838,10 +822,10 @@
 
     /* Poloja Details View */
     .detail-container {
-      padding: clamp(12px, 3vw, 20px) clamp(12px, 3.5vw, 20px) 30px;
-      max-width: 860px;
+      padding: 16px 20px 30px;
+      max-width: 800px;
       margin: 0 auto;
-      animation: fadeIn 0.4s ease;
+      animation: fadeIn 0.5s ease;
     }
 
     .feed-enter {
@@ -901,18 +885,18 @@
     .app-info-box {
       display: flex;
       align-items: center;
-      gap: clamp(12px, 3.5vw, 20px);
+      gap: 20px;
       margin-bottom: 22px;
       background: var(--surface);
-      padding: clamp(12px, 3vw, 16px);
+      padding: 15px;
       border-radius: 20px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
     }
 
     .detail-icon-btn {
-      width: clamp(82px, 22vw, 104px);
-      height: clamp(82px, 22vw, 104px);
+      width: 104px;
+      height: 104px;
       border-radius: 16px;
       flex-shrink: 0;
       position: relative;
@@ -1011,24 +995,11 @@
       text-decoration: none;
       color: var(--text);
       box-shadow: var(--shadow);
-      transition: transform 0.15s ease, background-color 0.15s ease;
-      outline: none !important;
-      -webkit-tap-highlight-color: transparent !important;
-      -webkit-touch-callout: default !important;
+      transition: 0.2s;
     }
 
-    .play-store:hover,
-    .play-store:focus,
-    .play-store:focus-visible,
-    .play-store:active {
-      border-color: var(--border) !important;
-      outline: none !important;
-      box-shadow: var(--shadow) !important;
-    }
-
-    .play-store:active {
-      transform: scale(0.98);
-      background: var(--surface-2);
+    .play-store:hover {
+      border-color: #10b981;
     }
 
     .btn-poloja {
@@ -1075,10 +1046,10 @@
 
     /* Private Vault */
     .vault-wrap {
-      padding: clamp(12px, 3vw, 20px) clamp(12px, 3.5vw, 20px) 30px;
-      max-width: 860px;
+      padding: 16px 20px 30px;
+      max-width: 800px;
       margin: 0 auto;
-      animation: fadeIn 0.4s ease;
+      animation: fadeIn 0.5s ease;
     }
 
     .vault-top {
@@ -1181,25 +1152,23 @@
       gap: 8px 10px;
     }
 
-    .footer-links button, .footer-links a, .footer-link-item {
+    .footer-links button, .footer-links a {
       background: none;
       border: 0;
       color: var(--muted);
       font-size: 12px;
       text-decoration: none;
       cursor: pointer;
-      -webkit-touch-callout: default !important;
-      transition: color 0.15s ease;
     }
 
-    .footer-links button:hover, .footer-links a:hover, .footer-link-item:hover {
+    .footer-links button:hover, .footer-links a:hover {
       color: var(--accent);
     }
 
     /* Poloja Floating Bottom Nav */
     .bottom-nav {
       position: fixed;
-      bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+      bottom: 15px;
       left: 50%;
       transform: translateX(-50%);
       width: 92%;
@@ -1231,13 +1200,6 @@
       border-radius: 25px;
       cursor: pointer;
       transition: 0.25s;
-      text-decoration: none;
-      -webkit-touch-callout: default !important;
-    }
-
-    .nav-item svg {
-      width: 20px;
-      height: 20px;
     }
 
     .nav-item span {
@@ -1281,13 +1243,13 @@
     .modal-box {
       position: relative;
       width: 100%;
-      max-width: min(390px, calc(100vw - 28px));
+      max-width: 390px;
       max-height: 88vh;
       overflow-y: auto;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: clamp(18px, 4vw, 24px);
-      padding: clamp(16px, 4vw, 22px);
+      border-radius: 24px;
+      padding: 22px;
       box-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
     }
 
@@ -1426,15 +1388,15 @@
 
     .toast.show { display: inline-flex; }
   </style>
-<script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
+</head>
 <body>
   <!-- Poloja Sticky Header -->
   <header class="app-header">
     <div class="header-inner">
-      <a href="/" class="logo-link" id="brandHomeBtn" onclick="return handleBrandHomeClick(event)">
+      <button type="button" class="logo-link" id="brandHomeBtn">
         <img src="https://i.postimg.cc/k5qxxjHd/Tik-Tok-Logo-9D2F901.png" alt="Logo" class="logo-img" referrerpolicy="no-referrer" />
         <span class="logo-text">Minhaj Apps</span>
-      </a>
+      </button>
 
       <div class="header-actions">
         <button type="button" class="theme-toggle" id="themeBtn" aria-label="Toggle theme"></button>
@@ -1449,30 +1411,30 @@
           </button>
 
           <div class="menu-dropdown" id="menuDropdown">
-            <a href="/" class="menu-item active" data-tab="home" onclick="return handleNavClick(event, 'home')">
+            <button type="button" class="menu-item active" data-tab="home">
               <span class="menu-icon-slot" style="color:#10b981;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span>
               <span>Home</span>
-            </a>
-            <a href="/apps" class="menu-item" data-tab="apps" onclick="return handleNavClick(event, 'apps')">
+            </button>
+            <button type="button" class="menu-item" data-tab="apps">
               <span class="menu-icon-slot" style="color:#10b981;"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2.25"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="2.25"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="2.25"/><rect x="13" y="13" width="7.5" height="7.5" rx="2.25"/></svg></span>
               <span>All Apps</span>
-            </a>
-            <a href="/games" class="menu-item" data-tab="games" onclick="return handleNavClick(event, 'games')">
+            </button>
+            <button type="button" class="menu-item" data-tab="games">
               <span class="menu-icon-slot" style="color:#ef4444;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span>
               <span>Games</span>
-            </a>
-            <a href="/prompts" class="menu-item" data-tab="prompts" onclick="return handleNavClick(event, 'prompts')">
+            </button>
+            <button type="button" class="menu-item" data-tab="prompts">
               <span class="menu-icon-slot" style="color:#8b5cf6;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg></span>
               <span>AI Prompt</span>
-            </a>
-            <a href="/qr-scanner" class="menu-item" id="openQrBtn" onclick="return handleMenuQrClick(event)">
+            </button>
+            <button type="button" class="menu-item" id="openQrBtn">
               <span class="menu-icon-slot" style="color:#10b981;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3M14 18h3"/></svg></span>
               <span>QR Scanner</span>
-            </a>
-            <a href="/private-login" class="menu-item" id="openPrivateLoginBtn" onclick="return handleMenuPrivateLoginClick(event)">
+            </button>
+            <button type="button" class="menu-item" id="openPrivateLoginBtn">
               <span class="menu-icon-slot" style="color:#f59e0b;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
               <span>Private Login</span>
-            </a>
+            </button>
 
             <div id="menuSocialItems"></div>
 
@@ -1494,22 +1456,22 @@
 
   <!-- Poloja Floating Bottom Navigation -->
   <nav class="bottom-nav" id="bottomNav" aria-label="Bottom navigation">
-    <a href="/" class="nav-item active" data-tab="home" onclick="return handleBottomNavClick(event, 'home')">
+    <button type="button" class="nav-item active" data-tab="home">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
       <span>Home</span>
-    </a>
-    <a href="/apps" class="nav-item" data-tab="apps" onclick="return handleBottomNavClick(event, 'apps')">
+    </button>
+    <button type="button" class="nav-item" data-tab="apps">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2.25"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="2.25"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="2.25"/><rect x="13" y="13" width="7.5" height="7.5" rx="2.25"/></svg>
       <span>All Apps</span>
-    </a>
-    <a href="/games" class="nav-item" data-tab="games" onclick="return handleBottomNavClick(event, 'games')">
+    </button>
+    <button type="button" class="nav-item" data-tab="games">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
       <span>Games</span>
-    </a>
-    <a href="/prompts" class="nav-item" data-tab="prompts" onclick="return handleBottomNavClick(event, 'prompts')">
+    </button>
+    <button type="button" class="nav-item" data-tab="prompts">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>
       <span>AI Prompt</span>
-    </a>
+    </button>
   </nav>
 
   <!-- Generic Modal Overlay -->
@@ -3742,7 +3704,7 @@
       html += '<a href="' + esc(DATA.BRAND_CONFIG.telegramUrl) + '" target="_blank" rel="noopener noreferrer" class="btn-poloja btn-tg">' + ICONS.tgBtn + '<span>Join Telegram</span></a>';
 
       if (!isPrompt) {
-        html += '<a href="' + esc(item.routePath) + '/tutorial" class="btn-poloja btn-tut" onclick="return handleTutorialClick(event, \'' + esc(item.id) + '\')">' + ICONS.playCircle + '<span>Install Problem Fix Tutorial</span></a>';
+        html += '<button type="button" class="btn-poloja btn-tut" onclick="openTutorialModal(\'' + esc(item.id) + '\')">' + ICONS.playCircle + '<span>Install Problem Fix Tutorial</span></button>';
       }
       html += '</div>';
 
@@ -3788,6 +3750,7 @@
       return '<div class="vault-wrap">' +
         '<div class="vault-top">' +
           '<button type="button" class="back-btn" style="margin:0;" onclick="backToMain(true)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back to Home</span></button>' +
+          '<button type="button" class="lock-btn" onclick="backToMain(true)">Lock Vault</button>' +
         '</div>' +
         '<div class="vault-header">' +
           '<div style="display:flex;align-items:center;gap:12px;">' +
@@ -4004,11 +3967,6 @@
             '<div class="key-helper-grid">' +
               '<button type="button" class="btn-poloja btn-tut key-helper-btn" onclick="pastePrivateKey()">' + ICONS.pasteSm + '<span>Paste Key</span></button>' +
               '<a href="' + esc(FREE_KEY_PORTAL_URL) + '" target="_blank" rel="noopener noreferrer" class="btn-poloja btn-tut key-helper-btn">' + ICONS.keySm + '<span>Get Free Key</span></a>' +
-            '</div>' +
-            '<div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);">' +
-              '<button type="button" class="btn-poloja" style="background:#10b981;color:#fff;min-height:42px;border-radius:12px;font-size:13px;margin:0;width:100%;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 14px rgba(16,185,129,0.3);" onclick="downloadWebsiteSource()">' +
-                ICONS.dlBtn + '<span>📥 Download index.html File</span>' +
-              '</button>' +
             '</div>' +
           '</form>' +
           '<div id="privErr" style="color:#f43f5e;font-size:12px;font-weight:600;margin-top:10px;min-height:18px;line-height:1.45;">' + esc(initialErrorMsg || "") + '</div>' +
@@ -4572,119 +4530,6 @@
       }, "/");
     }
 
-    /* Link & Navigation Handlers */
-    window.handleNavClick = function(ev, tab) {
-      if (ev) {
-        if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey || ev.button === 1) return true;
-        if (ev.preventDefault) ev.preventDefault();
-      }
-      var m = document.getElementById("menuDropdown");
-      var b = document.getElementById("menuBtn");
-      if (m) m.classList.remove("show");
-      if (b) b.classList.remove("active");
-      switchTab(tab);
-      return false;
-    };
-
-    window.handleMenuQrClick = function(ev) {
-      if (ev) {
-        if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey || ev.button === 1) return true;
-        if (ev.preventDefault) ev.preventDefault();
-      }
-      var m = document.getElementById("menuDropdown");
-      var b = document.getElementById("menuBtn");
-      if (m) m.classList.remove("show");
-      if (b) b.classList.remove("active");
-      openQrModal();
-      return false;
-    };
-
-    window.handleMenuPrivateLoginClick = function(ev) {
-      if (ev) {
-        if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey || ev.button === 1) return true;
-        if (ev.preventDefault) ev.preventDefault();
-      }
-      var m = document.getElementById("menuDropdown");
-      var b = document.getElementById("menuBtn");
-      if (m) m.classList.remove("show");
-      if (b) b.classList.remove("active");
-      openPrivateLoginModal();
-      return false;
-    };
-
-    window.handleFooterLinkClick = function(ev, id) {
-      if (ev) {
-        if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey || ev.button === 1) return true;
-        if (ev.preventDefault) ev.preventDefault();
-      }
-      openInfoModal(id);
-      return false;
-    };
-
-    window.handleBottomNavClick = function(ev, tab) {
-      if (ev) {
-        if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey || ev.button === 1) return true;
-        if (ev.preventDefault) ev.preventDefault();
-      }
-      switchTab(tab);
-      return false;
-    };
-
-    window.handleBrandHomeClick = function(ev) {
-      if (ev) {
-        if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey || ev.button === 1) return true;
-        if (ev.preventDefault) ev.preventDefault();
-      }
-      switchTab("home");
-      return false;
-    };
-
-    window.handleTutorialClick = function(ev, id) {
-      if (ev) {
-        if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey || ev.button === 1) return true;
-        if (ev.preventDefault) ev.preventDefault();
-      }
-      openTutorialModal(id);
-      return false;
-    };
-
-    window.downloadIndexHtmlFile = async function() {
-      try {
-        var mDropdown = document.getElementById("menuDropdown");
-        var mBtn = document.getElementById("menuBtn");
-        if (mDropdown) mDropdown.classList.remove("show");
-        if (mBtn) mBtn.classList.remove("active");
-
-        showToast("index.html ডাউনলোড হচ্ছে...");
-        var content = "";
-        try {
-          var resp = await fetch("/index.html", { cache: "no-store" });
-          if (resp && resp.ok) {
-            content = await resp.text();
-          }
-        } catch (e) {}
-
-        if (!content || content.indexOf("<!DOCTYPE html>") === -1) {
-          content = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-        }
-
-        var blob = new Blob([content], { type: "text/html;charset=utf-8" });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = "index.html";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function() {
-          if (a.parentNode) a.parentNode.removeChild(a);
-          URL.revokeObjectURL(url);
-          showToast("index.html ডাউনলোড সফল হয়েছে!");
-        }, 500);
-      } catch (err) {
-        showToast("ডাউনলোড করতে সমস্যা হয়েছে");
-      }
-    };
-
     /* Init Wire-up */
     (function init() {
       syncThemeIcon();
@@ -4694,6 +4539,10 @@
         document.documentElement.classList.toggle("dark", dark);
         try { localStorage.setItem("minhaj_theme", dark ? "dark" : "light"); } catch (e) {}
         syncThemeIcon();
+      });
+
+      document.getElementById("brandHomeBtn").addEventListener("click", function() {
+        switchTab("home");
       });
 
       var menuBtn = document.getElementById("menuBtn");
@@ -4717,10 +4566,18 @@
         }
       });
 
+      document.getElementById("openQrBtn").addEventListener("click", function() {
+        closeDropdown();
+        openQrModal();
+      });
+
+      document.getElementById("openPrivateLoginBtn").addEventListener("click", function() {
+        closeDropdown();
+        openPrivateLoginModal();
+      });
+
       document.querySelectorAll("[data-tab]").forEach(function(btn) {
-        btn.addEventListener("click", function(e) {
-          if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button === 1) return;
-          if (e.preventDefault) e.preventDefault();
+        btn.addEventListener("click", function() {
           closeDropdown();
           switchTab(btn.getAttribute("data-tab"));
         });
@@ -4735,8 +4592,8 @@
       }).join("");
 
       document.getElementById("footerLinks").innerHTML = DATA.FOOTER_INFO_ITEMS.map(function(f) {
-        return '<a href="' + esc(f.routePath) + '" class="footer-link-item" onclick="return handleFooterLinkClick(event, \'' + esc(f.id) + '\')">' + esc(f.label) + '</a><span>|</span>';
-      }).join("") + '<a href="' + esc(DATA.BRAND_CONFIG.telegramUrl) + '" target="_blank" rel="noopener noreferrer" class="footer-link-item">Telegram</a>';
+        return '<button type="button" onclick="openInfoModal(\'' + esc(f.id) + '\')">' + esc(f.label) + '</button><span>|</span>';
+      }).join("") + '<a href="' + esc(DATA.BRAND_CONFIG.telegramUrl) + '" target="_blank" rel="noopener noreferrer">Telegram</a>';
 
       document.getElementById("modalOverlay").addEventListener("click", closeModal);
       document.getElementById("lightboxOverlay").addEventListener("click", closeLightbox);
@@ -4765,35 +4622,6 @@
         closeDropdown();
         applyRouteFromLocation(e.state || {}, false);
       });
-
-      window.downloadWebsiteSource = function() {
-        showToast("index.html ডাউনলোড প্রস্তুত হচ্ছে...");
-        fetch("/index.html")
-          .then(function(res) {
-            if (!res.ok) throw new Error("Fetch failed");
-            return res.blob();
-          })
-          .then(function(blob) {
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement("a");
-            a.href = url;
-            a.download = "index.html";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(function() { URL.revokeObjectURL(url); }, 2000);
-            showToast("index.html ডাউনলোড সফল হয়েছে!");
-          })
-          .catch(function() {
-            window.location.href = "/download";
-          });
-      };
-
-      if (window.location.search.indexOf("download") !== -1 || window.location.hash === "#download") {
-        setTimeout(function() {
-          window.downloadWebsiteSource();
-        }, 600);
-      }
 
       applyRouteFromLocation(history.state || {}, true);
     })();
