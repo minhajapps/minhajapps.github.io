@@ -11,9 +11,11 @@
   <meta name="theme-color" content="#10b981" />
 
   <link rel="canonical" href="https://minhajapps.github.io/" />
-  <link rel="icon" type="image/png" href="https://minhajapps.github.io/favicon.png" />
+  <link rel="icon" type="image/png" sizes="384x384" href="/favicon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="https://minhajapps.github.io/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="https://minhajapps.github.io/favicon.png" />
   <link rel="shortcut icon" type="image/png" href="https://minhajapps.github.io/favicon.png" />
-  <link rel="apple-touch-icon" href="https://minhajapps.github.io/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="https://minhajapps.github.io/favicon.png" />
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Minhaj Apps" />
@@ -37,12 +39,33 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Minhaj Apps",
-    "alternateName": ["Minhaj Apps", "Minhaj Afrad"],
-    "url": "https://minhajapps.github.io/",
-    "image": "https://minhajapps.github.io/og-image.png",
-    "inLanguage": "bn"
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://minhajapps.github.io/#organization",
+        "name": "Minhaj Apps",
+        "url": "https://minhajapps.github.io/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://minhajapps.github.io/favicon.png",
+          "contentUrl": "https://minhajapps.github.io/favicon.png",
+          "width": 384,
+          "height": 384
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://minhajapps.github.io/#website",
+        "name": "Minhaj Apps",
+        "alternateName": ["Minhaj Apps", "Minhaj Afrad", "minhajapps.github.io"],
+        "url": "https://minhajapps.github.io/",
+        "image": "https://minhajapps.github.io/og-image.png",
+        "publisher": {
+          "@id": "https://minhajapps.github.io/#organization"
+        },
+        "inLanguage": "bn"
+      }
+    ]
   }
   </script>
 
@@ -77,10 +100,12 @@
       --muted: #5b6e8c;
       --accent: #10b981;
       --accent-soft: rgba(16, 185, 129, 0.1);
-      --accent-border: rgba(16, 185, 129, 0.2);
+      --accent-border: rgba(16, 185, 129, 0.22);
       --star-empty: #cbd5e1;
-      --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      --header-bg: #ffffff;
+      --shadow: 0 2px 8px rgba(15, 23, 42, 0.045);
+      --shadow-hover: 0 8px 20px rgba(15, 23, 42, 0.08);
+      --header-bg: rgba(255, 255, 255, 0.92);
+      --nav-bg: rgba(255, 255, 255, 0.94);
       --page-max: 800px;
       --side-pad: clamp(12px, 3.8vw, 20px);
     }
@@ -101,7 +126,7 @@
       --bg: #0f1216;
       --surface: #1a1f26;
       --surface-2: #252b35;
-      --surface-3: #0f1216;
+      --surface-3: #12161c;
       --border: rgba(255, 255, 255, 0.06);
       --text: #ffffff;
       --muted: #a0a6b1;
@@ -109,8 +134,10 @@
       --accent-soft: rgba(0, 255, 136, 0.1);
       --accent-border: rgba(0, 255, 136, 0.2);
       --star-empty: #475569;
-      --shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
-      --header-bg: #1a1f26;
+      --shadow: 0 3px 12px rgba(0, 0, 0, 0.22);
+      --shadow-hover: 0 10px 24px rgba(0, 0, 0, 0.34);
+      --header-bg: rgba(26, 31, 38, 0.92);
+      --nav-bg: rgba(26, 31, 38, 0.94);
       color-scheme: dark;
     }
 
@@ -180,6 +207,8 @@
     /* Poloja Header */
     .app-header {
       background: var(--header-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       padding: calc(12px + env(safe-area-inset-top, 0px)) max(var(--side-pad), env(safe-area-inset-right, 0px)) 12px max(var(--side-pad), env(safe-area-inset-left, 0px));
       position: sticky;
       top: 0;
@@ -228,7 +257,7 @@
     }
 
     .logo-text {
-      font-size: clamp(14px, 4.3vw, 18.5px);
+      font-size: clamp(14.5px, 4.3vw, 18px);
       font-weight: 700;
       line-height: 1.15;
       white-space: nowrap;
@@ -258,6 +287,11 @@
       flex-shrink: 0;
       cursor: pointer;
       transition: transform 0.2s, background 0.2s;
+    }
+
+    html.dark .theme-toggle,
+    html.dark .menu-btn {
+      border-color: rgba(255, 255, 255, 0.09);
     }
 
     .theme-toggle:hover, .theme-toggle:focus,
@@ -313,14 +347,18 @@
       background: var(--surface);
       border-radius: 20px;
       border: 1px solid var(--border);
-      min-width: min(244px, calc(100vw - 24px));
+      min-width: min(236px, calc(100vw - 24px));
       max-width: calc(100vw - 24px);
       max-height: min(calc(100vh - 80px), calc(100dvh - 80px));
       overflow-y: auto;
       overscroll-behavior: contain;
-      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.14);
+      box-shadow: 0 20px 38px rgba(15, 23, 42, 0.14);
       z-index: 1001;
       display: none;
+    }
+
+    html.dark .menu-dropdown {
+      box-shadow: 0 22px 44px rgba(0, 0, 0, 0.48);
     }
 
     .menu-dropdown.show {
@@ -333,15 +371,15 @@
       width: 100%;
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 13px 18px;
+      gap: 13px;
+      padding: 12.5px 18px;
       background: transparent;
       border: 0;
       border-bottom: 1px solid var(--border);
       outline: none;
       color: var(--text);
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13.8px;
       font-weight: 500;
       cursor: pointer;
       transition: background 0.2s, padding-left 0.2s, color 0.2s;
@@ -354,11 +392,19 @@
       padding-left: 22px;
     }
 
+    html.dark .menu-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
     .menu-item:focus,
     .menu-item:focus-visible,
     .menu-item:active {
       outline: none;
       border-bottom-color: var(--border);
+    }
+
+    #menuSocialItems .menu-item:last-child {
+      border-bottom: 0;
     }
 
     .menu-item.active {
@@ -368,8 +414,8 @@
     }
 
     .menu-icon-slot {
-      width: 22px;
-      height: 22px;
+      width: 21px;
+      height: 21px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -377,10 +423,11 @@
     }
 
     .menu-footer {
-      padding: 12px 16px;
+      padding: 11px 16px;
       color: var(--muted);
       font-size: 11px;
       text-align: center;
+      border-top: 1px solid var(--border);
     }
 
     /* Main Page Content */
@@ -621,7 +668,7 @@
       border: 1px solid var(--border);
       outline: none;
       position: relative;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       box-shadow: var(--shadow);
       cursor: pointer;
       width: 100%;
@@ -636,13 +683,20 @@
       border-color: var(--border);
     }
 
+    @media (hover: hover) {
+      .app-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+      }
+    }
+
     .app-card:active {
       transform: scale(0.96);
     }
 
     .horizontal-list .app-card.trend-card {
-      min-width: clamp(102px, 28vw, 114px);
-      width: clamp(102px, 28vw, 114px);
+      min-width: clamp(104px, 28vw, 114px);
+      width: clamp(104px, 28vw, 114px);
       flex-shrink: 0;
     }
 
@@ -669,7 +723,7 @@
     }
 
     .app-title {
-      font-size: clamp(11px, 3.1vw, 12.5px);
+      font-size: clamp(11px, 3.1vw, 12.2px);
       font-weight: 600;
       display: -webkit-box;
       -webkit-line-clamp: 1;
@@ -690,10 +744,10 @@
     }
 
     .mod-badge {
-      font-size: clamp(8.5px, 2.4vw, 9.5px);
+      font-size: clamp(8.5px, 2.4vw, 9.2px);
       background: var(--accent-soft);
       color: var(--accent);
-      padding: 2px 7px;
+      padding: 2px 7.5px;
       border-radius: 20px;
       border: 1px solid var(--accent-border);
       margin-top: auto;
@@ -726,7 +780,7 @@
       cursor: pointer;
       text-decoration: none;
       color: var(--text);
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .prompt-card-poloja:hover,
@@ -735,6 +789,13 @@
     .prompt-card-poloja:active {
       outline: none;
       border-color: var(--border);
+    }
+
+    @media (hover: hover) {
+      .prompt-card-poloja:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+      }
     }
 
     .prompt-card-poloja:active {
@@ -1016,8 +1077,8 @@
       min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 7px;
-      font-size: clamp(11.8px, 3.2vw, 13.5px);
+      gap: 6px;
+      font-size: clamp(11.8px, 3.2vw, 13.3px);
     }
 
     .info-row {
@@ -1029,6 +1090,11 @@
       padding-bottom: 5px;
     }
 
+    .info-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
     .info-label { color: var(--muted); flex-shrink: 0; }
     .info-val { font-weight: 600; color: var(--text); text-align: right; word-break: break-word; min-width: 0; }
     .info-val.green { color: var(--accent); }
@@ -1036,8 +1102,8 @@
     .desc-box {
       background: var(--surface);
       padding: clamp(13px, 3.8vw, 16px);
-      border-radius: 20px;
-      margin-bottom: 18px;
+      border-radius: 18px;
+      margin-bottom: 16px;
       font-size: clamp(12.8px, 3.4vw, 13.5px);
       line-height: 1.62;
       color: var(--muted);
@@ -1071,16 +1137,32 @@
       background: var(--surface);
       border: 1px solid var(--border);
       outline: none;
-      padding: 12px 15px;
-      border-radius: 20px;
+      padding: 11px 16px;
+      border-radius: 16px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       text-decoration: none;
       color: var(--text);
       box-shadow: var(--shadow);
       transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .play-store-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .play-store-arrow {
+      color: var(--muted);
+      opacity: 0.7;
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
     }
 
     .play-store:hover,
@@ -1100,34 +1182,38 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      min-height: 48px;
-      padding: 13px 16px;
-      border-radius: 20px;
+      height: 46px;
+      min-height: 46px;
+      padding: 0 16px;
+      border-radius: 16px;
       text-decoration: none;
-      font-weight: 700;
-      font-size: clamp(13.8px, 3.7vw, 15px);
-      margin-bottom: 12px;
-      gap: 10px;
-      transition: transform 0.2s, filter 0.2s, background 0.2s;
+      font-weight: 600;
+      font-size: clamp(13.4px, 3.6vw, 14.5px);
+      margin-bottom: 10px;
+      gap: 8px;
+      white-space: nowrap;
+      transition: transform 0.18s ease, filter 0.18s ease, background 0.18s ease;
       cursor: pointer;
       border: none;
       outline: none;
       text-align: center;
     }
 
-    .btn-poloja:hover { transform: translateY(-2px); }
+    @media (hover: hover) {
+      .btn-poloja:hover { transform: translateY(-1.5px); }
+    }
     .btn-poloja:active { transform: scale(0.985); }
-    .btn-dl { background: #10b981; color: #ffffff; }
+    .btn-dl { background: #10b981; color: #ffffff; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.22); }
     @keyframes dlSpin { to { transform: rotate(360deg); } }
     .dl-spin { animation: dlSpin 0.8s linear infinite; }
-    .btn-tg { background: #3b82f6; color: #ffffff; }
+    .btn-tg { background: #3b82f6; color: #ffffff; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2); }
     .btn-copy { background: #364661; color: #ffffff; }
     .btn-copy.copied { background: #10b981; }
     .btn-tut {
       background: var(--surface);
       color: var(--text);
       border: 1px solid var(--border);
-      font-size: clamp(13.2px, 3.5vw, 14px);
+      font-size: clamp(13px, 3.4vw, 13.8px);
       box-shadow: var(--shadow);
     }
 
@@ -1141,10 +1227,10 @@
 
     .rating-box {
       text-align: center;
-      margin-top: 24px;
-      padding: 20px;
+      margin-top: 20px;
+      padding: 18px 16px;
       background: var(--surface);
-      border-radius: 20px;
+      border-radius: 18px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
     }
@@ -1163,14 +1249,14 @@
       align-items: center;
       justify-content: flex-start;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .lock-btn {
-      min-height: 38px;
-      padding: 7px 13px;
-      border-radius: 12px;
-      background: var(--surface);
+      min-height: 36px;
+      padding: 6px 12px;
+      border-radius: 11px;
+      background: var(--surface-2);
       border: 1px solid var(--border);
       outline: none;
       color: var(--text);
@@ -1183,6 +1269,7 @@
       cursor: pointer;
       text-decoration: none;
       white-space: nowrap;
+      transition: transform 0.16s ease, background 0.16s ease;
     }
 
     .lock-btn:hover,
@@ -1193,21 +1280,25 @@
       border-color: var(--border);
     }
 
+    .lock-btn:active {
+      transform: scale(0.97);
+    }
+
     .vault-header {
       padding-bottom: 16px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       border-bottom: 1px solid var(--border);
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 12px 16px;
+      gap: 10px 16px;
     }
 
     .vault-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 15px;
+      gap: 14px;
     }
 
     @media (min-width: 640px) {
@@ -1221,8 +1312,8 @@
     .vault-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: clamp(15px, 4vw, 18px);
+      border-radius: 18px;
+      padding: clamp(14px, 3.8vw, 17px);
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
@@ -1230,9 +1321,9 @@
     }
 
     .vault-icon-box {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1241,8 +1332,8 @@
 
     .hud-code-bar {
       margin-bottom: 12px;
-      padding: 8px 11px;
-      border-radius: 12px;
+      padding: 7px 10px;
+      border-radius: 11px;
       background: var(--surface-3);
       border: 1px solid var(--border);
       display: flex;
@@ -1253,12 +1344,78 @@
     }
 
     .hud-code-bar code {
-      font-size: 12px;
+      font-size: 11.8px;
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       user-select: text;
+    }
+
+    .vault-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .btn-vault-preview {
+      height: 39px;
+      min-height: 39px;
+      padding: 0 13px;
+      border-radius: 11px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      outline: none;
+      color: var(--text);
+      font-size: 12.2px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease;
+    }
+
+    .btn-vault-preview:hover,
+    .btn-vault-preview:focus,
+    .btn-vault-preview:focus-visible,
+    .btn-vault-preview:active {
+      outline: none;
+      border-color: var(--border);
+    }
+
+    .btn-vault-preview:active {
+      transform: scale(0.97);
+    }
+
+    .btn-vault-dl {
+      flex: 1;
+      height: 39px;
+      min-height: 39px;
+      padding: 0 14px;
+      border-radius: 11px;
+      background: #10b981;
+      color: #ffffff;
+      border: 0;
+      outline: none;
+      font-size: 12.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(16, 185, 129, 0.2);
+      transition: transform 0.16s ease, opacity 0.16s ease;
+    }
+
+    .btn-vault-dl:active {
+      transform: scale(0.97);
     }
 
     /* Poloja Footer */
@@ -1306,9 +1463,9 @@
       left: 50%;
       transform: translateX(-50%);
       width: min(92%, 500px);
-      background: var(--surface);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -1318,6 +1475,11 @@
       border: 1px solid var(--border);
       z-index: 999;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    html.dark .bottom-nav {
+      border-color: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.36);
     }
 
     .nav-item {
@@ -1357,18 +1519,14 @@
       box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
 
-    @media (max-width: 359px) {
-      .bottom-nav {
-        width: calc(100% - 20px);
-        padding: 6px 4px;
-      }
-      .nav-item {
-        padding: 5px 4px;
-      }
-      .key-helper-btn {
-        font-size: 11.5px;
-        padding: 8px 6px;
-      }
+    html.dark .nav-item.active {
+      background: #00ff88;
+      color: #0f1216;
+      box-shadow: 0 4px 14px rgba(0, 255, 136, 0.26);
+    }
+
+    html.dark .nav-item.active span {
+      font-weight: 600;
     }
 
     /* Modals & Lightbox */
@@ -1377,7 +1535,8 @@
       inset: 0;
       z-index: 2000;
       background: rgba(2, 6, 23, 0.68);
-      backdrop-filter: blur(3px);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -1390,76 +1549,176 @@
     }
 
     .overlay.open .modal-box {
-      animation: modalZoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: modalZoomIn 0.24s cubic-bezier(0.34, 1.45, 0.64, 1);
     }
 
     .overlay.open #lightboxImg {
-      animation: lbZoomIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: lbZoomIn 0.24s cubic-bezier(0.34, 1.45, 0.64, 1);
     }
 
     .modal-box {
       position: relative;
       width: 100%;
-      max-width: min(400px, 100%);
+      max-width: min(370px, 100%);
       max-height: min(88vh, 88dvh);
       overflow-y: auto;
       overscroll-behavior: contain;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: clamp(18px, 5vw, 24px);
-      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+      border-radius: 22px;
+      padding: clamp(18px, 4.8vw, 22px);
+      box-shadow: 0 22px 56px rgba(0, 0, 0, 0.34);
     }
 
-    @media (max-height: 520px) {
-      .modal-box {
-        max-height: calc(100dvh - 24px);
-        padding: 16px;
-      }
-      .bottom-nav {
-        bottom: 8px;
-        padding: 5px 6px;
-      }
-      .nav-item {
-        min-height: 40px;
-        padding: 4px 8px;
-      }
+    html.dark .modal-box {
+      border-color: rgba(255, 255, 255, 0.08);
     }
 
     .modal-close {
       position: absolute;
-      top: 14px;
-      right: 14px;
-      width: 32px;
-      height: 32px;
+      top: 13px;
+      right: 13px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
-      border: 0;
+      border: 1px solid var(--border);
       background: var(--surface-2);
       color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease;
+    }
+
+    .modal-close:active {
+      transform: scale(0.92);
+    }
+
+    .modal-icon-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+    }
+
+    .modal-title {
+      font-size: 16.5px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--text);
+      margin-bottom: 3px;
+      padding: 0 22px;
+    }
+
+    .modal-sub {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 12.6px;
+      line-height: 1.58;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .modal-action-row {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-modal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 38px;
+      min-height: 38px;
+      padding: 0 11px;
+      border-radius: 11px;
+      font-size: 12.4px;
+      font-weight: 600;
+      line-height: 1;
+      gap: 6px;
+      white-space: nowrap;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      outline: none;
+      margin: 0;
+      transition: transform 0.16s ease, background 0.16s ease, opacity 0.16s ease;
+    }
+
+    .btn-modal svg {
+      flex-shrink: 0;
+    }
+
+    .btn-modal:hover,
+    .btn-modal:focus,
+    .btn-modal:focus-visible,
+    .btn-modal:active {
+      outline: none;
+    }
+
+    .btn-modal:active {
+      transform: scale(0.97);
+    }
+
+    .btn-modal-cancel {
+      background: var(--surface-2);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-modal-cancel:hover,
+    .btn-modal-cancel:focus,
+    .btn-modal-cancel:focus-visible,
+    .btn-modal-cancel:active {
+      border-color: var(--border);
+    }
+
+    .btn-modal-primary {
+      background: #10b981;
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(16, 185, 129, 0.22);
+    }
+
+    .btn-modal-full {
+      height: 42px;
+      min-height: 42px;
+      border-radius: 12px;
+      font-size: 13.4px;
     }
 
     .key-field-wrap {
       position: relative;
       display: flex;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .key-input {
       width: 100%;
-      height: 48px;
-      padding: 0 38px 0 14px;
-      border-radius: 14px;
+      height: 44px;
+      padding: 0 36px 0 12px;
+      border-radius: 12px;
       border: 1px solid var(--border);
       background: var(--surface-3);
       color: var(--text);
       text-align: center;
       font-family: 'JetBrains Mono', monospace;
-      font-size: clamp(11px, 3.2vw, 13.5px);
+      font-size: clamp(11px, 3.1vw, 13px);
       font-weight: 600;
       letter-spacing: 0.3px;
       text-transform: uppercase;
@@ -1479,9 +1738,9 @@
 
     .key-clear-btn {
       position: absolute;
-      right: 6px;
-      width: 32px;
-      height: 32px;
+      right: 5px;
+      width: 30px;
+      height: 30px;
       border: 0;
       border-radius: 8px;
       background: transparent;
@@ -1490,7 +1749,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .key-clear-btn.show {
@@ -1501,18 +1760,55 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 8px;
     }
 
     .key-helper-btn {
-      min-height: 42px;
-      padding: 8px 10px;
-      border-radius: 13px;
-      font-size: 12.5px;
+      height: 37px;
+      min-height: 37px;
+      padding: 0 10px;
+      border-radius: 11px;
+      font-size: 12px;
       font-weight: 600;
       margin: 0;
       gap: 6px;
       white-space: nowrap;
+    }
+
+    @media (max-width: 359px) {
+      .bottom-nav {
+        width: calc(100% - 20px);
+        padding: 6px 4px;
+      }
+      .nav-item {
+        padding: 5px 4px;
+      }
+      .btn-modal {
+        height: 36px;
+        min-height: 36px;
+        padding: 0 8px;
+        font-size: 11.8px;
+        gap: 5px;
+      }
+      .key-helper-btn {
+        font-size: 11.5px;
+        padding: 0 6px;
+      }
+    }
+
+    @media (max-height: 520px) {
+      .modal-box {
+        max-height: calc(100dvh - 24px);
+        padding: 16px;
+      }
+      .bottom-nav {
+        bottom: 8px;
+        padding: 5px 6px;
+      }
+      .nav-item {
+        min-height: 40px;
+        padding: 4px 8px;
+      }
     }
 
     .vault-session-bar {
@@ -1522,8 +1818,8 @@
       justify-content: space-between;
       gap: 8px 14px;
       padding: 11px 15px;
-      margin-bottom: 18px;
-      border-radius: 16px;
+      margin-bottom: 16px;
+      border-radius: 15px;
       background: var(--surface);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
@@ -1570,7 +1866,7 @@
   <header class="app-header">
     <div class="header-inner">
       <a href="/" class="logo-link" id="brandHomeBtn">
-        <img src="https://i.postimg.cc/k5qxxjHd/Tik-Tok-Logo-9D2F901.png" alt="Logo" class="logo-img" referrerpolicy="no-referrer" />
+        <img src="https://i.postimg.cc/k5qxxjHd/Tik-Tok-Logo-9D2F901.png" alt="Minhaj Afrad" class="logo-img" referrerpolicy="no-referrer" />
         <span class="logo-text">Minhaj Apps</span>
       </a>
 
@@ -1657,7 +1953,7 @@
 
   <!-- Lightbox Overlay -->
   <div class="overlay" id="lightboxOverlay" style="background:rgba(0,0,0,0.92);cursor:zoom-out;">
-    <button type="button" class="modal-close" style="background:rgba(255,255,255,0.16);color:#fff;" onclick="closeLightbox()">✕</button>
+    <button type="button" class="modal-close" style="background:rgba(255,255,255,0.16);border-color:rgba(255,255,255,0.14);color:#fff;" onclick="closeLightbox()" aria-label="Close preview"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     <div onclick="event.stopPropagation()" style="display:flex;align-items:center;justify-content:center;">
       <img id="lightboxImg" src="" alt="Full Preview" referrerpolicy="no-referrer" style="max-width:95vw;max-height:90vh;border-radius:4px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,0.8);" />
     </div>
@@ -1672,7 +1968,7 @@
   "BRAND_CONFIG": {
     "name": "Minhaj Apps",
     "owner": "Minhaj Afrad",
-    "logo": "https://github.com/minhajapps/minhajapps.github.io/blob/main/favicon.png",
+    "logo": "https://minhajapps.github.io/favicon.png",
     "qrScannerImage": "https://i.postimg.cc/sgZNM20Z/Picsart-26-10-11-18-49-38-494.jpg",
     "telegramUrl": "https://t.me/minhajafrad",
     "contactTelegramUrl": "https://t.me/minhajafrad/298",
@@ -2423,15 +2719,19 @@
       dlTiny: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
       spinner: '<svg class="dl-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>',
       checkBtn: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-      dlBtn: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
-      copyBtn: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
-      tgBtn: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21.7 3.4 18.6 20c-.2 1.2-.9 1.5-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6.1 13.7l-5-1.6c-1.1-.3-1.1-1.1.2-1.6L20.7 3c.9-.3 1.7.2 1 0.4Z"/></svg>',
-      playCircle: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="#3b82f6" stroke="none"/></svg>',
+      dlBtn: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+      dlSm: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+      dlBadge: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+      closeSm: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+      extSm: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>',
+      copyBtn: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+      tgBtn: '<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M21.7 3.4 18.6 20c-.2 1.2-.9 1.5-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6.1 13.7l-5-1.6c-1.1-.3-1.1-1.1.2-1.6L20.7 3c.9-.3 1.7.2 1 0.4Z"/></svg>',
+      playCircle: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="#3b82f6" stroke="none"/></svg>',
       zoom: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>',
-      lock: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
-      shield: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>',
-      keySm: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>',
-      pasteSm: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>',
+      lock: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+      shield: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>',
+      keySm: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>',
+      pasteSm: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>',
     };
 
     let state = {
@@ -3913,8 +4213,11 @@
 
       if (!isPrompt && item.playStoreUrl) {
         html += '<a href="' + esc(item.playStoreUrl) + '" target="_blank" rel="noopener noreferrer" class="play-store">' +
-          '<svg width="24" height="24" viewBox="0 0 24 24"><path d="M3 3.6v16.8c0 .6.7 1 1.2.7l10.2-8.4L4.2 3c-.5-.4-1.2 0-1.2.6Z" fill="#00d639"/><path d="m14.4 12.7 3.2-2.6 3.1 1.7c.7.4.7 1.4 0 1.8l-3.1 1.7-3.2-2.6Z" fill="#00a4ef"/><path d="m4.2 3 13.4 7.5-3.2 2.6L4.2 3Z" fill="#ffcf00"/><path d="m4.2 21 13.4-7.5-3.2-2.6L4.2 21Z" fill="#f44336"/></svg>' +
-          '<div style="line-height:1.2;"><div style="font-size:10px;color:var(--muted);">Get it on</div><div style="font-size:15px;font-weight:700;">Google Play</div></div>' +
+          '<div class="play-store-left">' +
+            '<svg width="23" height="23" viewBox="0 0 24 24"><path d="M3 3.6v16.8c0 .6.7 1 1.2.7l10.2-8.4L4.2 3c-.5-.4-1.2 0-1.2.6Z" fill="#00d639"/><path d="m14.4 12.7 3.2-2.6 3.1 1.7c.7.4.7 1.4 0 1.8l-3.1 1.7-3.2-2.6Z" fill="#00a4ef"/><path d="m4.2 3 13.4 7.5-3.2 2.6L4.2 3Z" fill="#ffcf00"/><path d="m4.2 21 13.4-7.5-3.2-2.6L4.2 21Z" fill="#f44336"/></svg>' +
+            '<div style="line-height:1.2;"><div style="font-size:10.5px;color:var(--muted);">Get it on</div><div style="font-size:14.5px;font-weight:700;">Google Play</div></div>' +
+          '</div>' +
+          '<span class="play-store-arrow">' + ICONS.extSm + '</span>' +
         '</a>';
       }
 
@@ -3934,8 +4237,8 @@
       html += '</div>';
 
       html += '<div class="rating-box">' +
-        '<div style="font-size:30px;font-weight:700;margin-bottom:4px;">' + Number(item.rating).toFixed(1) + '</div>' +
-        '<div style="display:flex;justify-content:center;gap:3px;margin-bottom:6px;">' + renderStars(item.rating, 21) + '</div>' +
+        '<div style="font-size:28px;font-weight:700;margin-bottom:4px;">' + Number(item.rating).toFixed(1) + '</div>' +
+        '<div style="display:flex;justify-content:center;gap:3px;margin-bottom:6px;">' + renderStars(item.rating, 20) + '</div>' +
         '<div style="font-size:12px;color:var(--muted);">Total Votes: ' + esc(cleanVotes) + '</div>' +
       '</div></div>';
 
@@ -3953,21 +4256,21 @@
         var isWebsite = res.id === "priv-website-qr";
         var isFF = res.id === "priv-ff-setting-qr";
         return '<article class="vault-card">' +
-          '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">' +
+          '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;">' +
             '<div class="vault-icon-box" style="background:' + meta.bg + ';">' + meta.svg + '</div>' +
             '<div style="flex:1;min-width:0;">' +
               '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
-                '<strong style="font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(res.title) + '</strong>' +
+                '<strong style="font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(res.title) + '</strong>' +
                 '<span class="mono" style="font-size:11px;color:var(--muted);flex-shrink:0;">0' + (idx + 1) + '</span>' +
               '</div>' +
               '<div style="font-size:11.5px;color:var(--muted);margin-top:2px;">' + esc(meta.sub) + '</div>' +
             '</div>' +
           '</div>' +
-          '<p style="font-size:13px;line-height:1.6;color:var(--muted);margin-bottom:14px;flex:1;">' + esc(res.description) + '</p>' +
-          (isFF ? '<div class="hud-code-bar"><code class="mono">#FFHUDT6O3j2tyNapPo7eO</code><button type="button" class="lock-btn" style="min-height:30px;padding:4px 10px;" onclick="copyText(\'#FFHUDT6O3j2tyNapPo7eO\', \'FF HUD Code Copied!\')">Copy Code</button></div>' : '') +
-          '<div style="display:flex;gap:8px;margin-top:auto;">' +
-            (isWebsite ? '<a href="/qr-scanner" class="lock-btn" style="min-height:44px;" onclick="return handleQrClick(event)">Preview</a>' : '') +
-            '<a href="' + esc(res.routePath) + '" class="btn-poloja btn-dl" style="min-height:44px;padding:10px 14px;border-radius:12px;font-size:13px;margin:0;flex:1;" onclick="return handlePrivDlConfirmClick(event, \'' + esc(res.id) + '\')">' + ICONS.dlBtn + '<span>Download File</span></a>' +
+          '<p style="font-size:12.8px;line-height:1.58;color:var(--muted);margin-bottom:13px;flex:1;">' + esc(res.description) + '</p>' +
+          (isFF ? '<div class="hud-code-bar"><code class="mono">#FFHUDT6O3j2tyNapPo7eO</code><button type="button" class="lock-btn" style="min-height:28px;padding:3px 9px;font-size:11.5px;" onclick="copyText(\'#FFHUDT6O3j2tyNapPo7eO\', \'FF HUD Code Copied!\')">Copy Code</button></div>' : '') +
+          '<div class="vault-card-actions">' +
+            (isWebsite ? '<a href="/qr-scanner" class="btn-vault-preview" onclick="return handleQrClick(event)">Preview</a>' : '') +
+            '<a href="' + esc(res.routePath) + '" class="btn-vault-dl" onclick="return handlePrivDlConfirmClick(event, \'' + esc(res.id) + '\')">' + ICONS.dlSm + '<span>Download File</span></a>' +
           '</div>' +
         '</article>';
       }).join("");
@@ -3978,10 +4281,10 @@
         '</div>' +
         '<div class="vault-header">' +
           '<div style="display:flex;align-items:center;gap:12px;min-width:0;">' +
-            '<div class="vault-icon-box" style="width:46px;height:46px;background:var(--accent-soft);color:var(--accent);">' + ICONS.shield + '</div>' +
-            '<div style="min-width:0;"><h1 style="font-size:clamp(18.5px, 4.8vw, 22px);font-weight:700;line-height:1.25;">Minhaj Private Vault</h1><p style="font-size:12.5px;color:var(--muted);margin-top:2px;">আপনার ব্যক্তিগত QR কোড, প্রিসেট এবং গেমিং সেটিংস কালেকশন।</p></div>' +
+            '<div class="vault-icon-box" style="width:44px;height:44px;background:var(--accent-soft);border:1px solid var(--accent-border);color:var(--accent);">' + ICONS.shield + '</div>' +
+            '<div style="min-width:0;"><h1 style="font-size:clamp(18px, 4.6vw, 21px);font-weight:700;line-height:1.25;">Minhaj Private Vault</h1><p style="font-size:12.3px;color:var(--muted);margin-top:2px;">আপনার ব্যক্তিগত QR কোড, প্রিসেট এবং গেমিং সেটিংস কালেকশন।</p></div>' +
           '</div>' +
-          '<div class="mono" style="font-size:12px;color:var(--accent);font-weight:600;">' + DATA.PRIVATE_RESOURCES.length + ' Private Files · Google Drive</div>' +
+          '<div class="mono" style="font-size:11.8px;color:var(--accent);font-weight:600;">' + DATA.PRIVATE_RESOURCES.length + ' Private Files · Google Drive</div>' +
         '</div>' +
         (activeSess
           ? '<div class="vault-session-bar">' +
@@ -4102,7 +4405,7 @@
     function showModalHTMLSilent(inner) {
       stopAndCloseOverlaysSilent();
       var box = document.getElementById("modalBox");
-      box.innerHTML = '<button type="button" class="modal-close" onclick="closeModal()">✕</button>' + inner;
+      box.innerHTML = '<button type="button" class="modal-close" onclick="closeModal()" aria-label="Close modal">' + ICONS.closeSm + '</button>' + inner;
       document.getElementById("modalOverlay").classList.add("open");
       document.body.style.overflow = "hidden";
     }
@@ -4113,7 +4416,7 @@
 
     function renderQrModalSilent() {
       showModalHTMLSilent(
-        '<h3 style="font-size:15px;font-weight:700;margin-bottom:12px;">Minhaj Apps — Official QR</h3>' +
+        '<h3 style="font-size:15px;font-weight:700;margin-bottom:12px;padding-right:28px;">Minhaj Apps — Official QR</h3>' +
         '<img src="' + esc(DATA.BRAND_CONFIG.qrScannerImage) + '" alt="QR Scanner" referrerpolicy="no-referrer" style="width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:16px;background:#fff;" />'
       );
     }
@@ -4125,11 +4428,11 @@
     };
 
     function renderInfoModalSilent(info) {
-      var body = info.paragraphs.map(function(p){ return '<p style="font-size:13.5px;line-height:1.65;color:var(--muted);margin-bottom:10px;">' + esc(p) + '</p>'; }).join("");
+      var body = info.paragraphs.map(function(p){ return '<p style="font-size:13.2px;line-height:1.65;color:var(--muted);margin-bottom:10px;">' + esc(p) + '</p>'; }).join("");
       if (info.link) {
-        body += '<a href="' + esc(info.link.url) + '" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700;font-size:13.5px;text-decoration:none;">' + esc(info.link.label) + ' ↗</a>';
+        body += '<a href="' + esc(info.link.url) + '" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:600;font-size:13.2px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;"><span>' + esc(info.link.label) + '</span>' + ICONS.extSm + '</a>';
       }
-      showModalHTMLSilent('<h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">' + esc(info.title) + '</h3>' + body);
+      showModalHTMLSilent('<h3 style="font-size:17px;font-weight:700;margin-bottom:10px;padding-right:28px;">' + esc(info.title) + '</h3>' + body);
     }
 
     window.openInfoModal = function(keyOrId) {
@@ -4145,13 +4448,13 @@
       var rawVideoSrc = (item && item.tutorialVideoUrl) || DATA.BRAND_CONFIG.defaultTutorialVideoUrl || "/Fix_Tutorial.mp4";
       var videoSrc = String(rawVideoSrc).replace(/^\.\//, "/");
       showModalHTMLSilent(
-        '<h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">Install Problem Fix Tutorial</h3>' +
-        '<video controls playsinline preload="metadata" controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture style="width:100%;aspect-ratio:9/16;max-height:64vh;border-radius:16px;background:#000;object-fit:contain;" onerror="this.style.display=\'none\';document.getElementById(\x27tutFallback\x27).style.display=\'block\';">' +
+        '<h3 style="font-size:15.5px;font-weight:700;margin-bottom:12px;padding-right:28px;">Install Problem Fix Tutorial</h3>' +
+        '<video controls playsinline preload="metadata" controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture style="width:100%;aspect-ratio:9/16;max-height:64vh;border-radius:15px;background:#000;object-fit:contain;" onerror="this.style.display=\'none\';document.getElementById(\x27tutFallback\x27).style.display=\'block\';">' +
           '<source src="' + esc(videoSrc) + '" type="video/mp4" />' +
         '</video>' +
-        '<div id="tutFallback" style="display:none;background:var(--surface-3);border:1px solid var(--border);border-radius:16px;padding:14px;">' +
-          '<p style="font-weight:700;font-size:13.5px;margin-bottom:8px;">' + esc(name) + ' ইনস্টল করার সঠিক নিয়ম:</p>' +
-          '<ol style="padding-left:18px;font-size:13px;line-height:1.6;color:var(--muted);">' +
+        '<div id="tutFallback" style="display:none;background:var(--surface-3);border:1px solid var(--border);border-radius:15px;padding:14px;">' +
+          '<p style="font-weight:700;font-size:13.2px;margin-bottom:8px;">' + esc(name) + ' ইনস্টল করার সঠিক নিয়ম:</p>' +
+          '<ol style="padding-left:18px;font-size:12.8px;line-height:1.6;color:var(--muted);">' +
             '<li style="margin-bottom:6px;">আগের পুরনো ভার্সনের অ্যাপটি প্রথমে Uninstall করুন।</li>' +
             '<li style="margin-bottom:6px;">ফাইলটি ওপেন করে ব্রাউজার বা File Manager-এ Install Unknown Apps অন করুন।</li>' +
             '<li>Play Protect পপআপ এলে More details → Install anyway চাপুন।</li>' +
@@ -4179,21 +4482,21 @@
     function renderPrivateLoginModalSilent(initialErrorMsg) {
       showModalHTMLSilent(
         '<div style="text-align:center;">' +
-          '<div style="width:54px;height:54px;border-radius:16px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">' + ICONS.lock + '</div>' +
-          '<h3 style="font-size:19px;font-weight:700;margin-bottom:4px;">Private Vault Login</h3>' +
-          '<p style="font-size:12.5px;color:var(--muted);line-height:1.55;margin-bottom:15px;">Key Generator থেকে বৈধ ও মেয়াদযুক্ত Access Key তৈরি করে নিচে পেস্ট করুন।</p>' +
+          '<div class="modal-icon-badge">' + ICONS.lock + '</div>' +
+          '<h3 class="modal-title">Private Vault Login</h3>' +
+          '<p class="modal-desc" style="margin-bottom:13px;">Key Generator থেকে বৈধ ও মেয়াদযুক্ত Access Key তৈরি করে নিচে পেস্ট করুন।</p>' +
           '<form onsubmit="submitPrivateKey(event)">' +
             '<div class="key-field-wrap">' +
               '<input type="text" id="privKeyInput" class="key-input" placeholder="MINHAJ-AFRAD-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" />' +
-              '<button type="button" id="privKeyClearBtn" class="key-clear-btn" onclick="clearPrivKeyInput()" aria-label="Clear key">✕</button>' +
+              '<button type="button" id="privKeyClearBtn" class="key-clear-btn" onclick="clearPrivKeyInput()" aria-label="Clear key">' + ICONS.closeSm + '</button>' +
             '</div>' +
-            '<button type="submit" id="privSubmitBtn" class="btn-poloja btn-dl" style="min-height:46px;border-radius:14px;font-size:14px;margin:0;"><span>Unlock Private Vault</span></button>' +
+            '<button type="submit" id="privSubmitBtn" class="btn-modal btn-modal-primary btn-modal-full"><span>Unlock Private Vault</span></button>' +
             '<div class="key-helper-grid">' +
-              '<button type="button" class="btn-poloja btn-tut key-helper-btn" onclick="pastePrivateKey()">' + ICONS.pasteSm + '<span>Paste Key</span></button>' +
-              '<a href="' + esc(FREE_KEY_PORTAL_URL) + '" target="_blank" rel="noopener noreferrer" class="btn-poloja btn-tut key-helper-btn">' + ICONS.keySm + '<span>Get Free Key</span></a>' +
+              '<button type="button" class="btn-modal btn-modal-cancel key-helper-btn" onclick="pastePrivateKey()">' + ICONS.pasteSm + '<span>Paste Key</span></button>' +
+              '<a href="' + esc(FREE_KEY_PORTAL_URL) + '" target="_blank" rel="noopener noreferrer" class="btn-modal btn-modal-cancel key-helper-btn">' + ICONS.keySm + '<span>Get Free Key</span></a>' +
             '</div>' +
           '</form>' +
-          '<div id="privErr" style="color:#f43f5e;font-size:12px;font-weight:600;margin-top:10px;min-height:18px;line-height:1.45;">' + esc(initialErrorMsg || "") + '</div>' +
+          '<div id="privErr" style="color:#f43f5e;font-size:12px;font-weight:600;margin-top:8px;min-height:17px;line-height:1.45;">' + esc(initialErrorMsg || "") + '</div>' +
         '</div>'
       );
 
@@ -4269,13 +4572,13 @@
     function renderPrivateDlConfirmSilent(res) {
       showModalHTMLSilent(
         '<div style="text-align:center;">' +
-          '<div style="width:48px;height:48px;border-radius:16px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">' + ICONS.dlBtn + '</div>' +
-          '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">' + esc(res.title) + '</h3>' +
-          '<div style="font-size:11.5px;color:var(--accent);font-weight:600;margin-bottom:10px;">Ready to Download via Google Drive</div>' +
-          '<p style="font-size:13px;line-height:1.6;color:var(--muted);margin-bottom:18px;">' + esc(res.description) + '</p>' +
-          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
-            '<button type="button" class="btn-poloja btn-tut" style="min-height:44px;border-radius:12px;font-size:13px;margin:0;" onclick="closeModal()">Cancel</button>' +
-            '<a href="' + esc(resolveDownloadInfo(res.downloadUrl, res.title).url) + '" class="btn-poloja btn-dl" style="min-height:44px;border-radius:12px;font-size:13px;margin:0;" onclick="return startPrivateDownload(\'' + esc(res.id) + '\', event)">' + ICONS.dlBtn + '<span>Download Now</span></a>' +
+          '<div class="modal-icon-badge">' + ICONS.dlBadge + '</div>' +
+          '<h3 class="modal-title">' + esc(res.title) + '</h3>' +
+          '<div class="modal-sub">Ready to Download via Google Drive</div>' +
+          '<p class="modal-desc">' + esc(res.description) + '</p>' +
+          '<div class="modal-action-row">' +
+            '<button type="button" class="btn-modal btn-modal-cancel" onclick="closeModal()">Cancel</button>' +
+            '<a href="' + esc(resolveDownloadInfo(res.downloadUrl, res.title).url) + '" class="btn-modal btn-modal-primary" onclick="return startPrivateDownload(\'' + esc(res.id) + '\', event)">' + ICONS.dlSm + '<span>Download Now</span></a>' +
           '</div>' +
         '</div>'
       );
